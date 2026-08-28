@@ -1,0 +1,6 @@
+{
+  "name": "СУ Васил Левски - гр. Вълчи дол | Официален портал",
+  "description": "Модерен уеб портал на СУ 'Васил Левски' гр. Вълчи дол с динамично съдържание, интерактивен прием, разписания, галерия, документи и вграден Headless CMS за управление.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
