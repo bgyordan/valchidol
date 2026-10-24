@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import { sendMail, mailConfigured } from '../../../lib/mail';
 
-// Контактната форма на сайта → писмо от eis@csop-varna.bg до CONTACT_TO (по подразбиране tech@csop-varna.bg).
+// Контактната форма на сайта → писмо от MAIL_FROM до CONTACT_TO (по подразбиране имейлът на училището).
 // Защита от спам: скрито поле (ботовете го попълват), минимално време за попълване, ограничение по IP.
 export const dynamic = 'force-dynamic';
 
 const TOPICS: Record<string, string> = {
   general: 'Общ въпрос',
   admission: 'Прием',
-  donation: 'Дарение',
+  docs: 'Документи и удостоверения',
   site: 'Сайт / технически проблем',
   other: 'Друго',
 };
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
 
   const when = new Date().toLocaleString('bg-BG', { timeZone: 'Europe/Sofia' });
   const text = [
-    `Съобщение от контактната форма на csop-varna.bg${lang === 'en' ? ' (английската версия)' : ''}`,
+    `Съобщение от контактната форма на souvalchidol.com${lang === 'en' ? ' (английската версия)' : ''}`,
     '',
     `Тема: ${topic}`,
     `Име: ${name}`,
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
 
   try {
     await sendMail({
-      to: process.env.CONTACT_TO || 'tech@csop-varna.bg',
+      to: process.env.CONTACT_TO || 'info-400112@edu.mon.bg',
       replyTo: email,
       subject: `[Сайт] ${topic} — ${name}`,
       text,

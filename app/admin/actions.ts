@@ -177,3 +177,47 @@ export async function deleteEvent(f: FormData) {
   await d.prepare('DELETE FROM site_events WHERE id = ?').bind(str(f, 'id', 60)).run();
   revalidatePath('/', 'layout');
 }
+
+/* ---------------- Текстови страници ---------------- */
+export async function savePage(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  const isNew = f.get('new') === '1';
+  const slug = isNew
+    ? str(f, 'slug', 120).toLowerCase().split('/').map((p) => slugify(p).replace(/\./g, '-')).filter(Boolean).join('/')
+    : str(f, 'slug', 120);
+  const title = str(f, 'title', 200);
+  if (!slug || !title) throw new Error('Липсва адрес или заглавие');
+
+  const old = await d.prepare('SELECT photos FROM site_pages WHERE slug = ?').bind(slug).first<{ photos: string }>();
+  if (isNew && old) throw new Error('Вече има страница с този адрес');
+  let photos: string[] = old ? JSON.parse(old.photos || '[]') : [];
+  const drop = new Set(f.getAll('remove_photo').map(String));
+  for (const u of drop) await deleteFile(u);
+  photos = photos.filter((u) => !drop.has(u));
+  for (const p of f.getAll('photos')) if (isFile(p)) photos.push(await uploadFile(p, 'stranitsi'));
+
+  const body = String(f.get('body') ?? '').replace(/\r/g, '').slice(0, 400000);
+  if (old) {
+    await d.prepare(`UPDATE site_pages SET title=?, grp=?, body=?, photos=?, updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE slug=?`)
+      .bind(title, opt(f, 'grp', 30), body, JSON.stringify(photos), slug).run();
+  } else {
+    await d.prepare('INSERT INTO site_pages (slug, title, grp, body, photos, sort) VALUES (?,?,?,?,?, (SELECT COALESCE(MAX(sort),0)+1 FROM site_pages))')
+      .bind(slug, title, opt(f, 'grp', 30), body, JSON.stringify(photos)).run();
+  }
+  revalidatePath('/', 'layout');
+  redirect('/admin/stranitsi');
+}
+
+export async function deletePage(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  const slug = str(f, 'slug', 120);
+  const row = await d.prepare('SELECT photos FROM site_pages WHERE slug = ?').bind(slug).first<{ photos: string }>();
+  if (row) {
+    for (const u of JSON.parse(row.photos || '[]')) await deleteFile(u);
+    await d.prepare('DELETE FROM site_pages WHERE slug = ?').bind(slug).run();
+  }
+  revalidatePath('/', 'layout');
+  redirect('/admin/stranitsi');
+}

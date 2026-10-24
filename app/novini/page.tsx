@@ -4,8 +4,8 @@ import { getNews } from '../../lib/data';
 import './novini.css';
 
 export const metadata = {
-  title: 'Новини — ЦСОП Варна',
-  description: 'Събития, празници, съобщения и истории от ежедневието на децата и екипа в ЦСОП – Варна.',
+  title: 'Новини — СУ „Васил Левски“ – Вълчи дол',
+  description: 'Събития, празници, съобщения и истории от живота на учениците и учителите в СУ „Васил Левски“ – гр. Вълчи дол.',
 };
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +13,7 @@ export default async function NewsArchivePage() {
   const posts = await getNews();
   return (
     <>
-      <PageHero path="/novini" title="Какво се случва при нас" intro="Събития, празници, съобщения и малки истории от ежедневието на децата и екипа." />
+      <PageHero path="/novini" title="Новини" intro="Събития, празници, постижения и съобщения от живота на училището." />
       <section className="section tone-lime">
         <div className="wrap"><NewsClient posts={posts} /></div>
       </section>

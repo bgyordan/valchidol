@@ -423,3 +423,12 @@ html.a11y-links a { text-decoration: underline !important; text-underline-offset
 :root[data-theme="dark"] .hx::before, .dark .hx::before,
 :root[data-theme="dark"] .home-dots span, .dark .home-dots span,
 :root[data-theme="dark"] .ph-dots span, .dark .ph-dots span { --sh: rgba(0, 0, 0, .5); }
+
+/* текстови страници от базата */
+.page-body { max-width: 860px; }
+.page-body h2 { margin-top: 32px; }
+.page-body h2:first-child { margin-top: 0; }
+.page-body h3 { font-size: 1.05rem; }
+.page-body ul { margin: 8px 0; }
+.page-body a { overflow-wrap: anywhere; }
+.page-back { margin-bottom: 16px; }

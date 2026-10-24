@@ -41,7 +41,7 @@ export default function GalleryClient({ albums, photos }: { albums: Album[]; pho
               <div key={a.id}>
                 <button className="gal-album" onClick={() => setOpenAlbum(a)}>
                   <div className="gal-album-img">
-                    {a.cover_url ? <img src={a.cover_url} alt={a.title} /> : <div className="gal-noimg"><span>ЦСОП</span></div>}
+                    {a.cover_url ? <img src={a.cover_url} alt={a.title} /> : <div className="gal-noimg"><span>СУ</span></div>}
                     <div className="gal-album-overlay">
                       <span className="gal-album-count">{a.photo_count} снимки</span>
                     </div>

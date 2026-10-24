@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { isEnPath } from '../../lib/lang';
 
-const KEY = 'csop-cookie-consent';
+const KEY = 'su-cookie-consent';
 
 export default function CookieBanner() {
   const [show, setShow] = useState(false);

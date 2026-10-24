@@ -15,9 +15,9 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const post = await getArticle(slug);
-  if (!post) return { title: 'Статията не е намерена — ЦСОП Варна' };
+  if (!post) return { title: 'Статията не е намерена — СУ „Васил Левски“ – Вълчи дол' };
   return {
-    title: `${post.title} — ЦСОП Варна`,
+    title: `${post.title} — СУ „Васил Левски“ – Вълчи дол`,
     description: post.excerpt ?? undefined,
     openGraph: { title: post.title, description: post.excerpt ?? undefined, images: post.cover_url ? [post.cover_url] : undefined },
   };

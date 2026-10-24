@@ -1,7 +1,7 @@
 import PageHero from '../components/PageHero';
 import { getEvents, fmtDate, monthShort } from '../../lib/data';
 
-export const metadata = { title: 'Събития — ЦСОП Варна', description: 'Предстоящи и минали събития в ЦСОП – Варна.' };
+export const metadata = { title: 'Събития — СУ „Васил Левски“ – Вълчи дол', description: 'Предстоящи и минали събития в СУ „Васил Левски“ – гр. Вълчи дол.' };
 export const dynamic = 'force-dynamic';
 
 export default async function EventsPage() {
@@ -12,7 +12,7 @@ export default async function EventsPage() {
 
   return (
     <>
-      <PageHero path="/sabitiya" title="Събития" intro="Предстоящите събития в центъра и архив на отминалите." />
+      <PageHero path="/sabitiya" title="Събития" intro="Предстоящите събития в училището и архив на отминалите." />
       <section className="section tone-lime">
         <div className="wrap">
           <h2 style={{ marginBottom: 16 }}>Предстоящи</h2>

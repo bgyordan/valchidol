@@ -1,7 +1,8 @@
-// Изпращане на писма от сайта през Gmail API като eis@csop-varna.bg.
+// Изпращане на писма от сайта през Gmail API от адреса MAIL_FROM (училищният Google акаунт).
 // Ключовете са в .env.local на сайта (виж scripts/gmail-token.mjs):
 //   GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN — токен САМО за изпращане (gmail.send), без достъп до Drive.
-//   CONTACT_TO — до кого отиват писмата от формата (по подразбиране tech@csop-varna.bg).
+//   CONTACT_TO — до кого отиват писмата от формата (по подразбиране info-400112@edu.mon.bg).
+//   MAIL_FROM — от кой адрес се изпращат (трябва да е акаунтът, за който е токенът).
 
 let cached: { token: string; exp: number } | null = null;
 
@@ -39,7 +40,7 @@ const clean = (s: string) => s.replace(/[\r\n]+/g, ' ').trim();
 
 export async function sendMail(m: { to: string; subject: string; text: string; replyTo?: string; fromName?: string }) {
   const lines = [
-    `From: ${header(m.fromName || 'Сайт ЦСОП Варна')} <eis@csop-varna.bg>`,
+    `From: ${header(m.fromName || 'Сайт СУ „Васил Левски“')} <${process.env.MAIL_FROM || 'info-400112@edu.mon.bg'}>`,
     `To: ${clean(m.to)}`,
     ...(m.replyTo ? [`Reply-To: ${clean(m.replyTo)}`] : []),
     `Subject: ${header(clean(m.subject))}`,

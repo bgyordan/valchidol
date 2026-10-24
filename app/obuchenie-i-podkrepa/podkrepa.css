@@ -1,7 +1,0 @@
-/* Обучение и подкрепа — списък на услугите: заглавие вляво, текст вдясно, тънка черта между тях */
-.sv-list { list-style: none; border-top: 1px solid var(--line-strong); }
-.sv-list li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 12px clamp(28px, 5vw, 96px); padding-block: clamp(26px, 3vw, 44px); border-bottom: 1px solid var(--line); }
-.sv-list h2 { font-size: calc(clamp(22px, 2vw, 34px) * var(--fs-ui, 1)); line-height: 1.15; font-weight: 400; letter-spacing: -.02em; }
-.sv-list p { font-size: calc(clamp(17px, 1.25vw, 19px) * var(--fs-ui, 1)); line-height: 1.65; max-width: 38em; }
-.sv-list .sv-who { margin-top: 10px; font-size: calc(15px * var(--fs, 1)); font-weight: 600; color: var(--ink-2); }
-@media (max-width: 760px) { .sv-list li { grid-template-columns: 1fr; } }

@@ -1,22 +1,8 @@
-// Двуезичие: българският сайт е пълен, английската част (/en) е кратка — обща информация.
-// Двойките страници (за превключвателя БГ/EN, hreflang и картата на сайта).
 export type Lang = 'bg' | 'en';
 
-export const PAIRS: { bg: string; en: string }[] = [
-  { bg: '/', en: '/en' },
-  { bg: '/obuchenie-i-podkrepa', en: '/en/services' },
-  { bg: '/priem/proczedura', en: '/en/admission' },
-  { bg: '/kontakti', en: '/en/contacts' },
-  { bg: '/daritelstvo', en: '/en/support-us' },
-];
-
-// БГ страници без собствен превод, които все пак водят към най-близката английска
-const BG_TO_EN: Record<string, string> = {
-  '/za-nas': '/en',
-  '/priem': '/en/admission',
-  '/priem/poseshtenie': '/en/admission',
-  '/za-roditeli/uslugi': '/en/services',
-};
+// Сайтът на училището е само на български; двойките остават празни.
+export const PAIRS: { bg: string; en: string }[] = [];
+const BG_TO_EN: Record<string, string> = {};
 
 export const isEnPath = (p: string) => p === '/en' || p.startsWith('/en/');
 

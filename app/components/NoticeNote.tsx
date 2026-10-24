@@ -5,12 +5,12 @@ import { createPortal } from 'react-dom';
 import '@fontsource-variable/caveat';
 import './notepaper.css';
 
-const SEEN = 'csop-notice-seen';
+const SEEN = 'su-notice-seen';
 
 // Обявата като листче от тетрадка.
 // • изскача само веднъж (около 1 с след отваряне на сайта), с уголемяване от листчето-иконка в менюто;
 // • затваря се с ОК, Esc или клик извън нея и „се прибира“ обратно в иконката;
-// • браузърът помни, че е видяна; при нова обява в ЕИС изскача пак;
+// • браузърът помни, че е видяна; при нова обява в админ панела изскача пак;
 // • иконката в менюто остава, докато обявата е активна — с клик се отваря отново.
 export default function NoticeNote({ id, text, link }: { id: string; text: string; link: string }) {
   const [slot, setSlot] = useState<HTMLElement | null>(null);

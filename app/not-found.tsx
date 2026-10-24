@@ -1,4 +1,4 @@
-export const metadata = { title: 'Страницата не е намерена — ЦСОП Варна' };
+export const metadata = { title: 'Страницата не е намерена — СУ „Васил Левски“ – Вълчи дол' };
 
 export default function NotFound() {
   return (
