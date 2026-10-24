@@ -50,6 +50,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <Link href="/admin/dokumenti">Документи</Link>
         <Link href="/admin/galeriya">Галерия</Link>
         <Link href="/admin/sabitiya">Събития</Link>
+        <Link href="/admin/nastroyki">Настройки</Link>
         {me.role === 'admin' && <Link href="/admin/hora">Хора</Link>}
         <span className="adm-me">
           <Link href="/admin/profil">{me.name || me.email}</Link>
