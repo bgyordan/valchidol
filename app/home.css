@@ -22,7 +22,7 @@
 .hh::after { content: ""; position: absolute; inset: 0; z-index: -1;
   background: linear-gradient(90deg, rgba(7, 32, 60, .92) 0%, rgba(7, 32, 60, .72) 42%, rgba(7, 32, 60, .2) 100%), linear-gradient(0deg, rgba(7, 32, 60, .55), transparent 40%); }
 .hh.no-photo::after { background: radial-gradient(circle at 85% 20%, rgba(255, 255, 255, .08), transparent 45%), linear-gradient(120deg, #0B3A6B, #072849); }
-.hh-in { width: 100%; padding-block: clamp(56px, 8vw, 110px) clamp(96px, 10vw, 140px); }
+.hh-in { width: 100%; padding-block: clamp(56px, 8vw, 110px) clamp(72px, 7vw, 104px); }
 .hh-kicker { display: inline-flex; align-items: center; gap: 10px; font-weight: 500; font-size: calc(15px * var(--fs-ui, 1)); letter-spacing: .02em; color: #E9EEF5; }
 .hh-kicker::before { content: ""; width: 28px; height: 3px; background: var(--gold); border-radius: 2px; }
 .hh h1 { color: #fff; font-size: calc(clamp(38px, 5.4vw, 76px) * var(--fs-ui, 1)); line-height: 1.02; margin-top: 18px; max-width: 12em; }
@@ -33,27 +33,58 @@
 .hh-ghost { background: transparent; border-color: rgba(255, 255, 255, .7); color: #fff; }
 .hh-ghost:hover { background: rgba(255, 255, 255, .12); border-color: #fff; }
 
-/* --- бързи връзки --- */
-.hq { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; margin-top: clamp(-72px, -6vw, -56px); }
-.hq a { display: grid; justify-items: start; align-content: start; gap: 4px; padding: 22px 20px 20px; background: var(--paper); border-radius: var(--r-lg);
-  transition: background .2s, transform .2s, box-shadow .2s; box-shadow: 0 20px 40px -26px rgba(11, 34, 60, .45); }
+/* --- бързи връзки ---
+   Компактни плочки: иконата вляво, текстът вдясно.
+   При зареждане долитат от различни посоки и „кацат“ на мястото си; после през тях
+   от време на време минава нежна вълна — всяка плочка леко се повдига след предишната и по нея минава отблясък. */
+.hq { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-top: clamp(-46px, -3.4vw, -34px); }
+.hq a { --dx: 0px; --dy: 40px; --rot: 0deg;
+  position: relative; overflow: hidden; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px; padding: 12px 14px;
+  background: var(--paper); border-radius: var(--r); box-shadow: 0 16px 32px -22px rgba(11, 34, 60, .5);
+  transition: box-shadow .25s, scale .25s cubic-bezier(.2, .9, .3, 1.3);
+  animation: hq-in .9s cubic-bezier(.2, .9, .25, 1.12) calc(.15s + var(--i, 0) * 90ms) backwards,
+             hq-wave 9s ease-in-out calc(1.5s + var(--i, 0) * 110ms) infinite; }
+/* от къде долита всяка плочка */
+.hq a:nth-child(1) { --dx: -90px; --dy: 10px; --rot: -6deg; }
+.hq a:nth-child(2) { --dx: 0px; --dy: -70px; --rot: 4deg; }
+.hq a:nth-child(3) { --dx: -20px; --dy: 80px; --rot: -3deg; }
+.hq a:nth-child(4) { --dx: 20px; --dy: -80px; --rot: 3deg; }
+.hq a:nth-child(5) { --dx: 0px; --dy: 70px; --rot: -4deg; }
+.hq a:nth-child(6) { --dx: 90px; --dy: 10px; --rot: 6deg; }
+@keyframes hq-in {
+  from { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(.9); filter: blur(4px); }
+  60% { opacity: 1; filter: blur(0); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes hq-wave {
+  0%, 9%, 100% { translate: 0 0; }
+  4% { translate: 0 -5px; }
+}
+/* отблясъкът, който минава с вълната */
+.hq a::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .7) 50%, transparent 65%);
+  translate: -120% 0; animation: hq-shine 9s ease-in-out calc(1.5s + var(--i, 0) * 110ms) infinite; }
+:root[data-theme="dark"] .hq a::after { background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .08) 50%, transparent 65%); }
+@keyframes hq-shine { 0% { translate: -120% 0; } 9%, 100% { translate: 120% 0; } }
 
-.hq-ic { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%; background: var(--navy-soft); color: var(--navy); margin-bottom: 8px; transition: background .2s, color .2s; }
-.hq-ic svg { width: 23px; height: 23px; }
-.hq b { font-weight: 600; line-height: 1.25; }
-.hq small { font-size: calc(14px * var(--fs, 1)); color: var(--ink-3); line-height: 1.35; }
-.hq a:hover { transform: translateY(-3px); box-shadow: 0 26px 44px -24px rgba(11, 34, 60, .5); }
+.hq-ic { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: var(--navy-soft); color: var(--navy); transition: background .2s, color .2s, rotate .4s cubic-bezier(.2, .9, .3, 1.4); }
+.hq-ic svg { width: 19px; height: 19px; }
+.hq-t { display: grid; min-width: 0; }
+.hq b { font-weight: 600; font-size: calc(15.5px * var(--fs, 1)); line-height: 1.25; }
+.hq small { font-size: calc(13px * var(--fs, 1)); color: var(--ink-3); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hq a:hover { scale: 1.04; box-shadow: 0 22px 40px -22px rgba(11, 34, 60, .55); }
 .hq a:hover b { color: var(--navy); }
-.hq a:hover .hq-ic { background: var(--red); color: #fff; }
+.hq a:hover .hq-ic { background: var(--red); color: #fff; rotate: -10deg; }
 @media (max-width: 1100px) {
-  .hq { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-
+  .hq { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 560px) {
-  .hq { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .hq a { padding: 16px 14px; }
-  .hq-ic { width: 40px; height: 40px; margin-bottom: 4px; }
+  .hq { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .hq a { padding: 10px 12px; gap: 10px; }
+  .hq-ic { width: 34px; height: 34px; }
+  .hq b { font-size: calc(14.5px * var(--fs, 1)); }
 }
+@media (prefers-reduced-motion: reduce) { .hq a, .hq a::after { animation: none; } }
 
 /* --- обява „Важно“ --- */
 .hh-alert { display: flex; align-items: center; gap: 16px; margin-top: clamp(24px, 3vw, 40px); padding: 16px 20px; border-radius: var(--r-lg); background: var(--red-soft); color: var(--ink); }
@@ -173,7 +204,7 @@
 @media (max-width: 860px) { .hc-grid { grid-template-columns: 1fr; } }
 @media (max-width: 640px) {
   .hh { min-height: 0; }
-  .hh-in { padding-block: 48px 96px; }
+  .hh-in { padding-block: 48px 72px; }
   .hh-alert { align-items: flex-start; }
   .hh-alert-go { margin-left: 0; }
 }
