@@ -1,11 +1,12 @@
-import { NAV, USEFUL_LINKS } from './nav';
+import { USEFUL_LINKS } from './nav';
+import { getNav } from '../../lib/menu';
 import { getSiteInfo } from '../../lib/siteinfo';
 import LastUpdated from './LastUpdated';
 import './footer.css';
 import type { Lang } from '../../lib/lang';
 
 export default async function Footer({ lang = 'bg' }: { lang?: Lang }) {
-  const { contact: CONTACT, hours: HOURS } = await getSiteInfo();
+  const [{ contact: CONTACT, hours: HOURS }, NAV] = await Promise.all([getSiteInfo(), getNav()]);
   // „Новини“ няма отделна колона — стои под „За училището“, за да останат пет колони и всички връзки да се виждат
   const news = NAV.find((g) => g.href === '/novini');
   const groups = NAV.filter((g) => g !== news);

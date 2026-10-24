@@ -2,13 +2,15 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { NAV } from './nav';
+import { NAV as DEFAULT_NAV, type NavGroup } from './nav';
 import ThemeToggle from './ThemeToggle';
 
 const BOOK = 'M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3zM4 17a3 3 0 0 1 3-3h11';
 import './header.css';
 
-export default function Header() {
+// менюто идва от layout (с промените от админа); без него — менюто от кода
+export default function Header({ nav }: { nav?: NavGroup[] }) {
+  const NAV = nav || DEFAULT_NAV;
   const pathname = usePathname() || '/';
   const [open, setOpen] = useState<string | null>(null); // отворено падащо меню (desktop)
   const [mobile, setMobile] = useState(false);
