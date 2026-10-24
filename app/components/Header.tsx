@@ -82,14 +82,10 @@ export default function Header() {
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
               </button>
               <div className={`sh-panel tone-${g.tone}`} hidden={open !== g.href}>
-                <p className="sh-panel-intro">{g.intro}</p>
                 <ul>
                   {g.links.filter((l) => l.href !== g.href).map((l) => (
                     <li key={l.href}>
-                      <a href={l.href} aria-current={pathname === l.href ? 'page' : undefined}>
-                        <b>{l.label}</b>
-                        {l.desc && <small>{l.desc}</small>}
-                      </a>
+                      <a href={l.href} aria-current={pathname === l.href ? 'page' : undefined}>{l.label}</a>
                     </li>
                   ))}
                 </ul>
