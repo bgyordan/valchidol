@@ -52,7 +52,8 @@ def live_images(page: str) -> list[str]:
     return out
 
 
-def upload(old: str, fresh: str):
+def download(old: str, fresh: str):
+    """Сваля снимката веднага (адресът важи кратко). Връща (old, path, ctype) или (old, None, грешка)."""
     key = 'stari/' + hashlib.sha1(base(old).encode()).hexdigest()[:16]
     try:
         data, ctype = get(base(fresh) + '=w1600')
@@ -65,12 +66,17 @@ def upload(old: str, fresh: str):
     path = os.path.join('out', key.replace('/', '_') + ext)
     with open(path, 'wb') as f:
         f.write(data)
-    r = subprocess.run(['npx', 'wrangler', 'r2', 'object', 'put', f'{BUCKET}/{key}{ext}', '--file', path,
+    return old, path, ctype
+
+
+def upload(old: str, path: str, ctype: str):
+    name = os.path.basename(path).replace('stari_', 'stari/', 1)
+    r = subprocess.run(['npx', 'wrangler', 'r2', 'object', 'put', f'{BUCKET}/{name}', '--file', path,
                         '--content-type', ctype, '--remote'], capture_output=True, text=True)
     os.remove(path)
     if r.returncode:
         return old, None, 'R2: ' + r.stderr[-300:]
-    return old, f'/files/{key}{ext}', None
+    return old, f'/files/{name}', None
 
 
 def main():
@@ -108,18 +114,38 @@ def main():
     os.makedirs('out', exist_ok=True)
     done, failed, seen = [], 0, set()
     for page in lives:
-        # адресите на Google са подписани за кратко → отваряме страницата пак точно преди сваляне
-        try:
-            pr = pairs_for(page, live_images(page))
-        except Exception as e:  # noqa: BLE001
-            print('ГРЕШКА', page, e)
-            continue
-        if not pr:
-            continue
-        pr = [(o, f) for o, f in pr if base(o) not in seen]
-        seen.update(base(o) for o, _ in pr)
+        # адресите на Google важат само секунди → първо сваляме всички снимки на страницата
+        # (бързо, много наведнъж), при грешка отваряме страницата наново и опитваме пак; после качваме
+        got, todo, errs = [], None, {}
+        for attempt in range(4):
+            try:
+                pr = pairs_for(page, live_images(page))
+            except Exception as e:  # noqa: BLE001
+                print('ГРЕШКА', page, e)
+                break
+            if not pr:
+                break
+            if todo is None:
+                todo = {base(o) for o, _ in pr if base(o) not in seen}
+                seen.update(todo)
+            pr = [(o, f) for o, f in pr if base(o) in todo]
+            if not pr:
+                break
+            with ThreadPoolExecutor(24) as ex:
+                for old, path, info in ex.map(lambda x: download(*x), pr):
+                    if path:
+                        got.append((old, path, info))
+                        todo.discard(base(old))
+                        errs.pop(base(old), None)
+                    else:
+                        errs[base(old)] = (old, info)
+            if not todo:
+                break
+        for old, err in errs.values():
+            failed += 1
+            print('  FAIL', old[:70], err)
         with ThreadPoolExecutor(8) as ex:
-            for old, new, err in ex.map(lambda x: upload(*x), pr):
+            for old, new, err in ex.map(lambda x: upload(*x), got):
                 if new:
                     done.append((old, new))
                 else:
