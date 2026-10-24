@@ -1,0 +1,33 @@
+# Пуска един SQL файл от seed/fixes върху базата на сайта (еднократни поправки на съдържанието).
+# Actions → DB fix → Run workflow → име на файла.
+name: DB fix
+
+on:
+  workflow_dispatch:
+    inputs:
+      file:
+        description: 'файл в seed/fixes, напр. 2026-10-24-drive-names.sql'
+        required: true
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Пускане
+        env:
+          FILE: ${{ inputs.file }}
+        run: |
+          case "$FILE" in */*|*..*) echo "само име на файл"; exit 1;; esac
+          test -f "seed/fixes/$FILE"
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="souvalchidol") | .uuid')
+          sed -i "s/PLACEHOLDER-SET-AFTER-d1-create/$id/" wrangler.jsonc
+          npx wrangler d1 execute souvalchidol --remote --file "seed/fixes/$FILE"
