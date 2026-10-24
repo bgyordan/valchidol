@@ -105,11 +105,10 @@ export default async function Home() {
 
       {/* ===== Бързи връзки — най-търсеното, като плочки върху долния ръб на снимката ===== */}
       <nav className="wrap hq" aria-label="Бързи връзки">
-        {QUICK.map((q) => (
-          <a key={q.href} href={q.href} {...(q.ext ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+        {QUICK.map((q, i) => (
+          <a key={q.href} href={q.href} style={{ ['--i' as any]: i }} {...(q.ext ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
             <span className="hq-ic"><Ic d={q.icon} /></span>
-            <b>{q.t}</b>
-            <small>{q.d}</small>
+            <span className="hq-t"><b>{q.t}</b><small>{q.d}</small></span>
           </a>
         ))}
       </nav>
