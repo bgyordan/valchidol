@@ -5,7 +5,7 @@ import './pagehero.css';
 /**
  * Заглавие на вътрешна страница.
  * path  — адресът на страницата; от него се вземат цветът на раздела и „пътечката“.
- * page  — ключ за снимки от ЕИС (site_settings.page_photos[page]); първата снимка се показва тук.
+ * page  — ключ за снимки (site_settings.page_photos[page]); първата снимка се показва тук.
  */
 export default async function PageHero({
   title,
@@ -15,6 +15,7 @@ export default async function PageHero({
   tone,
   kicker,
   lang = 'bg',
+  photo: photoProp,
 }: {
   title: string;
   intro?: string;
@@ -24,13 +25,14 @@ export default async function PageHero({
   kicker?: string;
   lang?: 'bg' | 'en';
   watermark?: string;
+  photo?: string; // снимка направо (напр. първата снимка на текстова страница)
 }) {
   const group = path ? NAV.find((g) => g.href === path || g.links.some((l) => l.href === path)) : undefined;
   // текущата страница като последна стъпка в пътечката (на вътрешните страници от раздела)
   const here = group && group.href !== path ? group.links.find((l) => l.href === path) : undefined;
   const t: Tone = group?.tone ?? (tone === 'em' ? 'lime' : tone === 'bl' ? 'blue' : (tone as Tone) ?? 'blue');
-  const photos = page ? await getPagePhotos(page) : [];
-  const photo = photos[0];
+  const photos = !photoProp && page ? await getPagePhotos(page) : [];
+  const photo = photoProp || photos[0];
   // меки кръгове на фона (както на началната) — подредбата зависи от страницата, за да не са навсякъде еднакви
   const key = path || title;
   let h = 0;

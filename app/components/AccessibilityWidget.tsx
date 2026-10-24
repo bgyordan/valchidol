@@ -7,7 +7,7 @@ import { isEnPath } from '../../lib/lang';
 type Settings = { font: number; contrast: boolean; links: boolean };
 const DEFAULTS: Settings = { font: 0, contrast: false, links: false };
 const FONT_STEPS = [1, 1.12, 1.25, 1.4]; // 100% → 140%
-const KEY = 'csop-a11y';
+const KEY = 'su-a11y';
 
 function apply(s: Settings) {
   const html = document.documentElement;

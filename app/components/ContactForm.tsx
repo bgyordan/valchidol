@@ -9,7 +9,7 @@ const T = {
   bg: {
     h: 'Пишете ни', sub: 'Ще ви отговорим на посочения имейл, обикновено до два работни дни.',
     name: 'Име и фамилия', email: 'Имейл', phone: 'Телефон', opt: 'по желание', topic: 'Тема', msg: 'Съобщение',
-    topics: { general: 'Общ въпрос', admission: 'Прием', donation: 'Дарение', site: 'Сайт / технически проблем', other: 'Друго' },
+    topics: { general: 'Общ въпрос', admission: 'Прием', docs: 'Документи и удостоверения', site: 'Сайт / технически проблем', other: 'Друго' },
     consent: 'Съгласен/съгласна съм данните ми да се използват само за отговор на това запитване.',
     privacy: 'Лични данни', send: 'Изпрати', sending: 'Изпращане…',
     ok: 'Благодарим! Съобщението е изпратено — ще ви отговорим скоро.', again: 'Ново съобщение',
@@ -20,7 +20,7 @@ const T = {
   en: {
     h: 'Write to us', sub: 'We will reply to the e-mail you give, usually within two working days.',
     name: 'Full name', email: 'E-mail', phone: 'Phone', opt: 'optional', topic: 'Topic', msg: 'Message',
-    topics: { general: 'General question', admission: 'Admission', donation: 'Donation', site: 'Website / technical problem', other: 'Other' },
+    topics: { general: 'General question', admission: 'Admission', docs: 'Documents', site: 'Website / technical problem', other: 'Other' },
     consent: 'I agree that my data will be used only to reply to this enquiry.',
     privacy: 'Privacy', send: 'Send', sending: 'Sending…',
     ok: 'Thank you! Your message has been sent — we will reply soon.', again: 'New message',
@@ -118,7 +118,7 @@ export default function ContactForm({ lang = 'bg', email, topic = 'general' }: {
       </div>
       <label className="cf-consent">
         <input type="checkbox" name="consent" required />
-        <span>{t.consent} <a href="/za-nas/zashtita-na-lichnite-danni" target="_blank" rel="noopener">{t.privacy}</a></span>
+        <span>{t.consent} <a href="/lichni-danni" target="_blank" rel="noopener">{t.privacy}</a></span>
       </label>
       {state === 'error' && (
         <p className="cf-err" role="alert">{msg || <>{t.err} <a href={`mailto:${email}`}>{email}</a>.</>}</p>

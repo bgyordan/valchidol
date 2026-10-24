@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 
-// Същият прост формат като в редактора на ЕИС:
-//   всеки ред = абзац · „## “ = подзаглавие · редове с „- “ = списък · **удебелен** · [текст](адрес)
+// Простият формат на текстовете (новини и страници):
+//   всеки ред = абзац · „## “ = подзаглавие · „### “ = по-малко подзаглавие · редове с „- “ = списък · **удебелен** · [текст](адрес)
 function inline(str: string, key: string): ReactNode[] {
   const parts: ReactNode[] = [];
-  const re = /\*\*([^*]+)\*\*|\[([^\]]+)\]\((https?:\/\/[^)\s]+|\/[^)\s]*)\)/g;
+  const re = /\*\*([^*]+)\*\*|\[([^\]]+)\]\((https?:\/\/[^)\s]+|\/[^)\s]*|mailto:[^)\s]+|tel:[^)\s]+)\)/g;
   let last = 0;
   let m: RegExpExecArray | null;
   let i = 0;
@@ -26,6 +26,7 @@ export function RichText({ text }: { text: string | null }) {
   const out: ReactNode[] = [];
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i];
+    if (l.startsWith('### ')) { out.push(<h3 key={i}>{inline(l.slice(4), 'h' + i)}</h3>); continue; }
     if (l.startsWith('## ')) { out.push(<h2 key={i}>{inline(l.slice(3), 'h' + i)}</h2>); continue; }
     if (/^[-•] /.test(l)) {
       const start = i;

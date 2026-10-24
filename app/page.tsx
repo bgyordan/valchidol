@@ -1,8 +1,7 @@
-import { alternates } from '../lib/lang';
 import { getNews, getUpcomingEvents, getHeroPhotos, getLatestPhotos, getPagePhotos, fmtDate, monthShort } from '../lib/data';
 import { daisyPolygon } from '../lib/flower';
 
-// две различни, неправилни маргаритки за снимките до „Над 150 деца…“ + цветната „сянка“ зад всяка (друго цвете)
+// две различни, неправилни маргаритки за снимките в блока „За училището“ + цветната „сянка“ зад всяка (друго цвете)
 const DAISY_A = daisyPolygon(9, 7), DAISY_A_BACK = daisyPolygon(9, 1007);
 const DAISY_B = daisyPolygon(11, 21), DAISY_B_BACK = daisyPolygon(11, 1021);
 import { getSiteInfo } from '../lib/siteinfo';
@@ -14,52 +13,38 @@ import Handprints, { HandDefs } from './components/Handprints';
 import '@fontsource-variable/caveat';
 import './home.css';
 
-// снимки по подразбиране, докато в ЕИС не са избрани други
-const FALLBACK = ['/nachalna/kabineti-3.jpg', '/nachalna/terapiya-1.jpg', '/nachalna/kabineti-1.jpg'];
-const FALLBACK_ABOUT = ['/nachalna/kabineti-2.jpg', '/nachalna/kabineti-4.jpg'];
+// Снимките на началната: от настройката hero_photos; ако няма — от най-новите новини.
 
 const STEPS = [
-  {
-    title: 'Подавате заявление',
-    text: 'Детето е записано в училище или детска градина. Подавате заявление за насочване заедно с документите за здравословното състояние и протокол от ТЕЛК, НЕЛК или ЛКК.',
-  },
-  {
-    title: 'Ние подготвяме преписката',
-    text: 'Екипът за подкрепа за личностно развитие изготвя становище и протокол. Изпращаме документите към РЦПППО – Варна в срок до един месец.',
-  },
-  {
-    title: 'Детето започва при нас',
-    text: 'След становището на РЦПППО попълвате заявлението за записване и детето започва обучение и терапия по своя план.',
-  },
+  { title: 'Първи клас', text: 'Прием на ученици в първи клас. Заповедта за плана-прием, графикът и нужните документи са на страница „Прием“.' },
+  { title: 'Пети клас', text: 'Прием в пети клас за учениците, които продължават в прогимназиален етап.' },
+  { title: 'Осми клас', text: 'Профилирани и професионални паралелки след седми клас. Графикът на дейностите по приема се обявява със заповед.' },
 ];
 
+// стратегическите цели от „Мисия и цели“
 const VALUES = [
-  { t: 'Приемане', d: 'Всяко дете е добре дошло такова, каквото е – със своя ритъм, характер и начин да опознава света.' },
-  { t: 'Индивидуалност', d: 'Работим по личен план за всеки ученик, изготвен от екип специалисти според неговите нужди.' },
-  { t: 'Заедно', d: 'Родители, учители и терапевти сме един екип. Развитието на детето е обща грижа и обща радост.' },
-  { t: 'Посока', d: 'Не бързаме. Важното е да вървим в правилната посока.' },
+  { t: 'Знания и умения', d: 'Непрекъснато усъвършенстване на знанията и уменията по общообразователните, техническите и специалните предмети и учебната практика.' },
+  { t: 'Уважение', d: 'Поведение, основано на взаимно зачитане на достойнството, толерантност и национална идентичност.' },
+  { t: 'Квалифицирани учители', d: 'Условия за постоянно повишаване на квалификацията на преподавателите.' },
+  { t: 'Проекти', d: 'Участие в общински, национални програми и проекти на Европейския съюз.' },
 ];
 
 const DOCS = [
-  { t: 'Бюджет и финанси', d: 'Бюджет и отчети', href: '/za-nas/byudzhet-i-finansi', icon: 'M4 20V10M10 20V4M16 20v-7M22 20H2' },
-  { t: 'Документи в ЦСОП', d: 'Правилници, планове и политики', href: '/za-nas/dokumenti-v-tsop', icon: 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h6' },
-  { t: 'Профил на купувача', d: 'Обществени поръчки в ЦАИС ЕОП', href: '/za-nas/profil-na-kupuvacha', icon: 'M3 7h18v13H3zM8 7V4h8v3' },
-  { t: 'Достъп до информация', d: 'Заявления и отчети по ЗДОИ', href: '/za-nas/dostap-do-obshtestvena-informatsiya', icon: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4' },
-  { t: 'Защита на личните данни', d: 'Политика по GDPR', href: '/za-nas/zashtita-na-lichnite-danni', icon: 'M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z' },
-  { t: 'Подаване на сигнали', d: 'Поверителен канал по ЗЗЛПСПОИН', href: '/podavane-na-signali', icon: 'M4 5h16v11H9l-5 4z' },
+  { t: 'Документация', d: 'Правилници, планове, графици', href: '/dokumentatsiya', icon: 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h6' },
+  { t: 'Бюджет', d: 'Бюджет и отчети по тримесечия', href: '/dokumentatsiya', icon: 'M4 20V10M10 20V4M16 20v-7M22 20H2' },
+  { t: 'Профил на купувача', d: 'Обществени поръчки в ЦАИС ЕОП', href: 'https://app.eop.bg/buyer/21179', icon: 'M3 7h18v13H3zM8 7V4h8v3' },
+  { t: 'Достъп до информация', d: 'Заявления и отчети по ЗДОИ', href: '/dostap-do-informatsiya', icon: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4' },
+  { t: 'Лични данни', d: 'Защита на личните данни', href: '/lichni-danni', icon: 'M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z' },
+  { t: 'Административни услуги', d: 'Удостоверения и заявления', href: '/administrativni-uslugi', icon: 'M4 5h16v11H9l-5 4z' },
 ];
 
-// hreflang: английската версия на началото е /en
-export const metadata = { alternates: alternates('/') };
-
 export default async function Home() {
-  const [hero, news, events, photos, info, chosenAbout] = await Promise.all([getHeroPhotos(), getNews(4), getUpcomingEvents(3), getLatestPhotos(8), getSiteInfo(), getPagePhotos('nachalna-pod')]);
-  // празно място ('') от ЕИС → стандартната снимка точно там
-  const h = [0, 1, 2].map((i) => hero[i] || FALLBACK[i]);
-  // за блока под херото: последните снимки от галерията, различни от трите в детелината
-  // снимки 4 и 5 се избират в ЕИС → Сайт → Начална; празно място → най-новите от галерията (без трите от началото)
-  const auto = [...photos.map((p) => p.photo_url).filter((u) => !h.includes(u) && !chosenAbout.includes(u)), ...FALLBACK_ABOUT];
-  const about = [0, 1].map((i) => chosenAbout[i] || auto.shift()!);
+  const [hero, news, recent, events, photos, info, chosenAbout] = await Promise.all([getHeroPhotos(), getNews(4), getNews(12), getUpcomingEvents(3), getLatestPhotos(8), getSiteInfo(), getPagePhotos('nachalna-pod')]);
+  // без избрани снимки → корици на последните новини
+  const covers = recent.map((n) => n.cover_url).filter((u): u is string => !!u);
+  const h = [0, 1, 2].map((i) => hero[i] || covers[i] || '/logo.svg');
+  const auto = [...photos.map((p) => p.photo_url), ...covers.slice(3)].filter((u) => !h.includes(u) && !chosenAbout.includes(u));
+  const about = [0, 1].map((i) => chosenAbout[i] || auto.shift() || h[i]);
   const [feat, ...rest] = news;
 
   return (
@@ -68,7 +53,7 @@ export default async function Home() {
       {/* верига от ефирни кръгове: големият синкав диск в херото → по-малък зелен → още по-малък оранжев,
           диагонално надолу и наляво, без да се допират; продължава и под първия екран */}
       <div className="home-dots" aria-hidden="true"><span className="hd-g" /><span className="hd-o" /></div>
-      {/* ===== Герой: светъл. Вляво мотото, вдясно детелината от трите снимки от ЕИС върху бледонебесен диск.
+      {/* ===== Герой: светъл. Вляво мотото, вдясно детелината от трите снимки от админ панела върху бледонебесен диск.
            Отдолу — трите неща, за които идва родителят: услуги, записване, контакт. ===== */}
       <section className="hx">
         <HeroPointer />
@@ -76,12 +61,12 @@ export default async function Home() {
         <div className="wrap hx-grid">
           <div className="hx-in">
             <h1 className="hx-title">
-              <span className="hx-script"><span>Вярваме, че</span></span>
-              <span className="hx-line"><span>посоката, в която се движим, е по‑важна от скоростта.</span></span>
+              <span className="hx-script"><span>Училище с традиции –</span></span>
+              <span className="hx-line"><span>училище с бъдеще.</span></span>
             </h1>
             <p className="hx-lead">
-              Център за специална образователна подкрепа във Варна. Обучение, терапия и рехабилитация
-              за деца и младежи със специални образователни потребности.
+              Средно училище „Васил Левски“ – гр. Вълчи дол. От 1880 година учим децата на града,
+              от първи до дванадесети клас.
             </p>
           </div>
 
@@ -92,7 +77,7 @@ export default async function Home() {
               <path className="pt-m" d="M-4 98 C0 74 6 54 12 46 S 28 26 36 22 S 52 6 60 -6" />
             </svg>
             {[0, 1, 2].map((i) => (
-              // снимка 1 от ЕИС е най-голямата (последната стъпка), 3 — най-малката
+              // снимка 1 от админ панела е най-голямата (последната стъпка), 3 — най-малката
               <div key={i} className={`pt-ph pt-${i + 1}`}><img src={h[2 - i]} alt="" /></div>
             ))}
             <i className="pt-mark pt-m1" />
@@ -102,13 +87,13 @@ export default async function Home() {
         </div>
 
         <nav className="wrap hx-paths" aria-label="За родители">
-          <a href="/obuchenie-i-podkrepa" className="hp-blue">
+          <a href="/priem" className="hp-blue">
             <i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5zM6 11v5c3 2.5 9 2.5 12 0v-5M22 9v6" /></svg></i>
-            <span><b>Какво предлагаме</b><span>Обучение, терапии и рехабилитация по личен план за всяко дете</span></span>
+            <span><b>Прием</b><span>Първи, пети и осми клас – заповеди, графици и документи</span></span>
           </a>
-          <a href="/priem/proczedura" className="hp-orange">
+          <a href="/zayavleniya" className="hp-orange">
             <i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h6" /></svg></i>
-            <span><b>Как се записва дете</b><span>Насочване чрез РЦПППО – Варна. Ние подготвяме документите</span></span>
+            <span><b>Заявления и бланки</b><span>Образци за родители и ученици</span></span>
           </a>
           <a href="/kontakti" className="hp-lime">
             <i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 3h3l2 5-2.5 1.5a11 11 0 0 0 7 7L16 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z" /></svg></i>
@@ -123,13 +108,13 @@ export default async function Home() {
         <div className="wrap ab-grid">
           <div className="ab-text">
             <h2 id="about-h" className="ab-say">
-              Над 150 деца и младежи учат при нас. Всяко дете има свой план, а родителите са част от екипа.
+              Над 140 години история и училище, в което всеки ученик може да намери своя път.
             </h2>
             <p>
-              Учители, логопеди, психолози и терапевти работят заедно по индивидуалния план на всяко дете –
-              в класната стая, в терапевтичните кабинети и в сензорната зала.
+              Сградата от 1987 г. има 22 класни стаи, ученически стол, актова зала, два физкултурни салона
+              и работилници. Учениците имат профилирани и професионални паралелки, проекти, клубове и училищни вестници.
             </p>
-            <a className="more" href="/za-nas">Повече за центъра</a>
+            <a className="more" href="/istoriya">Историята на училището</a>
           </div>
           <div className="ab-photos" aria-hidden="true">
             <div className="ab-fl ab-p1" style={{ ['--fl' as any]: DAISY_A, ['--fl2' as any]: DAISY_A_BACK }}><span /><img src={about[0]} alt="" loading="lazy" /></div>
@@ -145,8 +130,8 @@ export default async function Home() {
         <Handprints count={2} slots={[{ top: '10%', right: '4%' }, { top: '6%', right: '22%' }, { bottom: '8%', right: '6%' }, { bottom: '4%', right: '30%' }]} />
         <div className="wrap">
           <div className="hs-head">
-            <h2 id="priem-h">Записване на дете в три стъпки</h2>
-            <p>Насочването става чрез РЦПППО – Варна. Ние подготвяме документите и ви водим през целия път.</p>
+            <h2 id="priem-h">Прием на ученици</h2>
+            <p>Приемаме ученици в първи, пети и осми клас. Всичко за приема за новата учебна година е на едно място.</p>
           </div>
           <ol className="hx-steplist">
             {STEPS.map((s, i) => (
@@ -157,7 +142,7 @@ export default async function Home() {
               </li>
             ))}
           </ol>
-          <a className="btn btn-ink" href="/priem/proczedura">Пълната процедура и бланките</a>
+          <a className="btn btn-ink" href="/priem">Всичко за приема</a>
         </div>
       </section>
 
@@ -167,11 +152,11 @@ export default async function Home() {
       <section className="hs tone-lime" aria-labelledby="news-h">
         <div className="wrap">
           <div className="hs-head row">
-            <h2 id="news-h">Какво се случва при нас</h2>
+            <h2 id="news-h">Новини от училище</h2>
             <a className="more" href="/novini">Всички новини</a>
           </div>
           {!feat ? (
-            <p className="empty">Скоро тук ще има новини от живота в центъра.</p>
+            <p className="empty">Скоро тук ще има новини от училище.</p>
           ) : (
             <div className="hn-grid">
               {/* водеща новина — снимка и текст един до друг (като в новинарските сайтове), с мек кръг зад снимката */}
@@ -234,10 +219,10 @@ export default async function Home() {
         <section className="hs hx-gal tone-lime" aria-labelledby="gal-h">
           <div className="wrap">
             <div className="hs-head row">
-              <h2 id="gal-h">Моменти от ежедневието</h2>
+              <h2 id="gal-h">Моменти от училище</h2>
               <a className="more" href="/galeriya">Към галерията</a>
             </div>
-            <PhotoBand photos={photos.map((p) => p.photo_url)} title="Моменти от ежедневието" />
+            <PhotoBand photos={photos.map((p) => p.photo_url)} title="Моменти от училище" />
           </div>
         </section>
       )}
@@ -249,8 +234,8 @@ export default async function Home() {
         <Handprints dark count={2} slots={[{ bottom: '-6%', right: '3%' }, { bottom: '-10%', left: '-2%' }, { bottom: '-8%', left: '38%' }]} />
         <div className="wrap">
           <div className="hs-head row">
-            <h2 id="val-h">Това, в което вярваме</h2>
-            <a className="more" href="/za-nas">Повече за центъра</a>
+            <h2 id="val-h">Нашите цели</h2>
+            <a className="more" href="/misiya-i-tseli">Мисия и цели</a>
           </div>
           <div className="hx-vlist">
             {VALUES.map((v) => (
@@ -268,9 +253,9 @@ export default async function Home() {
       {/* ===== Покана за разговор ===== */}
       <section className="hs hx-ask" aria-labelledby="ask-h">
         <div className="wrap hd-grid">
-          <h2 id="ask-h">Не е нужно да знаете всичко предварително.</h2>
+          <h2 id="ask-h">Имате въпрос към училището?</h2>
           <div>
-            <p>Обадете се или ни пишете – ще ви кажем какви са следващите стъпки за вашето дете.</p>
+            <p>Ръководството приема родители всеки делничен ден от 13:00 до 14:30 ч. Можете и да се обадите или да ни пишете.</p>
             <div className="btn-row">
               <a className="btn btn-dark" href={info.contact.phoneHref}>{info.contact.phone}</a>
               <a className="btn btn-ghost" href="/kontakti">Всички контакти</a>
@@ -284,10 +269,10 @@ export default async function Home() {
         <div className="wrap">
           <div className="hs-head row">
             <div>
-              <h2 id="prz-h">Прозрачност</h2>
-              <p>Документите на центъра са публични и на едно място.</p>
+              <h2 id="prz-h">Документи</h2>
+              <p>Правилниците, плановете и отчетите на училището са публични.</p>
             </div>
-            <a className="more" href="/prozrachnost">Всички документи</a>
+            <a className="more" href="/dokumenti">Всички документи</a>
           </div>
           <div className="link-list" style={{ ['--cols' as any]: 3 }}>
             {DOCS.map((d) => (
@@ -302,15 +287,15 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ===== Дарителство ===== */}
-      <section className="hs hx-donate tone-orange" aria-labelledby="don-h">
+      {/* ===== Важно за родители ===== */}
+      <section className="hs hx-donate tone-orange" aria-labelledby="imp-h">
         <Handprints slots={[{ top: '6%', right: '3%' }, { bottom: '2%', right: '18%' }, { top: '14%', left: '46%' }]} />
         <div className="wrap">
           <div className="hd-grid">
-            <h2 id="don-h">Заедно правим средата още по‑добра</h2>
+            <h2 id="imp-h">Важно: правила за мобилните устройства</h2>
             <div>
-              <p>Даренията и партньорствата обогатяват учебната и терапевтичната среда на децата.</p>
-              <a className="btn btn-primary" href="/daritelstvo">Дарения и партньорства</a>
+              <p>За безопасна, спокойна и продуктивна училищна среда са въведени правила за използването на мобилни устройства в часовете и за превенция на рисковото поведение.</p>
+              <a className="btn btn-primary" href="/za-roditeli">Правилата и заповедите</a>
             </div>
           </div>
         </div>

@@ -2,24 +2,7 @@ import { all } from '../../../lib/db';
 import { addDocument, deleteDocument } from '../actions';
 import Confirm from '../Confirm';
 
-// Разделите, които страниците на сайта показват (getDocuments(section)).
-const SECTIONS: { key: string; title: string }[] = [
-  { key: 'internal', title: 'Документи на училището (За нас → Документи)' },
-  { key: 'admission', title: 'Прием' },
-  { key: 'roditeli', title: 'За родители — бланки' },
-  { key: 'budget', title: 'Бюджет и финанси' },
-  { key: 'zdoi', title: 'Достъп до обществена информация' },
-  { key: 'privacy', title: 'Защита на личните данни' },
-  { key: 'signali', title: 'Подаване на сигнали' },
-];
-const CATS: { key: string; title: string }[] = [
-  { key: 'strategy', title: 'Стратегия и планове' }, { key: 'rules', title: 'Правилници' }, { key: 'programs', title: 'Програми' },
-  { key: 'ethics', title: 'Етика и приобщаване' }, { key: 'safety', title: 'Безопасност' }, { key: 'data', title: 'Защита на данните' },
-  { key: 'approved', title: 'Бюджет: утвърден' }, { key: 'report', title: 'Бюджет: отчет' },
-  { key: 'obrazec', title: 'ЗДОИ: образец' }, { key: 'pravila', title: 'ЗДОИ: правила' }, { key: 'normativ', title: 'ЗДОИ: нормативен акт' }, { key: 'otchet', title: 'ЗДОИ: отчет' },
-];
-const catTitle = (k: string | null) => CATS.find((c) => c.key === k)?.title ?? k ?? '';
-
+// Документът се показва в края на избраната страница, групиран по „Подзаглавие“ и учебна година.
 type Row = { id: string; name: string; file_url: string; academic_year: string | null; section: string; category: string | null; on_site: number };
 
 function schoolYear() {
@@ -29,6 +12,8 @@ function schoolYear() {
 }
 
 export default async function AdminDocs() {
+  const SECTIONS = (await all<{ slug: string; title: string }>('SELECT slug, title FROM site_pages ORDER BY sort')).map((p) => ({ key: p.slug, title: p.title }));
+  const catTitle = (k: string | null) => k ?? '';
   const rows = await all<Row>('SELECT id, name, file_url, academic_year, section, category, on_site FROM site_documents ORDER BY section, academic_year DESC, sort_order, name');
   return (
     <>
@@ -39,17 +24,18 @@ export default async function AdminDocs() {
         <label>…или връзка към документ<input name="link" type="url" placeholder="https://" /></label>
         <label>Име на документа<input name="name" placeholder="по подразбиране: името на файла" /></label>
         <div className="adm-row">
-          <label>Раздел
-            <select name="section" defaultValue="internal">{SECTIONS.map((s) => <option key={s.key} value={s.key}>{s.title}</option>)}</select>
+          <label>На коя страница
+            <select name="section" defaultValue="dokumentatsiya">{SECTIONS.map((s) => <option key={s.key} value={s.key}>{s.title}</option>)}</select>
           </label>
-          <label>Категория
-            <select name="category" defaultValue=""><option value="">—</option>{CATS.map((c) => <option key={c.key} value={c.key}>{c.title}</option>)}</select>
+          <label>Подзаглавие (по желание)
+            <input name="category" list="doc-cats" placeholder="напр. Бюджет, Графици, Заповеди" />
           </label>
         </div>
         <div className="adm-row">
           <label>Учебна година<input name="academic_year" defaultValue={schoolYear()} /></label>
           <label>Подредба (по-малко = по-горе)<input name="sort_order" type="number" defaultValue={0} /></label>
         </div>
+        <datalist id="doc-cats"><option value="Училищна документация" /><option value="Бюджет" /><option value="Графици" /><option value="Заповеди" /><option value="Учебни планове" /><option value="Протоколи" /></datalist>
         <label className="adm-check"><input type="checkbox" name="on_site" value="1" defaultChecked /> Показвай на сайта</label>
         <p><button type="submit" className="adm-btn primary">Качи</button></p>
       </form>

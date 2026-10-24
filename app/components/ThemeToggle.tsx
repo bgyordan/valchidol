@@ -19,7 +19,7 @@ export default function ThemeToggle() {
     const html = document.documentElement;
     html.setAttribute('data-theme', next ? 'dark' : 'light');
     html.classList.toggle('dark', next);
-    try { localStorage.setItem('csop-theme', next ? 'dark' : 'light'); } catch { /* ignore */ }
+    try { localStorage.setItem('su-theme', next ? 'dark' : 'light'); } catch { /* ignore */ }
   };
 
   // докато не знаем темата — празно място със същия размер (без подскачане на лентата)

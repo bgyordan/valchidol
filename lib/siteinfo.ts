@@ -1,7 +1,7 @@
 import { CONTACT as DEFAULT_CONTACT } from '../app/components/nav';
 import { getSetting } from './data';
 
-// Данните на сайта, които се сменят от ЕИС → Сайт → Настройки (site_settings.site_info).
+// Данните на сайта от site_settings.site_info (ключ в базата).
 // Ако базата не отговори или поле липсва, остават стойностите по подразбиране от кода.
 export type SiteInfo = {
   notice: { on: boolean; text: string; link: string; until: string };
@@ -15,16 +15,15 @@ export type SiteInfo = {
 const DEFAULTS: SiteInfo = {
   notice: { on: false, text: '', link: '', until: '' },
   contact: DEFAULT_CONTACT,
-  hours: { center: '8:00 – 18:00', admin: '8:00 – 16:30', director: 'вторник, 9:00 – 10:00' },
+  hours: { center: 'пон – пет, 8:00 – 17:00', admin: 'пон – пет, 8:00 – 17:00', director: 'пон – пет, 13:00 – 14:30' },
+  // от страница „Контакти“ на стария сайт
   phones: [
-    { name: 'Светлана Иванова', role: 'Директор', phone: '+359 878 521 823', href: 'tel:+359878521823' },
-    { name: 'Силвия Кьошкерян', role: 'Зам.-директор УД', phone: '+359 882 699 867', href: 'tel:+359882699867' },
-    { name: 'Йордан Йорданов', role: 'Зам.-директор АСД', phone: '+359 893 405 737', href: 'tel:+359893405737' },
-    { name: 'Деловодство', role: 'Администрация', phone: '+359 888 490 771', href: 'tel:+359888490771' },
+    { name: 'Директор', role: 'Ръководител', phone: '0894 417 170', href: 'tel:+359894417170' },
+    { name: 'Заместник-директор УД', role: 'Учебна дейност', phone: '0894 417 176', href: 'tel:+359894417176' },
+    { name: 'Заместник-директор АСД', role: 'Административна дейност', phone: '0892 412 342', href: 'tel:+359892412342' },
   ],
-  // сметката на центъра в ЦКБ (от стария сайт); сменя се от ЕИС → Сайт → Настройки → Банка
-  bank: { to: 'Център за специална образователна подкрепа – Варна', iban: 'BG19 CECB 9790 3196 3387 00', bic: 'CECBBGSF', reason: 'Дарение за дейността на ЦСОП – Варна' },
-  signali: { person: 'Силвия Кьошкерян, ЗДУД', email: 'signali@csop-varna.bg', phone: '' },
+  bank: { to: '', iban: '', bic: '', reason: '' },
+  signali: { person: 'Заместник-директор АСД', email: 'info-400112@edu.mon.bg', phone: '0892 412 342' },
 };
 
 const telHref = (p: string) => 'tel:' + p.replace(/[^\d+]/g, '');

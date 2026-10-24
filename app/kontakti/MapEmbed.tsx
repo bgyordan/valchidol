@@ -9,7 +9,7 @@ export default function MapEmbed({ src, link, lang = 'bg' }: { src: string; link
   if (on) {
     return (
       <div className="map-frame">
-        <iframe src={src} title={en ? 'Map – CSOP Varna, 7 Petko Staynov Str.' : 'Карта – ЦСОП Варна, ул. „Петко Стайнов“ 7'} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
+        <iframe src={src} title={en ? 'Map – Vasil Levski Secondary School, Valchi Dol' : 'Карта – СУ „Васил Левски“, гр. Вълчи дол'} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
       </div>
     );
   }

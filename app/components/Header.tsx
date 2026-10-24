@@ -4,17 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { NAV } from './nav';
 import ThemeToggle from './ThemeToggle';
-import LangSwitch from './LangSwitch';
-import { isEnPath } from '../../lib/lang';
 
-// Английската част е кратка — само няколко страници, без падащи менюта
-const EN_NAV = [
-  { label: 'Home', href: '/en' },
-  { label: 'Services', href: '/en/services' },
-  { label: 'Admission', href: '/en/admission' },
-  { label: 'Contacts', href: '/en/contacts' },
-];
-const HEART = 'M12 20.5s-7.5-4.6-9.3-9.2C1.5 8 3.6 4.5 7.1 4.5c2 0 3.6 1.1 4.9 2.9 1.3-1.8 2.9-2.9 4.9-2.9 3.5 0 5.6 3.5 4.4 6.8-1.8 4.6-9.3 9.2-9.3 9.2z';
+const BOOK = 'M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3zM4 17a3 3 0 0 1 3-3h11';
 import './header.css';
 
 export default function Header() {
@@ -58,49 +49,15 @@ export default function Header() {
   const activeGroup = NAV.find((g) => pathname === g.href || g.links.some((l) => pathname === l.href || pathname.startsWith(l.href + '/')))?.href;
   const isActive = (href: string) => href === activeGroup;
 
-  if (isEnPath(pathname)) {
-    return (
-      <header className={`site-head${stuck ? ' is-stuck' : ''}${mobile ? ' is-mob' : ''}`}>
-        <a className="skip" href="#main">Skip to content</a>
-        <div className="wrap sh-bar">
-          <a href="/en" className="sh-brand" aria-label="CSOP Varna – home">
-            <img src="/logo.jpg" alt="" width={56} height={56} />
-            <span>
-              <b>CSOP Varna</b>
-              <small>Centre for Special Educational Support</small>
-            </span>
-          </a>
-          <nav className="sh-nav" aria-label="Main menu">
-            {EN_NAV.map((l) => (
-              <div key={l.href} className="sh-item"><a href={l.href} className={`sh-link solo${pathname === l.href ? ' current' : ''}`}>{l.label}</a></div>
-            ))}
-          </nav>
-          <ThemeToggle />
-          <a href="/en/support-us" className="sh-donate"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={HEART} /></svg>Donate</a>
-          <button type="button" className="sh-menu" aria-expanded={mobile} aria-controls="mob-nav" onClick={() => setMobile(!mobile)}>
-            {mobile ? 'Close' : 'Menu'}
-          </button>
-        </div>
-        <div id="mob-nav" className="sh-mob" hidden={!mobile}>
-          <div className="wrap">
-            {EN_NAV.map((l) => <a key={l.href} className="sh-mob-solo" href={l.href}>{l.label}</a>)}
-            <LangSwitch className="sh-mob-solo" full />
-            <a className="sh-donate sh-mob-donate" href="/en/support-us"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={HEART} /></svg>Donate</a>
-          </div>
-        </div>
-      </header>
-    );
-  }
-
   return (
     <header className={`site-head${open ? ' is-open' : ''}${stuck ? ' is-stuck' : ''}${mobile ? ' is-mob' : ''}`}>
       <a className="skip" href="#main">Към съдържанието</a>
       <div className="wrap sh-bar">
-        <a href="/" className="sh-brand" aria-label="ЦСОП Варна – начална страница">
-          <img src="/logo.jpg" alt="" width={56} height={56} />
+        <a href="/" className="sh-brand" aria-label="СУ „Васил Левски“ – начална страница">
+          <img src="/logo.svg" alt="" width={56} height={56} />
           <span>
-            <b>ЦСОП Варна</b>
-            <small>Център за специална образователна подкрепа</small>
+            <b>СУ „Васил Левски“</b>
+            <small>гр. Вълчи дол</small>
           </span>
         </a>
 
@@ -138,10 +95,10 @@ export default function Header() {
           <div className="sh-item"><a href="/kontakti" className={`sh-link solo${pathname === '/kontakti' ? ' current' : ''}`}>Контакти</a></div>
         </nav>
 
-        {/* листче-иконка за обявата от ЕИС (NoticeNote.tsx я слага тук, когато има активна обява) */}
+        {/* листче-иконка за обявата (NoticeNote.tsx я слага тук, когато има активна обява) */}
         <span id="sh-notice-slot" />
         <ThemeToggle />
-        <a href="/daritelstvo" className="sh-donate"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8 3.6 4.5 7.1 4.5c2 0 3.6 1.1 4.9 2.9 1.3-1.8 2.9-2.9 4.9-2.9 3.5 0 5.6 3.5 4.4 6.8-1.8 4.6-9.3 9.2-9.3 9.2z" /></svg>Дари</a>
+        <a href="https://app.shkolo.bg/" className="sh-donate" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={BOOK} /></svg>Дневник</a>
         <button type="button" className="sh-menu" aria-expanded={mobile} aria-controls="mob-nav" onClick={() => setMobile(!mobile)}>
           {mobile ? 'Затвори' : 'Меню'}
         </button>
@@ -167,8 +124,7 @@ export default function Header() {
             </div>
           ))}
           <a className="sh-mob-solo" href="/kontakti">Контакти</a>
-          <LangSwitch className="sh-mob-solo" full />
-          <a className="sh-donate sh-mob-donate" href="/daritelstvo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8 3.6 4.5 7.1 4.5c2 0 3.6 1.1 4.9 2.9 1.3-1.8 2.9-2.9 4.9-2.9 3.5 0 5.6 3.5 4.4 6.8-1.8 4.6-9.3 9.2-9.3 9.2z" /></svg>Дари</a>
+          <a className="sh-donate sh-mob-donate" href="https://app.shkolo.bg/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={BOOK} /></svg>Електронен дневник</a>
         </div>
       </div>
     </header>

@@ -1,7 +1,7 @@
 import { getSiteInfo, noticeActive } from '../../lib/siteinfo';
 import NoticeNote from './NoticeNote';
 
-// Обява от ЕИС → Сайт → Настройки (текст, връзка, срок „до“).
+// Обява от настройките на сайта (текст, връзка, срок „до“).
 // Показва се като листче от тетрадка, което изскача веднъж; после остава листче-иконка в менюто.
 export default async function SiteNotice() {
   const { notice } = await getSiteInfo();

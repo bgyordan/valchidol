@@ -9,27 +9,24 @@ import SiteNotice from './components/SiteNotice';
 import ScrollTop from './components/ScrollTop';
 import AccessibilityWidget from './components/AccessibilityWidget';
 import CookieBanner from './components/CookieBanner';
-import ChatWidget from './components/ChatWidget';
-import { getSiteInfo } from '../lib/siteinfo';
 import { getLang } from '../lib/lang-server';
 
-const SITE = 'https://csop-varna.bg';
+const SITE = 'https://souvalchidol.com';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: {
-    default: 'ЦСОП Варна – Център за специална образователна подкрепа',
+    default: 'СУ „Васил Левски“ – гр. Вълчи дол',
     template: '%s',
   },
   description:
-    'Център за специална образователна подкрепа – Варна: обучение, специализирана подкрепа и рехабилитация за деца и младежи със специални образователни потребности.',
-  icons: { icon: '/logo.jpg', apple: '/logo.jpg', shortcut: '/logo.jpg' },
+    'Средно училище „Васил Левски“ – гр. Вълчи дол. Училище с традиции – училище с бъдеще. Новини, прием, документи и информация за родители и ученици.',
+  icons: { icon: '/logo.svg', apple: '/logo.svg', shortcut: '/logo.svg' },
   openGraph: {
-    title: 'ЦСОП Варна – Център за специална образователна подкрепа',
-    description: 'Обучение, специализирана подкрепа и рехабилитация за деца и младежи.',
+    title: 'СУ „Васил Левски“ – гр. Вълчи дол',
+    description: 'Училище с традиции – училище с бъдеще.',
     url: SITE,
-    siteName: 'ЦСОП Варна',
-    images: [{ url: '/logo.jpg', width: 512, height: 512, alt: 'Логото на ЦСОП Варна' }],
+    siteName: 'СУ „Васил Левски“ – Вълчи дол',
     locale: 'bg_BG',
     type: 'website',
   },
@@ -43,12 +40,10 @@ export const viewport: Viewport = {
 };
 
 // Темата се избира преди първото рисуване (без проблясване).
-const THEME_SCRIPT = `(function(){try{var s=localStorage.getItem('csop-theme');var d=s?s==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;var h=document.documentElement;h.setAttribute('data-theme',d?'dark':'light');h.classList.toggle('dark',d);}catch(e){}try{var a=JSON.parse(localStorage.getItem('csop-a11y')||'null');if(a){var F=[1,1.12,1.25,1.4];if(a.font)document.documentElement.style.setProperty('--fs',String(F[a.font]||1));if(a.contrast)document.documentElement.classList.add('a11y-contrast');if(a.links)document.documentElement.classList.add('a11y-links');}}catch(e){}})();`;
+const THEME_SCRIPT = `(function(){try{var s=localStorage.getItem('su-theme');var d=s?s==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;var h=document.documentElement;h.setAttribute('data-theme',d?'dark':'light');h.classList.toggle('dark',d);}catch(e){}try{var a=JSON.parse(localStorage.getItem('su-a11y')||'null');if(a){var F=[1,1.12,1.25,1.4];if(a.font)document.documentElement.style.setProperty('--fs',String(F[a.font]||1));if(a.contrast)document.documentElement.classList.add('a11y-contrast');if(a.links)document.documentElement.classList.add('a11y-links');}}catch(e){}})();`;
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const lang = await getLang();
-  // чатботът се показва само когато на сървъра има ключ за Gemini
-  const chat = process.env.GEMINI_API_KEY ? (await getSiteInfo()).contact : null;
   return (
     <html lang={lang} suppressHydrationWarning>
       <head>
@@ -63,7 +58,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ScrollTop />
         <AccessibilityWidget />
         <CookieBanner />
-        {chat && <ChatWidget phone={chat.phone} phoneHref={chat.phoneHref} />}
       </body>
     </html>
   );
