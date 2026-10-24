@@ -468,3 +468,8 @@ html.a11y-links a { text-decoration: underline !important; text-underline-offset
 .pc-t { padding: 16px 18px 20px; line-height: 1.4; }
 @keyframes pc-in { from { opacity: 0; transform: translateY(18px); } }
 @media (prefers-reduced-motion: reduce) { .proj-card { animation: none; } }
+/* годините вътре в група документи — по-малки бутони */
+.yt-sub .yt-bar { background: transparent; padding: 0; gap: 6px; margin-bottom: 18px; }
+.yt-sub .yt-bar button { padding: 7px 14px; font-size: calc(14px * var(--fs, 1)); border: 1px solid var(--line); }
+.yt-sub .yt-bar button.on { border-color: var(--navy); }
+.doc-year { margin: 0 0 10px; font-weight: 400; font-size: 1rem; color: var(--ink-2); }

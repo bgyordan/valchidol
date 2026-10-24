@@ -73,3 +73,10 @@
 @media (max-width: 600px) { .adm-menu-row { grid-template-columns: 64px 1fr; } .adm-menu-row.sub { padding-left: 0; } }
 .adm-docs td:nth-child(2) { display: table-cell !important; width: 1%; white-space: nowrap; }
 .adm-table details form.adm-doc-edit { display: grid; gap: 10px; max-width: 640px; }
+/* Документи: групи като бутони, годините се отварят */
+.adm-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 16px; }
+.adm-tabs a { padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink); text-decoration: none; }
+.adm-tabs a span { opacity: .6; font-size: .85em; margin-left: 4px; }
+.adm-tabs a.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+.adm-year { border: 1px solid var(--line); border-radius: 14px; padding: 4px 14px; margin-bottom: 10px; }
+.adm-year > summary { cursor: pointer; padding: 10px 0; font-size: 1.1rem; }

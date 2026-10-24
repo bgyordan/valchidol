@@ -121,6 +121,33 @@ function PageBody({ body, docs }: { body: string; docs: DocRow[] }) {
   const noYear = docs.filter((d) => !d.academic_year);
   const text = (t: string) => (t ? <div className="prose-block page-body"><RichText text={t} /></div> : null);
 
+  // Няколко групи (Училищна документация, Бюджет, Графици…) → първо бутони с групите, в тях — годините.
+  // При много групи (напр. класовете в СФО) остава първо годината.
+  const cats = groupOrder(docs);
+  if (cats.length >= 2 && cats.length <= 12 && docs.length >= 40) {
+    return (
+      <>
+        {text(body)}
+        <YearTabs aria="Група документи" tabs={cats.map((c) => {
+          const list = docs.filter((d) => (d.category || '') === c);
+          const ys = [...new Set(list.map((d) => d.academic_year).filter((y): y is string => !!y))].sort((x, y) => y.localeCompare(x));
+          const rest = list.filter((d) => !d.academic_year);
+          return {
+            label: c || 'Други',
+            node: (
+              <>
+                {ys.length >= 2
+                  ? <YearTabs sub noHash tabs={ys.map((y) => ({ label: y, node: <DocRows docs={sorted(list.filter((d) => d.academic_year === y))} /> }))} />
+                  : ys.length === 1 && <><h3 className="doc-year">{ys[0]}</h3><DocRows docs={sorted(list.filter((d) => d.academic_year === ys[0]))} /></>}
+                {rest.length > 0 && <DocRows docs={sorted(rest)} />}
+              </>
+            ),
+          };
+        })} />
+      </>
+    );
+  }
+
   if (all.length < 2) {
     return (
       <>
@@ -139,6 +166,14 @@ function PageBody({ body, docs }: { body: string; docs: DocRow[] }) {
       <DocGroups docs={noYear} />
     </>
   );
+}
+
+const sorted = (l: DocRow[]) => [...l].sort((a, b) => a.sort_order - b.sort_order);
+// групите по реда от админ панела (най-малкият номер в групата)
+function groupOrder(docs: DocRow[]) {
+  const m = new Map<string, number>();
+  for (const d of docs) { const c = d.category || ''; m.set(c, Math.min(m.get(c) ?? Infinity, d.sort_order)); }
+  return [...m.entries()].sort((a, b) => a[1] - b[1]).map(([c]) => c);
 }
 
 // Документите, групирани по „група“ (подзаглавие), в реда от админ панела.
