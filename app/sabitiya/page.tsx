@@ -12,7 +12,7 @@ export default async function EventsPage() {
 
   return (
     <>
-      <PageHero path="/sabitiya" title="Събития" intro="Предстоящите събития в училището и архив на отминалите." />
+      <PageHero path="/sabitiya" title="Събития" />
       <section className="section tone-lime">
         <div className="wrap">
           <h2 style={{ marginBottom: 16 }}>Предстоящи</h2>

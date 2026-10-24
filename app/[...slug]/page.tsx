@@ -51,7 +51,6 @@ export default async function SitePageView({ params }: Props) {
       <PageHero
         path={slug.startsWith('proekti/') ? '/proekti' : path}
         title={page?.title ?? group!.label}
-        intro={group?.intro}
         photo={page?.photos[0]}
       />
 
@@ -108,7 +107,7 @@ export default async function SitePageView({ params }: Props) {
           <div className="wrap">
             {page?.body && <h2 style={{ marginBottom: 20 }}>В този раздел</h2>}
             <LinkList
-              items={group.links.filter((l) => l.href !== path).map((l) => ({ t: l.label, d: l.desc, href: l.href, icon: l.href.startsWith('http') ? 'external' : 'doc', external: l.href.startsWith('http') }))}
+              items={group.links.filter((l) => l.href !== path).map((l) => ({ t: l.label, href: l.href, icon: l.href.startsWith('http') ? 'external' : 'doc', external: l.href.startsWith('http') }))}
             />
           </div>
         </section>

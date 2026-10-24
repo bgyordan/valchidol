@@ -13,7 +13,7 @@ export default async function NewsArchivePage() {
   const posts = await getNews();
   return (
     <>
-      <PageHero path="/novini" title="Новини" intro="Събития, празници, постижения и съобщения от живота на училището." />
+      <PageHero path="/novini" title="Новини" />
       <section className="section tone-lime">
         <div className="wrap"><NewsClient posts={posts} /></div>
       </section>

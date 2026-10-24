@@ -13,7 +13,7 @@ export default async function GalleryPage() {
   const { albums, photos } = await getGallery();
   return (
     <>
-      <PageHero path="/galeriya" title="Галерия" intro="Снимки от събития, празници и учебните дни в училище." />
+      <PageHero path="/galeriya" title="Галерия" />
       <section className="section tone-lime">
         <GalleryClient albums={albums} photos={photos} />
       </section>
