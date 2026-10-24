@@ -15,5 +15,5 @@ export async function GET(req: Request, { params }: { params: Promise<{ key: str
   headers.set('etag', obj.httpEtag);
   headers.set('cache-control', 'public, max-age=86400');
   if (!('body' in obj)) return new Response(null, { status: 304, headers }); // не е променен
-  return new Response(obj.body, { status: obj.range ? 206 : 200, headers });
+  return new Response(obj.body, { status: req.headers.has('range') && obj.range ? 206 : 200, headers });
 }

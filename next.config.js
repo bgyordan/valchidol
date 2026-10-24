@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // качване на снимки и документи от админ панела
+  experimental: { serverActions: { bodySizeLimit: '50mb' } },
   // стари адреси → нови (за запазени връзки и търсачките)
   async redirects() {
     return [
