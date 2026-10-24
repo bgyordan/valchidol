@@ -26,12 +26,14 @@ export function RichText({ text }: { text: string | null }) {
   const out: ReactNode[] = [];
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i];
+    if (/^#{4,6} /.test(l)) { out.push(<h4 key={i}>{inline(l.replace(/^#+ /, ''), 'h' + i)}</h4>); continue; }
     if (l.startsWith('### ')) { out.push(<h3 key={i}>{inline(l.slice(4), 'h' + i)}</h3>); continue; }
     if (l.startsWith('## ')) { out.push(<h2 key={i}>{inline(l.slice(3), 'h' + i)}</h2>); continue; }
     if (/^[-•] /.test(l)) {
       const start = i;
       const items: string[] = [];
-      while (i < lines.length && /^[-•] /.test(lines[i])) items.push(lines[i++].slice(2));
+      // „- ##### [текст](адрес)“ от стария сайт — без знаците за заглавие
+      while (i < lines.length && /^[-•] /.test(lines[i])) items.push(lines[i++].slice(2).replace(/^#{1,6}\s+/, ''));
       i--;
       out.push(<ul key={start}>{items.map((it, k) => <li key={k}>{inline(it, `l${start}-${k}`)}</li>)}</ul>);
       continue;

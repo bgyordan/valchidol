@@ -7,6 +7,8 @@ import { NAV, SCHOOL } from '../components/nav';
 import { getChildPages, getDocuments, getPage, type DocRow } from '../../lib/data';
 import DocRows from '../components/DocRows';
 import { RichText } from '../../lib/rich';
+import { splitByYears } from '../../lib/years';
+import YearTabs from '../components/YearTabs';
 
 // Текстовите страници от базата (site_pages) и началните страници на групите от менюто.
 export const dynamic = 'force-dynamic';
@@ -59,9 +61,7 @@ export default async function SitePageView({ params }: Props) {
           <div className={`wrap${section ? ' page-layout' : ''}`}>
             <div>
               {parent && <p className="page-back"><a href={'/' + parent.slug}>← {parent.title}</a></p>}
-              <div className="prose-block page-body">
-                <RichText text={stripTitle(page.body, page.title)} />
-              </div>
+              <PageBody body={stripTitle(page.body, page.title)} />
             </div>
             {section && (
               <nav className={`page-side tone-${section.tone}`} aria-label={`Раздел „${section.label}“`}>
@@ -121,6 +121,19 @@ export default async function SitePageView({ params }: Props) {
           </div>
         </section>
       )}
+    </>
+  );
+}
+
+// Текстът на страницата. Ако в него има няколко учебни години, се показва само най-новата,
+// а другите се избират с бутоните над нея (вместо всички години една под друга).
+function PageBody({ body }: { body: string }) {
+  const years = splitByYears(body);
+  if (!years) return <div className="prose-block page-body"><RichText text={body} /></div>;
+  return (
+    <>
+      {years.intro && <div className="prose-block page-body"><RichText text={years.intro} /></div>}
+      <YearTabs tabs={years.sections.map((y) => ({ label: y.label, node: <div className="prose-block page-body"><RichText text={y.text} /></div> }))} />
     </>
   );
 }

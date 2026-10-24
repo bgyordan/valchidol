@@ -28,8 +28,7 @@
 .hh h1 { color: #fff; font-size: calc(clamp(38px, 5.4vw, 76px) * var(--fs-ui, 1)); line-height: 1.02; margin-top: 18px; max-width: 12em; }
 .hh-motto { margin-top: 16px; font-size: calc(clamp(19px, 1.8vw, 24px) * var(--fs-ui, 1)); color: #E2E9F2; max-width: 30em; }
 .hh .btn-row { margin-top: 32px; }
-.hh .btn-primary { background: var(--red); color: #fff; }
-:root[data-theme="dark"] .hh .btn-primary, :root[data-theme="dark"] .hc .btn-primary { background: #B8232B; color: #fff; }
+.hh .btn-primary, .hc .btn-primary { background: var(--warm); color: var(--on-warm); }
 .hh-ghost { background: transparent; border-color: rgba(255, 255, 255, .7); color: #fff; }
 .hh-ghost:hover { background: rgba(255, 255, 255, .12); border-color: #fff; }
 
@@ -72,7 +71,7 @@
 .hq b { min-width: 0; font-weight: 600; font-size: calc(15.5px * var(--fs, 1)); line-height: 1.25; }
 .hq a:hover { scale: 1.04; box-shadow: 0 22px 40px -22px rgba(11, 34, 60, .55); }
 .hq a:hover b { color: var(--navy); }
-.hq a:hover .hq-ic { background: var(--red); color: #fff; rotate: -10deg; }
+.hq a:hover .hq-ic { background: var(--warm); color: var(--on-warm); rotate: -10deg; }
 @media (max-width: 1100px) {
   .hq { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
@@ -85,11 +84,11 @@
 @media (prefers-reduced-motion: reduce) { .hq a, .hq a::after { animation: none; } }
 
 /* --- обява „Важно“ --- */
-.hh-alert { display: flex; align-items: center; gap: 16px; margin-top: clamp(24px, 3vw, 40px); padding: 16px 20px; border-radius: var(--r-lg); background: var(--red-soft); color: var(--ink); }
-.hh-alert-ic { flex-shrink: 0; color: var(--red); }
+.hh-alert { display: flex; align-items: center; gap: 16px; margin-top: clamp(24px, 3vw, 40px); padding: 16px 20px; border-radius: var(--r-lg); background: var(--warm-soft); color: var(--ink); }
+.hh-alert-ic { flex-shrink: 0; color: var(--warm-ink); }
 .hh-alert-ic svg { width: 26px; height: 26px; }
-.hh-alert b { color: var(--red); }
-.hh-alert-go { margin-left: auto; flex-shrink: 0; font-weight: 600; color: var(--red); white-space: nowrap; }
+.hh-alert b { color: var(--warm-ink); }
+.hh-alert-go { margin-left: auto; flex-shrink: 0; font-weight: 600; color: var(--warm-ink); white-space: nowrap; }
 .hh-alert-go::after { content: " →"; }
 .hh-alert:hover .hh-alert-go { text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 640px) { .hh-alert { flex-wrap: wrap; } .hh-alert-go { margin-left: 42px; } }
@@ -163,10 +162,9 @@
 .hab-photos { position: relative; padding: 0 12% 12% 0; }
 .hab-p1 { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--r); background: var(--sky-2); }
 .hab-p2 { position: absolute; right: 0; bottom: 0; width: 46%; aspect-ratio: 1; object-fit: cover; border-radius: var(--r); border: 6px solid var(--sky); background: var(--sky-2); }
-.hab-year { position: absolute; left: -10px; bottom: 4%; display: grid; gap: 2px; padding: 16px 20px; border-radius: var(--r); background: var(--red); color: #fff; font-weight: 500; line-height: 1.2; box-shadow: var(--shadow); }
+.hab-year { position: absolute; left: -10px; bottom: 4%; display: grid; gap: 2px; padding: 16px 20px; border-radius: var(--r); background: var(--warm); color: var(--on-warm); font-weight: 500; line-height: 1.2; box-shadow: var(--shadow); }
 .hab-year b { font: 400 calc(32px * var(--fs-ui, 1))/1 var(--display); }
-:root[data-theme="dark"] .hab-year { background: #B8232B; }
-.hab-text .kicker { color: var(--red); text-transform: uppercase; letter-spacing: .08em; font-size: calc(13.5px * var(--fs, 1)); font-weight: 600; }
+.hab-text .kicker { color: var(--warm-ink); text-transform: uppercase; letter-spacing: .08em; font-size: calc(13.5px * var(--fs, 1)); font-weight: 600; }
 .hab-text > p:not(.kicker) { margin-top: 16px; color: var(--ink-2); }
 .hab-text .feature-list { margin-top: 20px; --tone-soft: var(--navy-soft); }
 .hab-text .btn-row { margin-top: 28px; }
@@ -190,7 +188,6 @@
 .hc h2 { color: #fff; }
 .hc-grid > div > p { margin-top: 14px; max-width: 34em; }
 .hc .btn-row { margin-top: 26px; }
-.hc .btn-primary { background: var(--red); color: #fff; }
 .hc-facts { list-style: none; display: grid; gap: 0; }
 .hc-facts li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 14px; padding: 16px 0; border-bottom: 1px solid rgba(255, 255, 255, .14); }
 .hc-facts li:first-child { border-top: 1px solid rgba(255, 255, 255, .14); }
