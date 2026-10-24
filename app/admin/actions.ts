@@ -92,7 +92,7 @@ export async function addDocument(f: FormData) {
   await d.prepare(`INSERT INTO site_documents (id, name, file_url, academic_year, section, category, sort_order, on_site) VALUES (?,?,?,?,?,?,?,?)`)
     .bind(crypto.randomUUID(), name, url, year, section, cat, order, f.get('on_site') === '1' ? 1 : 0).run();
   revalidatePath('/', 'layout');
-  redirect(`/admin/dokumenti?page=${encodeURIComponent(section)}`);
+  redirect(`/admin/dokumenti?page=${encodeURIComponent(section)}${cat ? `&cat=${encodeURIComponent(cat)}` : ''}`);
 }
 
 export async function updateDocument(f: FormData) {

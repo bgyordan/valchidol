@@ -12,7 +12,7 @@ function schoolYear() {
   return `${y}/${y + 1}`;
 }
 
-export default async function AdminDocs({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+export default async function AdminDocs({ searchParams }: { searchParams: Promise<{ page?: string; cat?: string }> }) {
   const pages = await all<{ slug: string; title: string }>('SELECT slug, title FROM site_pages ORDER BY sort');
   const counts = await all<{ section: string; n: number }>('SELECT section, COUNT(*) AS n FROM site_documents GROUP BY section');
   const n = (slug: string) => counts.find((c) => c.section === slug)?.n ?? 0;
@@ -21,7 +21,14 @@ export default async function AdminDocs({ searchParams }: { searchParams: Promis
   const rows = await all<Row>('SELECT id, name, file_url, academic_year, section, category, sort_order, on_site FROM site_documents WHERE section = ? ORDER BY academic_year DESC, sort_order, name', cur);
   const cats = [...new Set(rows.map((r) => r.category).filter((c): c is string => !!c))];
   const years = [...new Set(rows.map((r) => r.academic_year).filter((y): y is string => !!y))];
-  const byYear = [...new Set(rows.map((r) => r.academic_year ?? ''))];
+  // групите по реда на сайта; при повече от една — бутони отгоре и се показва само избраната
+  const order = new Map<string, number>();
+  for (const r of rows) { const c = r.category ?? ''; order.set(c, Math.min(order.get(c) ?? Infinity, r.sort_order)); }
+  const groupsAll = [...order.entries()].sort((a, b) => a[1] - b[1]).map(([c]) => c);
+  const curCat = groupsAll.includes(sp.cat ?? '\u0000') ? sp.cat! : groupsAll[0] ?? '';
+  const shown = groupsAll.length > 1 ? rows.filter((r) => (r.category ?? '') === curCat) : rows;
+  const byYear = [...new Set(shown.map((r) => r.academic_year ?? ''))].sort((a, b) => (!a ? 1 : !b ? -1 : b.localeCompare(a)));
+  const href = (c: string) => `/admin/dokumenti?page=${encodeURIComponent(cur)}&cat=${encodeURIComponent(c)}`;
   const title = pages.find((p) => p.slug === cur)?.title ?? cur;
 
   return (
@@ -44,7 +51,7 @@ export default async function AdminDocs({ searchParams }: { searchParams: Promis
         <label>Име на документа<input name="name" placeholder="по подразбиране: името на файла" /></label>
         <div className="adm-row">
           <label>Група
-            <input name="category" list="doc-cats" placeholder={cats[0] ? `напр. ${cats[0]}` : 'напр. Бюджет'} />
+            <input name="category" list="doc-cats" defaultValue={groupsAll.length > 1 ? curCat : ''} placeholder={cats[0] ? `напр. ${cats[0]}` : 'напр. Бюджет'} />
           </label>
           <label>Учебна година<input name="academic_year" list="doc-years" defaultValue={years[0] ?? schoolYear()} /></label>
         </div>
@@ -68,49 +75,51 @@ export default async function AdminDocs({ searchParams }: { searchParams: Promis
       )}
 
       {!rows.length && <p className="adm-muted">Тази страница още няма документи.</p>}
-      {byYear.map((y) => {
-        const list = rows.filter((r) => (r.academic_year ?? '') === y);
-        const groups = [...new Set(list.map((r) => r.category ?? ''))];
+      {groupsAll.length > 1 && (
+        <nav className="adm-tabs" aria-label="Групи">
+          {groupsAll.map((g) => (
+            <a key={g} href={href(g)} className={g === curCat ? 'on' : ''}>{g || 'Без група'} <span>{rows.filter((r) => (r.category ?? '') === g).length}</span></a>
+          ))}
+        </nav>
+      )}
+      {byYear.map((y, i) => {
+        const list = shown.filter((r) => (r.academic_year ?? '') === y);
         return (
-          <section key={y}>
-            <h2>{y || 'Без година'}</h2>
-            {groups.map((g) => (
-              <div key={g}>
-                {g && <h3>{g}</h3>}
-                <table className="adm-table adm-docs">
-                  <tbody>
-                    {list.filter((r) => (r.category ?? '') === g).map((r) => (
-                      <tr key={r.id}>
-                        <td>
-                          {r.file_url ? <a href={r.file_url} target="_blank">{r.name}</a> : r.name}
-                          {!r.file_url && <span className="adm-tag">няма файл</span>}{!r.on_site && <span className="adm-tag">скрит</span>}
-                          <details>
-                            <summary className="adm-link">промени</summary>
-                            <form action={updateDocument} className="adm-form adm-doc-edit">
-                              <input type="hidden" name="id" value={r.id} />
-                              <label>Име<input name="name" defaultValue={r.name} /></label>
-                              <div className="adm-row">
-                                <label>{r.file_url ? 'Смени файла' : 'Качи файла'}<input type="file" name="file" /></label>
-                                <label>…или връзка<input name="link" type="url" placeholder="https://" /></label>
-                              </div>
-                              <div className="adm-row">
-                                <label>Група<input name="category" list="doc-cats" defaultValue={r.category ?? ''} /></label>
-                                <label>Година<input name="academic_year" list="doc-years" defaultValue={r.academic_year ?? ''} /></label>
-                                <label>Ред<input name="sort_order" type="number" defaultValue={r.sort_order} /></label>
-                              </div>
-                              <label className="adm-check"><input type="checkbox" name="on_site" value="1" defaultChecked={!!r.on_site} /> Показвай на сайта</label>
-                              <p><button className="adm-btn primary">Запази</button></p>
-                            </form>
-                          </details>
-                        </td>
-                        <td><form action={deleteDocument}><input type="hidden" name="id" value={r.id} /><Confirm text={`Да изтрия ли „${r.name}“?`} className="adm-link danger">изтрий</Confirm></form></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ))}
-          </section>
+          <details key={y} className="adm-year" open={i === 0}>
+            <summary>{y || 'Без година'} <span className="adm-muted">({list.length})</span></summary>
+            <table className="adm-table adm-docs">
+              <tbody>
+                {list.map((r) => (
+                  <tr key={r.id}>
+                    <td>
+                      {r.file_url ? <a href={r.file_url} target="_blank">{r.name}</a> : r.name}
+                      {!r.file_url && <span className="adm-tag">няма файл</span>}{!r.on_site && <span className="adm-tag">скрит</span>}
+                      {groupsAll.length <= 1 && r.category && <span className="adm-tag">{r.category}</span>}
+                      <details>
+                        <summary className="adm-link">промени</summary>
+                        <form action={updateDocument} className="adm-form adm-doc-edit">
+                          <input type="hidden" name="id" value={r.id} />
+                          <label>Име<input name="name" defaultValue={r.name} /></label>
+                          <div className="adm-row">
+                            <label>{r.file_url ? 'Смени файла' : 'Качи файла'}<input type="file" name="file" /></label>
+                            <label>…или връзка<input name="link" type="url" placeholder="https://" /></label>
+                          </div>
+                          <div className="adm-row">
+                            <label>Група<input name="category" list="doc-cats" defaultValue={r.category ?? ''} /></label>
+                            <label>Година<input name="academic_year" list="doc-years" defaultValue={r.academic_year ?? ''} /></label>
+                            <label>Ред<input name="sort_order" type="number" defaultValue={r.sort_order} /></label>
+                          </div>
+                          <label className="adm-check"><input type="checkbox" name="on_site" value="1" defaultChecked={!!r.on_site} /> Показвай на сайта</label>
+                          <p><button className="adm-btn primary">Запази</button></p>
+                        </form>
+                      </details>
+                    </td>
+                    <td><form action={deleteDocument}><input type="hidden" name="id" value={r.id} /><Confirm text={`Да изтрия ли „${r.name}“?`} className="adm-link danger">изтрий</Confirm></form></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </details>
         );
       })}
     </>
