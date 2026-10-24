@@ -27,7 +27,7 @@ npm run preview            # пълна проверка в истинския W
    `CLOUDFLARE_API_TOKEN` (токенът) и `CLOUDFLARE_ACCOUNT_ID` (Account ID от началната страница на Cloudflare).
 4. GitHub → **Actions → Deploy → Run workflow**. Сайтът излиза на `https://souvalchidol.<адрес>.workers.dev`.
 
-Тайните на сайта (Gmail, Access и т.н. от `.env.example`) се слагат пак като GitHub secrets със същите имена —
+Тайните на сайта (Gmail, ADMIN_SETUP_CODE и т.н. от `.env.example`) се слагат пак като GitHub secrets със същите имена —
 при следващото пускане се прехвърлят сами в Cloudflare. Страниците от стария сайт се зареждат наново само ръчно:
 *Run workflow* с отметка „Зареди наново…“ (това изтрива промените по тях от админа).
 
@@ -38,26 +38,18 @@ npm run preview            # пълна проверка в истинския W
    всички записи, особено **MX** за пощата на Google — иначе пощата спира).
 3. Когато домейнът стане *Active*: Workers & Pages → souvalchidol → Settings → **Domains & Routes** → *Add* →
    *Custom domain* → `souvalchidol.com`, после още веднъж за `www.souvalchidol.com`.
-4. Преправи Access (по-долу) да пази само `souvalchidol.com/admin`, а не целия сайт.
 
 ## Админ панел (/admin)
 
-Служителите влизат на `souvalchidol.com/admin` и оттам пускат новини, документи, снимки и събития.
-Входът е през **Cloudflare Access** (еднократна настройка):
+Служителите влизат на `/admin` с имейл и парола (таблица `admin_users`, миграция `0003`).
+**Главният админ** добавя и маха хора от *Хора*; **редакторите** пишат съдържание. Паролите се пазят само като PBKDF2 хеш;
+след 5 грешни опита входът за този имейл спира за 15 минути.
 
-**Докато сайтът е само на workers.dev** (тестов период) Access пази целия адрес — така и непубликуваният сайт не е видим за всички:
+Първи вход (еднократно):
 
-1. Workers & Pages → souvalchidol → Settings → Domains & Routes → `workers.dev` → **Enable Cloudflare Access**
-   (първия път Cloudflare иска да се избере име на екипа и безплатния план Zero Trust).
-2. *Manage Cloudflare Access* → в правилото (policy) остави *Allow* и сложи *Emails ending in* `@<домейна на училището>`.
-   Вход с еднократен код по имейл работи веднага; Google вход се добавя по-късно в Zero Trust → Settings → Authentication.
-3. Копирай **Application Audience (AUD) Tag** и името на екипа и ги сложи като GitHub secrets
-   `ACCESS_AUD` и `ACCESS_TEAM_DOMAIN` (напр. `souvalchidol.cloudflareaccess.com`), после *Run workflow*.
-
-**След домейна**: Zero Trust → Access → Applications → *Self-hosted*: домейн `souvalchidol.com`, път `admin`,
-същото правило; новия AUD Tag в `ACCESS_AUD`. Защитата на workers.dev може да се изключи.
-
-По желание `ADMIN_DOMAIN` или `ADMIN_EMAILS` — втора проверка в самия сайт.
+1. GitHub → Settings → Secrets → Actions → нов секрет `ADMIN_SETUP_CODE` (дълга фраза по избор) → *Run workflow*.
+2. Отвори `/admin` → „Първоначална настройка“ → въведи кода, своя имейл и парола. Това става само докато няма никой.
+3. После добави останалите от *Хора*. Кодът може да се изтрие от GitHub.
 
 Локално: в `.dev.vars` сложи `DEV_ADMIN_EMAIL=ти@пример.bg` и пусни `npm run dev`.
 
