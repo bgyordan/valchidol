@@ -67,6 +67,17 @@ export async function deleteNews(f: FormData) {
 }
 
 /* ---------------- Документи ---------------- */
+// Нов документ без номер за подредба → най-горе в своята група (най-новото първо).
+// Нова група → след всички групи на страницата за тази година.
+async function nextOrder(d: Awaited<ReturnType<typeof D>>, section: string, year: string | null, cat: string | null) {
+  const inCat = await d.prepare(`SELECT MIN(sort_order) AS m FROM site_documents WHERE section = ? AND IFNULL(academic_year,'') = ? AND IFNULL(category,'') = ?`)
+    .bind(section, year ?? '', cat ?? '').first<{ m: number | null }>();
+  if (inCat?.m != null) return inCat.m - 1;
+  const all = await d.prepare(`SELECT MAX(sort_order) AS m FROM site_documents WHERE section = ? AND IFNULL(academic_year,'') = ?`)
+    .bind(section, year ?? '').first<{ m: number | null }>();
+  return (all?.m ?? 0) + 10;
+}
+
 export async function addDocument(f: FormData) {
   await requireAdmin();
   const d = await D();
@@ -75,8 +86,41 @@ export async function addDocument(f: FormData) {
   if (!isFile(file) && !link) throw new Error('Изберете файл или поставете връзка');
   const url = isFile(file) ? await uploadFile(file, 'dokumenti') : link;
   const name = str(f, 'name', 300) || (isFile(file) ? file.name.replace(/\.[^.]+$/, '') : link);
+  const section = str(f, 'section', 60) || 'dokumentatsiya';
+  const year = opt(f, 'academic_year', 20), cat = opt(f, 'category', 60);
+  const order = str(f, 'sort_order', 10) ? num(f, 'sort_order') : await nextOrder(d, section, year, cat);
   await d.prepare(`INSERT INTO site_documents (id, name, file_url, academic_year, section, category, sort_order, on_site) VALUES (?,?,?,?,?,?,?,?)`)
-    .bind(crypto.randomUUID(), name, url, opt(f, 'academic_year', 20), str(f, 'section', 60) || 'internal', opt(f, 'category', 60), num(f, 'sort_order'), f.get('on_site') === '1' ? 1 : 0).run();
+    .bind(crypto.randomUUID(), name, url, year, section, cat, order, f.get('on_site') === '1' ? 1 : 0).run();
+  revalidatePath('/', 'layout');
+  redirect(`/admin/dokumenti?page=${encodeURIComponent(section)}`);
+}
+
+export async function updateDocument(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  const id = str(f, 'id', 60);
+  const name = str(f, 'name', 300);
+  if (!name) throw new Error('Липсва име');
+  // нов файл (или връзка) на мястото на стария
+  const file = f.get('file');
+  const link = str(f, 'link', 1000);
+  let url: string | null = null;
+  if (isFile(file) || link) {
+    const old = await d.prepare('SELECT file_url FROM site_documents WHERE id = ?').bind(id).first<{ file_url: string }>();
+    url = isFile(file) ? await uploadFile(file, 'dokumenti') : link;
+    await deleteFile(old?.file_url);
+  }
+  await d.prepare('UPDATE site_documents SET name=?, academic_year=?, category=?, sort_order=?, on_site=?, file_url=COALESCE(?, file_url) WHERE id=?')
+    .bind(name, opt(f, 'academic_year', 20), opt(f, 'category', 60), num(f, 'sort_order'), f.get('on_site') === '1' ? 1 : 0, url, id).run();
+  revalidatePath('/', 'layout');
+}
+
+// Преименува група за цялата страница (напр. „Училищна документация“ → „Правилници и планове“).
+export async function renameDocGroup(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  await d.prepare('UPDATE site_documents SET category=? WHERE section=? AND category=?')
+    .bind(opt(f, 'to', 60), str(f, 'section', 60), str(f, 'from', 60)).run();
   revalidatePath('/', 'layout');
 }
 

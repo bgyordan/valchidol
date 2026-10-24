@@ -11,6 +11,16 @@ export default function DocRows({ docs }: { docs: Pick<DocRow, 'id' | 'name' | '
     <ul className="doc-rows">
       {docs.map((d) => (
         <li key={d.id}>
+          {!d.file_url ? (
+            // документ, чийто файл още не е качен (от стария сайт)
+            <span className="dr-nofile">
+              <span className="dr-ic" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2h9l5 5v15H6zM14 2v6h6" /></svg>
+              </span>
+              <span className="dr-name">{d.name}</span>
+              <span className="dr-type">няма файл</span>
+            </span>
+          ) : (
           <a href={d.file_url} target="_blank" rel="noopener noreferrer">
             <span className="dr-ic" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h6" /></svg>
@@ -18,6 +28,7 @@ export default function DocRows({ docs }: { docs: Pick<DocRow, 'id' | 'name' | '
             <span className="dr-name">{d.name}</span>
             <span className="dr-type">{ext(d.file_url)}<span className="sr-only">, отваря се в нов раздел</span></span>
           </a>
+          )}
         </li>
       ))}
     </ul>

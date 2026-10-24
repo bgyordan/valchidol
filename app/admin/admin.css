@@ -71,3 +71,5 @@
 .adm-menu-row.sub { padding-left: 24px; }
 .adm-menu-row input[type=number] { width: 100%; }
 @media (max-width: 600px) { .adm-menu-row { grid-template-columns: 64px 1fr; } .adm-menu-row.sub { padding-left: 0; } }
+.adm-docs td:nth-child(2) { display: table-cell !important; width: 1%; white-space: nowrap; }
+.adm-table details form.adm-doc-edit { display: grid; gap: 10px; max-width: 640px; }

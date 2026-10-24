@@ -34,15 +34,8 @@ export default async function SitePageView({ params }: Props) {
   if (!page && !group) notFound();
 
   const children = slug === 'proekti' ? await getChildPages('proekti') : [];
-  // документи, качени от админ панела за тази страница — по учебна година и подзаглавие
+  // документи за тази страница (от админ панела) — показват се по учебни години и групи заедно с текста
   const docs = page ? await getDocuments(slug, true) : [];
-  const docGroups: { key: string; list: DocRow[] }[] = [];
-  for (const d of docs) {
-    const key = [d.academic_year, d.category].filter(Boolean).join(' · ');
-    let g = docGroups.find((x) => x.key === key);
-    if (!g) docGroups.push((g = { key, list: [] }));
-    g.list.push(d);
-  }
   const parent = slug.includes('/') ? await getPage(slug.split('/')[0]) : null;
   // разделът от менюто, в който е страницата — връзките му стоят в страничната колона
   const navPath = slug.startsWith('proekti/') ? '/proekti' : path;
@@ -56,12 +49,12 @@ export default async function SitePageView({ params }: Props) {
         photo={page?.photos[0]}
       />
 
-      {page?.body && (
+      {(page?.body || docs.length > 0) && (
         <section className="section">
           <div className={`wrap${section ? ' page-layout' : ''}`}>
             <div>
               {parent && <p className="page-back"><a href={'/' + parent.slug}>← {parent.title}</a></p>}
-              <PageBody body={stripTitle(page.body, page.title)} />
+              <PageBody body={page ? stripTitle(page.body || '', page.title) : ''} docs={docs} />
             </div>
             {section && (
               <nav className={`page-side tone-${section.tone}`} aria-label={`Раздел „${section.label}“`}>
@@ -75,20 +68,6 @@ export default async function SitePageView({ params }: Props) {
                 </ul>
               </nav>
             )}
-          </div>
-        </section>
-      )}
-
-      {docGroups.length > 0 && (
-        <section className={`section${page?.body ? ' tint' : ''}`}>
-          <div className="wrap">
-            <h2 style={{ marginBottom: 20 }}>Документи</h2>
-            {docGroups.map((g) => (
-              <div key={g.key} style={{ marginBottom: 24 }}>
-                {g.key && <h3 style={{ marginBottom: 10 }}>{g.key}</h3>}
-                <DocRows docs={g.list} />
-              </div>
-            ))}
           </div>
         </section>
       )}
@@ -125,16 +104,55 @@ export default async function SitePageView({ params }: Props) {
   );
 }
 
-// Текстът на страницата. Ако в него има няколко учебни години, се показва само най-новата,
-// а другите се избират с бутоните над нея (вместо всички години една под друга).
-function PageBody({ body }: { body: string }) {
-  const years = splitByYears(body);
-  if (!years) return <div className="prose-block page-body"><RichText text={body} /></div>;
+// Текстът и документите на страницата. Ако има няколко учебни години (в текста или в документите),
+// се показва само най-новата, а другите се избират с бутоните над нея.
+function PageBody({ body, docs }: { body: string; docs: DocRow[] }) {
+  const years = body ? splitByYears(body) : null;
+  const textOf = new Map((years?.sections ?? []).map((y) => [y.label, y.text]));
+  const all = [...new Set([...textOf.keys(), ...docs.map((d) => d.academic_year).filter((y): y is string => !!y)])]
+    .sort((x, y) => y.localeCompare(x));
+  const noYear = docs.filter((d) => !d.academic_year);
+  const text = (t: string) => (t ? <div className="prose-block page-body"><RichText text={t} /></div> : null);
+
+  if (all.length < 2) {
+    return (
+      <>
+        {text(body)}
+        <DocGroups docs={docs} />
+      </>
+    );
+  }
   return (
     <>
-      {years.intro && <div className="prose-block page-body"><RichText text={years.intro} /></div>}
-      <YearTabs tabs={years.sections.map((y) => ({ label: y.label, node: <div className="prose-block page-body"><RichText text={y.text} /></div> }))} />
+      {text(years ? years.intro : body)}
+      <YearTabs tabs={all.map((y) => ({
+        label: y,
+        node: <>{text(textOf.get(y) ?? '')}<DocGroups docs={docs.filter((d) => d.academic_year === y)} /></>,
+      }))} />
+      <DocGroups docs={noYear} />
     </>
+  );
+}
+
+// Документите, групирани по „група“ (подзаглавие), в реда от админ панела.
+function DocGroups({ docs }: { docs: DocRow[] }) {
+  if (!docs.length) return null;
+  const groups: { cat: string; list: DocRow[] }[] = [];
+  for (const d of [...docs].sort((a, b) => a.sort_order - b.sort_order)) {
+    const cat = d.category || '';
+    let g = groups.find((x) => x.cat === cat);
+    if (!g) groups.push((g = { cat, list: [] }));
+    g.list.push(d);
+  }
+  return (
+    <div className="doc-groups">
+      {groups.map((g) => (
+        <div key={g.cat} className="doc-group">
+          {g.cat && <h3>{g.cat}</h3>}
+          <DocRows docs={g.list} />
+        </div>
+      ))}
+    </div>
   );
 }
 

@@ -245,6 +245,12 @@ html.a11y-links a { text-decoration: underline !important; text-underline-offset
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
 /* документи */
+.doc-groups { margin-top: 8px; }
+.doc-rows .dr-nofile { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 14px 4px; color: var(--muted, #667); }
+.doc-rows .dr-nofile .dr-type { font-size: .8rem; }
+.doc-group + .doc-group { margin-top: 28px; }
+.doc-group h3 { margin: 0 0 10px; font-weight: 400; }
+.prose-block + .doc-groups { margin-top: 28px; }
 .doc-rows { list-style: none; border-top: 1px solid var(--line); }
 .doc-rows li { border-bottom: 1px solid var(--line); }
 .doc-rows a { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 14px 4px; }
