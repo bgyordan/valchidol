@@ -49,10 +49,14 @@ jobs:
           echo "D1: $id"
           sed -i "s/PLACEHOLDER-SET-AFTER-d1-create/$id/" wrangler.jsonc
 
+      # Ако R2 още не е включен в акаунта, сайтът се пуска без него (без качване на снимки и файлове).
       - name: Хранилище R2 (създава се, ако го няма)
         run: |
           if ! npx wrangler r2 bucket info souvalchidol-files >/dev/null 2>&1; then
-            npx wrangler r2 bucket create souvalchidol-files
+            if ! npx wrangler r2 bucket create souvalchidol-files; then
+              echo "::warning::R2 не е включен (Cloudflare → R2 → Enable). Пускам сайта без качване на файлове."
+              node -e "const f='wrangler.jsonc',fs=require('fs');fs.writeFileSync(f,fs.readFileSync(f,'utf8').replace(/\"r2_buckets\"[\s\S]*?\],/,''))"
+            fi
           fi
 
       - name: Схема на базата
