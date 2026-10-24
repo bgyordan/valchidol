@@ -1,0 +1,179 @@
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { requireAdmin } from '../../lib/auth';
+import { db } from '../../lib/db';
+import { deleteFile, isFile, slugify, uploadFile } from '../../lib/files';
+import { sofiaToIso } from '../../lib/sofia';
+
+const str = (f: FormData, k: string, max = 500) => String(f.get(k) ?? '').trim().slice(0, max);
+const opt = (f: FormData, k: string, max = 500) => str(f, k, max) || null;
+const num = (f: FormData, k: string) => Number(f.get(k)) || 0;
+
+async function D() {
+  const d = await db();
+  if (!d) throw new Error('Няма връзка с базата');
+  return d;
+}
+
+/* ---------------- Новини ---------------- */
+export async function saveNews(f: FormData) {
+  const me = await requireAdmin();
+  const d = await D();
+  const id = str(f, 'id', 120);
+  const title = str(f, 'title', 300);
+  if (!title) throw new Error('Липсва заглавие');
+
+  const old = id ? await d.prepare('SELECT cover_url, gallery_images FROM site_news WHERE id = ?').bind(id).first<{ cover_url: string | null; gallery_images: string }>() : null;
+  let cover = old?.cover_url ?? null;
+  if (f.get('remove_cover') === '1') { await deleteFile(cover); cover = null; }
+  const coverFile = f.get('cover');
+  if (isFile(coverFile)) { await deleteFile(cover); cover = await uploadFile(coverFile, 'novini'); }
+
+  let gallery: string[] = old ? JSON.parse(old.gallery_images || '[]') : [];
+  const drop = new Set(f.getAll('remove_gallery').map(String));
+  for (const u of drop) await deleteFile(u);
+  gallery = gallery.filter((u) => !drop.has(u));
+  for (const g of f.getAll('gallery')) if (isFile(g)) gallery.push(await uploadFile(g, 'novini'));
+
+  const status = f.get('status') === 'published' ? 'published' : 'draft';
+  const publishedAt = sofiaToIso(str(f, 'published_at', 20)) ?? (status === 'published' ? new Date().toISOString() : null);
+  const vals = [title, opt(f, 'excerpt', 600), opt(f, 'content', 50000), cover, JSON.stringify(gallery), str(f, 'category', 60) || 'Новини', status, publishedAt, opt(f, 'author_name', 120) ?? me.email];
+
+  if (old) {
+    await d.prepare(`UPDATE site_news SET title=?, excerpt=?, content=?, cover_url=?, gallery_images=?, category=?, status=?, published_at=?, author_name=? WHERE id=?`).bind(...vals, id).run();
+  } else {
+    // адресът на новината: латиница от заглавието + кратък код
+    const newId = `${slugify(title).replace(/\./g, '-').slice(0, 60)}-${crypto.randomUUID().slice(0, 4)}`;
+    await d.prepare(`INSERT INTO site_news (title, excerpt, content, cover_url, gallery_images, category, status, published_at, author_name, id) VALUES (?,?,?,?,?,?,?,?,?,?)`).bind(...vals, newId).run();
+  }
+  revalidatePath('/', 'layout');
+  redirect('/admin/novini');
+}
+
+export async function deleteNews(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  const id = str(f, 'id', 120);
+  const row = await d.prepare('SELECT cover_url, gallery_images FROM site_news WHERE id = ?').bind(id).first<{ cover_url: string | null; gallery_images: string }>();
+  if (row) {
+    await deleteFile(row.cover_url);
+    for (const u of JSON.parse(row.gallery_images || '[]')) await deleteFile(u);
+    await d.prepare('DELETE FROM site_news WHERE id = ?').bind(id).run();
+  }
+  revalidatePath('/', 'layout');
+  redirect('/admin/novini');
+}
+
+/* ---------------- Документи ---------------- */
+export async function addDocument(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  const file = f.get('file');
+  const link = str(f, 'link', 1000);
+  if (!isFile(file) && !link) throw new Error('Изберете файл или поставете връзка');
+  const url = isFile(file) ? await uploadFile(file, 'dokumenti') : link;
+  const name = str(f, 'name', 300) || (isFile(file) ? file.name.replace(/\.[^.]+$/, '') : link);
+  await d.prepare(`INSERT INTO site_documents (id, name, file_url, academic_year, section, category, sort_order, on_site) VALUES (?,?,?,?,?,?,?,?)`)
+    .bind(crypto.randomUUID(), name, url, opt(f, 'academic_year', 20), str(f, 'section', 60) || 'internal', opt(f, 'category', 60), num(f, 'sort_order'), f.get('on_site') === '1' ? 1 : 0).run();
+  revalidatePath('/', 'layout');
+}
+
+export async function deleteDocument(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  const id = str(f, 'id', 60);
+  const row = await d.prepare('SELECT file_url FROM site_documents WHERE id = ?').bind(id).first<{ file_url: string }>();
+  if (row) { await deleteFile(row.file_url); await d.prepare('DELETE FROM site_documents WHERE id = ?').bind(id).run(); }
+  revalidatePath('/', 'layout');
+}
+
+/* ---------------- Галерия ---------------- */
+export async function createAlbum(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  const title = str(f, 'title', 200);
+  if (!title) throw new Error('Липсва заглавие');
+  const id = crypto.randomUUID();
+  await d.prepare('INSERT INTO gallery_albums (id, title, event_date) VALUES (?,?,?)').bind(id, title, opt(f, 'event_date', 10)).run();
+  redirect(`/admin/galeriya/${id}`);
+}
+
+export async function updateAlbum(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  await d.prepare('UPDATE gallery_albums SET title=?, event_date=?, sort_order=? WHERE id=?')
+    .bind(str(f, 'title', 200), opt(f, 'event_date', 10), num(f, 'sort_order'), str(f, 'id', 60)).run();
+  revalidatePath('/', 'layout');
+}
+
+export async function addPhotos(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  const album = str(f, 'album_id', 60);
+  const max = await d.prepare('SELECT COALESCE(MAX(sort_order), 0) AS m FROM gallery_photos WHERE album_id = ?').bind(album).first<{ m: number }>();
+  let n = max?.m ?? 0;
+  let firstUrl: string | null = null;
+  for (const p of f.getAll('photos')) {
+    if (!isFile(p)) continue;
+    const url = await uploadFile(p, 'galeriya');
+    firstUrl ??= url;
+    await d.prepare('INSERT INTO gallery_photos (id, album_id, photo_url, sort_order) VALUES (?,?,?,?)').bind(crypto.randomUUID(), album, url, ++n).run();
+  }
+  // първата качена снимка става корица, ако албумът още няма
+  if (firstUrl) await d.prepare('UPDATE gallery_albums SET cover_url = ? WHERE id = ? AND cover_url IS NULL').bind(firstUrl, album).run();
+  revalidatePath('/', 'layout');
+}
+
+export async function photoAction(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  const id = str(f, 'id', 60);
+  const p = await d.prepare('SELECT album_id, photo_url FROM gallery_photos WHERE id = ?').bind(id).first<{ album_id: string; photo_url: string }>();
+  if (!p) return;
+  const what = str(f, 'do', 20);
+  if (what === 'cover') {
+    await d.prepare('UPDATE gallery_albums SET cover_url = ? WHERE id = ?').bind(p.photo_url, p.album_id).run();
+  } else if (what === 'caption') {
+    await d.prepare('UPDATE gallery_photos SET caption = ? WHERE id = ?').bind(opt(f, 'caption', 300), id).run();
+  } else if (what === 'delete') {
+    await deleteFile(p.photo_url);
+    await d.prepare('DELETE FROM gallery_photos WHERE id = ?').bind(id).run();
+    await d.prepare('UPDATE gallery_albums SET cover_url = NULL WHERE id = ? AND cover_url = ?').bind(p.album_id, p.photo_url).run();
+  }
+  revalidatePath('/', 'layout');
+}
+
+export async function deleteAlbum(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  const id = str(f, 'id', 60);
+  const { results } = await d.prepare('SELECT photo_url FROM gallery_photos WHERE album_id = ?').bind(id).all<{ photo_url: string }>();
+  for (const r of results ?? []) await deleteFile(r.photo_url);
+  await d.batch([
+    d.prepare('DELETE FROM gallery_photos WHERE album_id = ?').bind(id),
+    d.prepare('DELETE FROM gallery_albums WHERE id = ?').bind(id),
+  ]);
+  revalidatePath('/', 'layout');
+  redirect('/admin/galeriya');
+}
+
+/* ---------------- Събития ---------------- */
+export async function addEvent(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  const title = str(f, 'title', 200);
+  const date = str(f, 'event_date', 10);
+  if (!title || !date) throw new Error('Липсва заглавие или дата');
+  await d.prepare('INSERT INTO site_events (id, title, event_date, event_time, location, description) VALUES (?,?,?,?,?,?)')
+    .bind(crypto.randomUUID(), title, date, opt(f, 'event_time', 20), opt(f, 'location', 200), opt(f, 'description', 2000)).run();
+  revalidatePath('/', 'layout');
+}
+
+export async function deleteEvent(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  await d.prepare('DELETE FROM site_events WHERE id = ?').bind(str(f, 'id', 60)).run();
+  revalidatePath('/', 'layout');
+}
