@@ -33,7 +33,7 @@ export default async function SitePageView({ params }: Props) {
   const page = await getPage(slug);
   if (!page && !group) notFound();
 
-  const children = slug === 'proekti' ? await getChildPages('proekti') : [];
+  const children = page && !slug.includes('/') ? await getChildPages(slug) : [];
   // документи за тази страница (от админ панела) — показват се по учебни години и групи заедно с текста
   const docs = page ? await getDocuments(slug, true) : [];
   const parent = slug.includes('/') ? await getPage(slug.split('/')[0]) : null;
@@ -54,7 +54,7 @@ export default async function SitePageView({ params }: Props) {
           <div className={`wrap${section ? ' page-layout' : ''}`}>
             <div>
               {parent && <p className="page-back"><a href={'/' + parent.slug}>← {parent.title}</a></p>}
-              <PageBody body={page ? stripTitle(page.body || '', page.title) : ''} docs={docs} />
+              <PageBody body={page ? dropChildLinks(stripTitle(page.body || '', page.title), children.map((c) => c.slug)) : ''} docs={docs} />
             </div>
             {section && (
               <nav className={`page-side tone-${section.tone}`} aria-label={`Раздел „${section.label}“`}>
@@ -76,7 +76,14 @@ export default async function SitePageView({ params }: Props) {
         <section className="section tint">
           <div className="wrap">
             <h2 style={{ marginBottom: 20 }}>Проекти и програми</h2>
-            <LinkList items={children.map((c) => ({ t: c.title, href: '/' + c.slug, icon: 'bulb' }))} />
+            <div className="proj-cards">
+              {children.map((c, i) => (
+                <a key={c.slug} href={'/' + c.slug} className="proj-card" style={{ ['--i' as string]: i } as React.CSSProperties}>
+                  <span className="pc-img">{c.photo ? <img src={c.photo} alt="" loading="lazy" /> : <span className="pc-noimg" aria-hidden="true" />}</span>
+                  <span className="pc-t">{c.title}</span>
+                </a>
+              ))}
+            </div>
           </div>
         </section>
       )}
@@ -154,6 +161,17 @@ function DocGroups({ docs }: { docs: DocRow[] }) {
       ))}
     </div>
   );
+}
+
+// Връзките към подстраниците стоят като карти отдолу — не ги повтаряме в текста.
+function dropChildLinks(body: string, slugs: string[]) {
+  if (!slugs.length) return body;
+  const set = new Set(slugs.map((x) => '/' + x));
+  return body
+    .split('\n')
+    .filter((l) => { const m = l.trim().match(/^(?:[-*]\s+)?\[[^\]]+\]\(([^)\s]+)\)$/); return !(m && set.has(m[1])); })
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n');
 }
 
 // Старите страници често започват със същото заглавие като страницата — не го повтаряме.

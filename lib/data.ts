@@ -184,7 +184,13 @@ export async function getPage(slug: string): Promise<SitePage | null> {
   return { ...r, photos: Array.isArray(ph) ? ph.filter((x): x is string => typeof x === 'string') : [] };
 }
 
-export async function getChildPages(prefix: string): Promise<{ slug: string; title: string }[]> {
+// Подстраниците (напр. проектите под „Проекти“) — с първата им снимка за картата.
+export async function getChildPages(prefix: string): Promise<{ slug: string; title: string; photo: string | null }[]> {
   noStore();
-  return all('SELECT slug, title FROM site_pages WHERE slug LIKE ? ORDER BY sort', prefix + '/%');
+  const rows = await all<{ slug: string; title: string; photos: string }>('SELECT slug, title, photos FROM site_pages WHERE slug LIKE ? ORDER BY sort', prefix + '/%');
+  return rows.map((r) => {
+    const ph = json<unknown>(r.photos, []);
+    const first = Array.isArray(ph) ? ph.find((x): x is string => typeof x === 'string') : undefined;
+    return { slug: r.slug, title: r.title, photo: first ?? null };
+  });
 }
