@@ -1,0 +1,92 @@
+# Пуска сайта в Cloudflare при всяка промяна в main (или ръчно от Actions → Run workflow).
+# Нужни са две тайни в GitHub (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
+# По желание и тайните на сайта (вж. .env.example) — прехвърлят се сами в Cloudflare.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      seed:
+        description: 'Зареди наново страниците от стария сайт (изтрива промените по тях в админа)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Проверка на тайните
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Липсват CLOUDFLARE_API_TOKEN или CLOUDFLARE_ACCOUNT_ID в Settings → Secrets → Actions"
+            exit 1
+          fi
+
+      - name: База D1 (създава се, ако я няма)
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="souvalchidol") | .uuid')
+          if [ -z "$id" ]; then
+            npx wrangler d1 create souvalchidol
+            id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="souvalchidol") | .uuid')
+          fi
+          echo "D1: $id"
+          sed -i "s/PLACEHOLDER-SET-AFTER-d1-create/$id/" wrangler.jsonc
+
+      - name: Хранилище R2 (създава се, ако го няма)
+        run: |
+          if ! npx wrangler r2 bucket info souvalchidol-files >/dev/null 2>&1; then
+            npx wrangler r2 bucket create souvalchidol-files
+          fi
+
+      - name: Схема на базата
+        run: npx wrangler d1 migrations apply souvalchidol --remote
+
+      - name: Съдържание от стария сайт (само при празна база или ръчно)
+        run: |
+          n=$(npx wrangler d1 execute souvalchidol --remote --json --command "SELECT COUNT(*) AS n FROM site_pages" | jq -r '.[0].results[0].n')
+          if [ "$n" = "0" ] || [ "${{ inputs.seed }}" = "true" ]; then
+            npx wrangler d1 execute souvalchidol --remote --file seed/old-site.sql
+          else
+            echo "Страниците вече са заредени ($n), пропускам."
+          fi
+
+      - name: Build и пускане
+        run: npm run deploy
+
+      - name: Тайни на сайта
+        env:
+          GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+          GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+          GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+          CONTACT_TO: ${{ secrets.CONTACT_TO }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ACCESS_TEAM_DOMAIN: ${{ secrets.ACCESS_TEAM_DOMAIN }}
+          ACCESS_AUD: ${{ secrets.ACCESS_AUD }}
+          ADMIN_DOMAIN: ${{ secrets.ADMIN_DOMAIN }}
+          ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
+        run: |
+          jq -n 'env | with_entries(select(.key | IN("GMAIL_CLIENT_ID","GMAIL_CLIENT_SECRET","GMAIL_REFRESH_TOKEN","CONTACT_TO","MAIL_FROM","GEMINI_API_KEY","ACCESS_TEAM_DOMAIN","ACCESS_AUD","ADMIN_DOMAIN","ADMIN_EMAILS")) | select(.value != ""))' > /tmp/secrets.json
+          if [ "$(jq length /tmp/secrets.json)" -gt 0 ]; then
+            npx wrangler secret bulk /tmp/secrets.json
+          else
+            echo "Няма зададени тайни на сайта."
+          fi
+          rm -f /tmp/secrets.json
