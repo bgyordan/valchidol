@@ -1,0 +1,74 @@
+/* =====================================================================
+   Страница на новина — широка
+   Заглавие голямо и леко; корицата през цялата ширина; под нея текстът (удобна дължина на реда)
+   и снимките един до друг. На телефон — едно под друго.
+   ===================================================================== */
+.article-hero { background: var(--paper); padding-block: clamp(40px, 5vw, 88px) 0; }
+.article-hero h1 { font-size: calc(clamp(32px, 4.4vw, 76px) * var(--fs-ui, 1)); line-height: 1.05; font-weight: 300; letter-spacing: -.03em; max-width: 18em; }
+.article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: clamp(18px, 2vw, 28px); font-size: calc(15px * var(--fs, 1)); color: var(--ink-2); }
+.article-meta .tag { background: var(--sky); color: var(--ink); }
+.article-cover { margin: clamp(32px, 4vw, 56px) 0 0; border-radius: var(--r-lg); overflow: hidden; aspect-ratio: 21 / 9; }
+.article-cover img { width: 100%; height: 100%; object-fit: cover; }
+
+.art-grid { display: grid; grid-template-columns: minmax(0, 46rem); justify-content: center; gap: clamp(40px, 6vw, 120px); padding-block: clamp(40px, 5vw, 80px) clamp(56px, 6vw, 104px); }
+.art-grid.has-photos { grid-template-columns: minmax(0, 46rem) minmax(0, 1fr); justify-content: stretch; align-items: start; }
+.art-text { min-width: 0; }
+.art-photos { position: sticky; top: calc(var(--header-h) + 24px); min-width: 0; }
+.art-photos-h { display: flex; align-items: baseline; gap: 10px; font: 300 calc(clamp(22px, 1.8vw, 30px) * var(--fs-ui, 1))/1.1 var(--display); letter-spacing: -.02em; margin-bottom: 18px; }
+.art-photos-h span { font: 500 calc(14px * var(--fs, 1)) var(--body); color: var(--ink-3); }
+
+.article-body { padding: 0; }
+.article-lead { font-size: calc(clamp(20px, 1.6vw, 25px) * var(--fs-ui, 1)); line-height: 1.55; color: var(--ink); font-weight: 400; margin-bottom: clamp(24px, 2.4vw, 36px); padding: 0; border: 0; }
+.article-body p { font-size: calc(clamp(17.5px, 1.15vw, 19.5px) * var(--fs-ui, 1)); line-height: 1.8; color: var(--ink-2); }
+.article-body > * + * { margin-top: 20px; }
+.article-body h2 { font-size: calc(clamp(24px, 2vw, 32px) * var(--fs-ui, 1)); line-height: 1.2; font-weight: 300; letter-spacing: -.02em; color: var(--ink); margin-top: clamp(36px, 3vw, 52px); }
+.article-body ul { padding-left: 1.3em; font-size: calc(18px * var(--fs, 1)); line-height: 1.7; color: var(--ink-2); }
+.article-body li + li { margin-top: 6px; }
+.article-body li::marker { color: var(--ink-3); }
+.article-body strong { color: var(--ink); font-weight: 650; }
+.article-body a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 980px) {
+  .art-grid.has-photos { grid-template-columns: 1fr; }
+  .art-photos { position: static; }
+  .article-cover { aspect-ratio: 16 / 10; }
+}
+
+/* Бутон Сподели */
+.share-box { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding-top: 24px; margin-top: clamp(32px, 3vw, 48px); border-top: 1px solid var(--line); }
+.share-label { font-weight: 600; color: var(--ink-2); }
+.share-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; font-weight: 600; font-size: calc(15px * var(--fs, 1)); border: 0; border-radius: var(--r-pill); cursor: pointer; }
+.share-btn svg { width: 17px; height: 17px; }
+.share-btn.fb { background: var(--ink); color: var(--paper); }
+.share-btn.native { background: var(--sky); color: var(--ink); }
+.article-cover.is-zoom{display:block;width:100%;padding:0;border:none;cursor:zoom-in;position:relative;background:none}
+.article-cover.is-zoom img{transition:transform .8s cubic-bezier(.2,.7,.3,1)}
+.article-cover.is-zoom:hover img{transform:scale(1.03)}
+.ac-badge{position:absolute;right:16px;bottom:16px;display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;font-size:calc(13px * var(--fs, 1));font-weight:600;color:#fff;background:rgba(15,30,25,.45);backdrop-filter:blur(10px)}
+.ac-badge svg{width:16px;height:16px}
+
+/* Мозайка от снимки в статията */
+.ng-grid{display:grid;grid-template-columns:repeat(2,1fr);grid-auto-rows:clamp(120px,11vw,220px);gap:clamp(8px,.8vw,14px);margin:0}
+.ng-grid.n1{grid-template-columns:1fr;grid-auto-rows:clamp(240px,24vw,460px)}
+.ng-grid.n2{grid-template-columns:1fr;grid-auto-rows:clamp(200px,17vw,320px)}
+.ng-grid.n3 .ng-item:first-child{grid-column:span 2;grid-row:span 2}
+.ng-grid.n4 .ng-item:first-child,.ng-grid.n5 .ng-item:first-child,.ng-grid.n6 .ng-item:first-child,.ng-grid.n7 .ng-item:first-child{grid-column:span 2;grid-row:span 2}
+.ng-grid.n4 .ng-item:nth-child(4),.ng-grid.n6 .ng-item:nth-child(6){grid-column:span 2}
+.ng-item{position:relative;padding:0;border:none;border-radius:14px;overflow:hidden;cursor:zoom-in;background:var(--sky);box-shadow:0 10px 26px -16px rgba(21,50,74,.3);transition:transform .35s,box-shadow .35s}
+.ng-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.2,.7,.3,1)}
+.ng-item:hover{transform:translateY(-3px);box-shadow:0 20px 40px -20px rgba(21,50,74,.4)}
+.ng-item:hover img{transform:scale(1.06)}
+.ng-zoom{position:absolute;inset:0;display:grid;place-items:center;background:rgba(15,40,30,.28);opacity:0;transition:opacity .3s}
+.ng-zoom svg{width:34px;height:34px;color:#fff;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
+.ng-item:hover .ng-zoom{opacity:1}
+.ng-more{position:absolute;inset:0;display:grid;place-items:center;font-size:calc(30px * var(--fs, 1));font-weight:600;color:#fff;background:rgba(15,40,30,.55);backdrop-filter:blur(2px);transition:background .3s}
+.ng-item:hover .ng-more{background:rgba(15,40,30,.4)}
+@media(max-width:600px){
+  .ng-grid{grid-template-columns:1fr 1fr !important;grid-auto-rows:130px;gap:8px}
+  .ng-grid .ng-item{grid-column:auto !important;grid-row:auto !important}
+  .ng-grid .ng-item:first-child{grid-column:span 2 !important;grid-row:span 2 !important}
+  .ng-grid.n1{grid-auto-rows:220px}
+  .ng-grid.n4 .ng-item:last-child,.ng-grid.n6 .ng-item:last-child{grid-column:span 2 !important}
+}
+

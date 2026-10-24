@@ -1,0 +1,60 @@
+.page-hero { position: relative; isolation: isolate; background: var(--paper); padding-block: clamp(44px, 6vw, 96px) clamp(28px, 3vw, 44px); overflow: hidden; border-bottom: 1px solid var(--line); }
+
+/* Меки кръгове на фона — същият език като на началната: голям небесносин диск, по-малък зеленикав и малък оранжев.
+   Подредбата (ph-v0…v3) се избира по адреса на страницата, за да не изглеждат всички вътрешни еднакво. */
+.page-hero { --pd-b: #E4F3FE; --pd-g: color-mix(in srgb, var(--brand-lime) 13%, var(--paper)); --pd-o: color-mix(in srgb, var(--brand-orange) 12%, var(--paper)); }
+:root[data-theme="dark"] .page-hero, .dark .page-hero { --pd-b: #132B40; --pd-g: color-mix(in srgb, var(--brand-lime) 8%, var(--paper)); --pd-o: color-mix(in srgb, var(--brand-orange) 8%, var(--paper)); }
+.ph-dots { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.ph-dots span { position: absolute; border-radius: 50%; aspect-ratio: 1; animation: pd-in .9s cubic-bezier(.2, .7, .2, 1) both; }
+.ph-dots .pd-g { animation-delay: .12s; }
+.ph-dots .pd-o { animation-delay: .24s; }
+@keyframes pd-in { from { opacity: 0; scale: .9; } }
+@media (prefers-reduced-motion: reduce) { .ph-dots span { animation: none; } }
+.pd-b { --c: var(--pd-b); --hi: #FFFFFF; --lo: color-mix(in srgb, var(--brand-blue) 24%, var(--paper)); }
+.pd-g { --c: var(--pd-g); --hi: #FFFFFF; --lo: color-mix(in srgb, var(--brand-lime) 30%, var(--paper)); }
+.pd-o { --c: var(--pd-o); --hi: #FFFFFF; --lo: color-mix(in srgb, var(--brand-orange) 28%, var(--paper)); }
+:root[data-theme="dark"] .pd-b, .dark .pd-b { --hi: #1E4260; --lo: #0B1C2B; }
+:root[data-theme="dark"] .pd-g, .dark .pd-g { --hi: color-mix(in srgb, var(--brand-lime) 22%, var(--paper)); --lo: color-mix(in srgb, var(--brand-lime) 3%, #050C12); }
+:root[data-theme="dark"] .pd-o, .dark .pd-o { --hi: color-mix(in srgb, var(--brand-orange) 22%, var(--paper)); --lo: color-mix(in srgb, var(--brand-orange) 3%, #050C12); }
+
+/* Вторите кръгове стоят в дясната ~третина, за да не минават под текста.
+   v0 — синият диск горе вдясно, зеленият диагонално надолу-наляво, оранжевото още по-наляво */
+.ph-v0 .pd-b { width: clamp(280px, 36vw, 560px); right: max(-9vw, -150px); top: -38%; }
+.ph-v0 .pd-g { width: clamp(110px, 12vw, 190px); right: clamp(200px, 22vw, 360px); bottom: -14%; }
+.ph-v0 .pd-o { width: clamp(38px, 4vw, 64px); right: clamp(330px, 34vw, 560px); bottom: 22%; }
+/* v1 — зеленият е големият, синият по-малък под него */
+.ph-v1 .pd-g { width: clamp(260px, 32vw, 500px); right: max(-7vw, -120px); top: -30%; }
+.ph-v1 .pd-b { width: clamp(120px, 13vw, 210px); right: clamp(190px, 22vw, 360px); bottom: -22%; }
+.ph-v1 .pd-o { display: none; }
+/* v2 — синият диск ниско вдясно, малък оранжев горе над него, зеленикав встрани */
+.ph-v2 .pd-b { width: clamp(300px, 38vw, 600px); right: max(-11vw, -180px); bottom: -55%; }
+.ph-v2 .pd-o { width: clamp(44px, 4.6vw, 74px); right: clamp(150px, 20vw, 320px); top: 12%; }
+.ph-v2 .pd-g { width: clamp(90px, 9vw, 150px); right: clamp(260px, 27vw, 440px); top: -10%; }
+/* v3 — два кръга един до друг по диагонал: син и зеленикав */
+.ph-v3 .pd-b { width: clamp(240px, 30vw, 470px); right: max(-6vw, -100px); top: -24%; }
+.ph-v3 .pd-g { width: clamp(130px, 14vw, 230px); right: clamp(180px, 21vw, 340px); top: 46%; }
+.ph-v3 .pd-o { display: none; }
+.ph-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; align-items: center; }
+.page-hero.has-photo .ph-grid { grid-template-columns: minmax(0, 1.4fr) minmax(0, .8fr); }
+.ph-crumb { display: flex; flex-wrap: wrap; gap: 8px; font-size: calc(14.5px * var(--fs, 1)); color: var(--ink-2); margin-bottom: 14px; }
+.ph-crumb a:hover { color: var(--tone-ink); text-decoration: underline; text-underline-offset: 3px; }
+.ph-crumb span:last-child { color: var(--tone-ink); font-weight: 600; }
+.page-hero h1 { max-width: 16em; }
+.ph-intro { margin-top: 16px; font-size: calc(clamp(17px, 1.5vw, 19.5px) * var(--fs-ui, 1)); color: var(--ink-2); max-width: 40em; }
+.ph-text::before { content: ""; display: block; width: 56px; height: 6px; border-radius: 6px; background: var(--tone); margin-bottom: 22px; }
+
+/* снимка в кръг с полумесец в цвета на раздела — като в логото */
+.ph-photo { position: relative; width: min(100%, 300px); aspect-ratio: 1; justify-self: end; }
+.ph-photo::before { content: ""; position: absolute; inset: -6%; border-radius: 50%; background: var(--tone); transform: translate(6%, -5%); }
+.ph-photo img { position: relative; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 6px solid var(--paper); }
+
+@media (max-width: 760px) {
+  /* на телефон — по-малки, само горе вдясно, за да не пречат на текста */
+  .page-hero .ph-dots .pd-b { width: 200px; right: -60px; top: -60px; bottom: auto; }
+  .page-hero .ph-dots .pd-g { width: 58px; right: 150px; top: 6px; bottom: auto; }
+  .page-hero .ph-dots .pd-o { display: none; }
+  .page-hero.ph-v1 .ph-dots .pd-g { width: 200px; right: -60px; top: -60px; }
+  .page-hero.ph-v1 .ph-dots .pd-b { width: 58px; right: 150px; top: 6px; }
+  .page-hero.has-photo .ph-grid { grid-template-columns: 1fr; }
+  .ph-photo { width: 200px; justify-self: start; order: -1; margin-left: 8px; }
+}

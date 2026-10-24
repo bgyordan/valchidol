@@ -1,8 +1,12 @@
-node_modules/
-build/
-dist/
-coverage/
+node_modules
+.next
+out
+.env*.local
 .DS_Store
 *.log
-.env*
-!.env.example
+.vercel
+next-env.d.ts
+
+# локални/генерирани (lock-ът се прави на сървъра)
+package-lock.json
+*.tsbuildinfo

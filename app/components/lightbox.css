@@ -1,0 +1,51 @@
+/* ===== Общ преглед на снимки (новини + галерия) ===== */
+.lb{position:fixed;inset:0;z-index:400;display:flex;flex-direction:column;background:#0b1512;color:#fff;animation:lbIn .28s ease;user-select:none}
+.lb-bg{position:absolute;inset:-40px;background-size:cover;background-position:center;filter:blur(40px) saturate(1.2) brightness(.35);transform:scale(1.1);transition:background-image .4s;pointer-events:none}
+.lb>*:not(.lb-bg){position:relative}
+
+.lb-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px}
+.lb-count{display:flex;align-items:baseline;gap:2px;font-size:calc(14px * var(--fs, 1));color:rgba(255,255,255,.6);min-width:0}
+.lb-count strong{font-size:calc(17px * var(--fs, 1));font-weight:600;color:#fff}
+.lb-title{font-style:normal;margin-left:14px;padding-left:14px;border-left:1px solid rgba(255,255,255,.2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:rgba(255,255,255,.75)}
+.lb-actions{display:flex;gap:8px;flex-shrink:0}
+.lb-btn{width:42px;height:42px;border-radius:50%;border:none;display:grid;place-items:center;background:rgba(255,255,255,.1);backdrop-filter:blur(10px);color:#fff;cursor:pointer;transition:background .2s,transform .25s}
+.lb-btn:hover{background:rgba(255,255,255,.22)}
+.lb-btn:last-child:hover{transform:rotate(90deg)}
+.lb-btn svg{width:20px;height:20px}
+
+.lb-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;gap:18px;padding:0 22px}
+.lb-figure{position:relative;margin:0;flex:1;min-width:0;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.lb-figure img{max-width:100%;max-height:calc(100% - 40px);object-fit:contain;border-radius:10px;box-shadow:0 30px 90px -20px rgba(0,0,0,.7);opacity:0;transform:scale(.97);transition:opacity .35s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
+.lb-figure img.is-in{opacity:1;transform:none}
+.lb-figure figcaption{margin-top:12px;font-size:calc(14px * var(--fs, 1));line-height:1.5;color:rgba(255,255,255,.85);text-align:center;max-width:640px}
+.lb-spin{position:absolute;width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,.15);border-top-color:#22B37A;animation:lbSpin .8s linear infinite}
+
+.lb-nav{flex-shrink:0;width:52px;height:52px;border-radius:50%;border:none;display:grid;place-items:center;background:rgba(255,255,255,.1);backdrop-filter:blur(10px);color:#fff;cursor:pointer;transition:background .2s,transform .2s}
+.lb-nav:hover{background:rgba(255,255,255,.22)}
+.lb-nav.prev:hover{transform:translateX(-3px)}
+.lb-nav.next:hover{transform:translateX(3px)}
+.lb-nav svg{width:26px;height:26px}
+
+.lb-thumbs{display:flex;gap:8px;padding:14px 22px 20px;overflow-x:auto;scrollbar-width:none;justify-content:safe center}
+.lb-thumbs::-webkit-scrollbar{display:none}
+.lb-thumb{flex-shrink:0;width:64px;height:48px;padding:0;border:2px solid transparent;border-radius:8px;overflow:hidden;cursor:pointer;background:none;opacity:.45;transition:opacity .2s,border-color .2s,transform .2s}
+.lb-thumb:hover{opacity:.85}
+.lb-thumb.on{opacity:1;border-color:#22B37A;transform:translateY(-2px)}
+.lb-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+
+@keyframes lbIn{from{opacity:0}to{opacity:1}}
+@keyframes lbSpin{to{transform:rotate(360deg)}}
+
+@media(max-width:640px){
+  .lb-top{padding:12px 14px}
+  .lb-title{display:none}
+  .lb-stage{padding:0 6px;gap:0}
+  .lb-nav{position:absolute;z-index:2;width:40px;height:40px;background:rgba(0,0,0,.35)}
+  .lb-nav.prev{left:8px}
+  .lb-nav.next{right:8px}
+  .lb-thumb{width:52px;height:40px}
+  .lb-thumbs{padding:10px 12px 16px}
+}
+@media(prefers-reduced-motion:reduce){
+  .lb,.lb-figure img{animation:none;transition:none}
+}
