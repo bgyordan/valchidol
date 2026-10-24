@@ -1,0 +1,45 @@
+# Еднократно: файловете на документите от стария хостинг (souvalchidol.com/files) и от Google Drive → R2.
+# Actions → Document files → Run workflow. „probe“ само проверява по няколко файла.
+name: Document files
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'probe = проверка, run = копиране и смяна на адресите'
+        type: choice
+        options: [probe, run]
+        default: probe
+      which:
+        description: 'кои файлове'
+        type: choice
+        options: [all, souvalchidol, drive]
+        default: all
+
+jobs:
+  files:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Адресите от базата
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="souvalchidol") | .uuid')
+          sed -i "s/PLACEHOLDER-SET-AFTER-d1-create/$id/" wrangler.jsonc
+          mkdir -p out
+          npx wrangler d1 execute souvalchidol --remote --json --command "SELECT DISTINCT file_url FROM site_documents" > out/docs.json
+          npx wrangler d1 execute souvalchidol --remote --json --command "SELECT body FROM site_pages" > out/pages.json
+          npx wrangler d1 execute souvalchidol --remote --json --command "SELECT content FROM site_news" > out/news.json
+      - name: Сваляне и качване в R2
+        run: python3 -I scripts/migrate-files.py ${{ inputs.mode }} ${{ inputs.which }} out/docs.json out/pages.json out/news.json
+      - name: Смяна на адресите в базата
+        if: inputs.mode == 'run'
+        run: npx wrangler d1 execute souvalchidol --remote --file out/files.sql
