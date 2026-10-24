@@ -1,33 +1,67 @@
 import { getNews, getUpcomingEvents, getHeroPhotos, getLatestPhotos, getPagePhotos, fmtDate, monthShort } from '../lib/data';
-import { daisyPolygon } from '../lib/flower';
-
-// две различни, неправилни маргаритки за снимките в блока „За училището“ + цветната „сянка“ зад всяка (друго цвете)
-const DAISY_A = daisyPolygon(9, 7), DAISY_A_BACK = daisyPolygon(9, 1007);
-const DAISY_B = daisyPolygon(11, 21), DAISY_B_BACK = daisyPolygon(11, 1021);
 import { getSiteInfo } from '../lib/siteinfo';
+import { NAV } from './components/nav';
 import PhotoBand from './components/PhotoBand';
-import HeroPointer from './components/HeroPointer';
-import HeroKnockout from './components/HeroKnockout';
-import SectionJoin from './components/SectionJoin';
-import Handprints, { HandDefs } from './components/Handprints';
-import '@fontsource-variable/caveat';
 import './home.css';
 
-// Снимките на началната: от настройката hero_photos; ако няма — от най-новите новини.
+// Начална страница — подредена като на повечето средни училища:
+// снимка с името и главните действия → бързи връзки → новини и събития → числа →
+// „за ученици / родители / учители“ → за училището → галерия → документи → контакт.
+// Снимките в началото са от настройката hero_photos; ако няма — от най-новите новини.
 
-const STEPS = [
-  { title: 'Първи клас', text: 'Прием на ученици в първи клас. Заповедта за плана-прием, графикът и нужните документи са на страница „Прием“.' },
-  { title: 'Пети клас', text: 'Прием в пети клас за учениците, които продължават в прогимназиален етап.' },
-  { title: 'Осми клас', text: 'Профилирани и професионални паралелки след седми клас. Графикът на дейностите по приема се обявява със заповед.' },
+const ICON = {
+  book: 'M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3zM4 17a3 3 0 0 1 3-3h11',
+  cap: 'M2 9l10-5 10 5-10 5zM6 11v5c3 2.5 9 2.5 12 0v-5M22 9v6',
+  seat: 'M4 20v-6h16v6M6 14V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v6M9 10h6',
+  form: 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h6',
+  folder: 'M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z',
+  phone: 'M5 3h3l2 5-2.5 1.5a11 11 0 0 0 7 7L16 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z',
+  pin: 'M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
+  clock: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2',
+  mail: 'M3 6h18v12H3zM3 7l9 6 9-6',
+  alert: 'M12 3 2 21h20zM12 10v5M12 18h.01',
+  student: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0',
+  family: 'M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM2 20a6 6 0 0 1 12 0M13 20a4.5 4.5 0 0 1 9 0',
+  teacher: 'M3 4h18v11H3zM8 21l4-6 4 6M7 8h6M7 11h4',
+};
+
+function Ic({ d }: { d: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={d} /></svg>
+  );
+}
+
+const QUICK = [
+  { t: 'Е-дневник', d: 'Школо', href: 'https://app.shkolo.bg/', icon: ICON.book, ext: true },
+  { t: 'Прием', d: '1., 5. и 8. клас', href: '/priem', icon: ICON.cap },
+  { t: 'Свободни места', d: 'Към момента', href: '/svobodni-mesta', icon: ICON.seat },
+  { t: 'Заявления и бланки', d: 'Образци', href: '/zayavleniya', icon: ICON.form },
+  { t: 'Документи', d: 'Правилници и планове', href: '/dokumentatsiya', icon: ICON.folder },
+  { t: 'Контакти', d: 'Телефони и адрес', href: '/kontakti', icon: ICON.phone },
 ];
 
-// стратегическите цели от „Мисия и цели“
-const VALUES = [
-  { t: 'Знания и умения', d: 'Непрекъснато усъвършенстване на знанията и уменията по общообразователните, техническите и специалните предмети и учебната практика.' },
-  { t: 'Уважение', d: 'Поведение, основано на взаимно зачитане на достойнството, толерантност и национална идентичност.' },
-  { t: 'Квалифицирани учители', d: 'Условия за постоянно повишаване на квалификацията на преподавателите.' },
-  { t: 'Проекти', d: 'Участие в общински, национални програми и проекти на Европейския съюз.' },
+const STATS = [
+  { n: '1880', t: 'година на основаване' },
+  { n: '1–12', t: 'клас – от началото до дипломата' },
+  { n: '22', t: 'класни стаи и кабинети' },
+  { n: '2', t: 'физкултурни салона' },
 ];
+
+// връзките за всяка група посетители — от главното меню
+const pick = (hrefs: string[]) => {
+  const all = NAV.flatMap((g) => g.links);
+  return hrefs.map((h) => all.find((l) => l.href === h)).filter((l): l is NonNullable<typeof l> => !!l);
+};
+const AUDIENCE = [
+  { t: 'Ученици', tone: 'lime', icon: ICON.student, href: '/za-uchenika', text: 'Изпити, стипендии, занимания по интереси и ученическо самоуправление.',
+    links: pick(['/za-uchenika', '/stipendii', '/zanimaniya-po-interesi', '/sfo', '/parlament']) },
+  { t: 'Родители', tone: 'orange', icon: ICON.family, href: '/za-roditeli', text: 'Прием, заявления, правила в училище и всичко за пътуванията и безопасността.',
+    links: pick(['/priem', '/zayavleniya', '/za-roditeli', '/roditelski-klub', '/patuvaniya']) },
+  { t: 'Учители', tone: 'blue', icon: ICON.teacher, href: '/za-uchitelya', text: 'Вътрешни документи, критерии и организиране на изяви и екскурзии.',
+    links: pick(['/za-uchitelya', '/kriterii-dtv', '/profesionalni-obshtnosti', '/organizirane-na-ekskurzii', '/dokumentatsiya']) },
+];
+
+const VALUES = ['Знания и умения по всички предмети', 'Взаимно уважение и толерантност', 'Квалифицирани учители', 'Национални и европейски проекти'];
 
 const DOCS = [
   { t: 'Документация', d: 'Правилници, планове, графици', href: '/dokumentatsiya', icon: 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h6' },
@@ -38,187 +72,190 @@ const DOCS = [
   { t: 'Административни услуги', d: 'Удостоверения и заявления', href: '/administrativni-uslugi', icon: 'M4 5h16v11H9l-5 4z' },
 ];
 
+const isPhoto = (u: string) => u !== '/logo.svg';
+
 export default async function Home() {
-  const [hero, news, recent, events, photos, info, chosenAbout] = await Promise.all([getHeroPhotos(), getNews(4), getNews(12), getUpcomingEvents(3), getLatestPhotos(8), getSiteInfo(), getPagePhotos('nachalna-pod')]);
+  const [hero, news, recent, events, photos, info, chosenAbout] = await Promise.all([
+    getHeroPhotos(), getNews(4), getNews(12), getUpcomingEvents(4), getLatestPhotos(8), getSiteInfo(), getPagePhotos('nachalna-pod'),
+  ]);
   // без избрани снимки → корици на последните новини
   const covers = recent.map((n) => n.cover_url).filter((u): u is string => !!u);
-  const h = [0, 1, 2].map((i) => hero[i] || covers[i] || '/logo.svg');
-  const auto = [...photos.map((p) => p.photo_url), ...covers.slice(3)].filter((u) => !h.includes(u) && !chosenAbout.includes(u));
-  const about = [0, 1].map((i) => chosenAbout[i] || auto.shift() || h[i]);
+  const slides = [0, 1, 2].map((i) => hero[i] || covers[i]).filter((u): u is string => !!u);
+  const auto = [...photos.map((p) => p.photo_url), ...covers.slice(3)].filter((u) => !slides.includes(u) && !chosenAbout.includes(u));
+  const about = [0, 1].map((i) => chosenAbout[i] || auto.shift() || slides[i] || '/logo.svg');
   const [feat, ...rest] = news;
 
   return (
     <div className="home">
-      <HandDefs />
-      {/* верига от ефирни кръгове: големият синкав диск в херото → по-малък зелен → още по-малък оранжев,
-          диагонално надолу и наляво, без да се допират; продължава и под първия екран */}
-      <div className="home-dots" aria-hidden="true"><span className="hd-g" /><span className="hd-o" /></div>
-      {/* ===== Герой: светъл. Вляво мотото, вдясно детелината от трите снимки от админ панела върху бледонебесен диск.
-           Отдолу — трите неща, за които идва родителят: услуги, записване, контакт. ===== */}
-      <section className="hx">
-        <HeroPointer />
-        <HeroKnockout />
-        <div className="wrap hx-grid">
-          <div className="hx-in">
-            <h1 className="hx-title">
-              <span className="hx-script"><span>Училище с традиции –</span></span>
-              <span className="hx-line"><span>училище с бъдеще.</span></span>
-            </h1>
-            <p className="hx-lead">
-              Средно училище „Васил Левски“ – гр. Вълчи дол. От 1880 година учим децата на града,
-              от първи до дванадесети клас.
-            </p>
-          </div>
-
-          <div className="hx-clover" aria-hidden="true">
-            {/* „Пътят“: пунктирна пътека, която се изкачва през трите снимки — всяка стъпка по-голяма от предишната */}
-            <svg className="pt-path" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <path className="pt-d" d="M-6 92 C4 64 14 34 26 24 S 44 10 52 8 S 60 2 68 -8" />
-              <path className="pt-m" d="M-4 98 C0 74 6 54 12 46 S 28 26 36 22 S 52 6 60 -6" />
-            </svg>
-            {[0, 1, 2].map((i) => (
-              // снимка 1 от админ панела е най-голямата (последната стъпка), 3 — най-малката
-              <div key={i} className={`pt-ph pt-${i + 1}`}><img src={h[2 - i]} alt="" /></div>
-            ))}
-            <i className="pt-mark pt-m1" />
-            <i className="pt-mark pt-m2" />
-            <div className="cl-core"><span /></div>
-          </div>
+      {/* ===== Герой: снимки от училище (сменят се плавно), името и главните действия ===== */}
+      <section className={`hh${slides.length ? '' : ' no-photo'}`} aria-labelledby="hh-title">
+        <div className={`hh-slides n${slides.length}`} aria-hidden="true">
+          {slides.map((src, i) => <img key={src + i} src={src} alt="" fetchPriority={i === 0 ? 'high' : 'low'} />)}
         </div>
-
-        <nav className="wrap hx-paths" aria-label="За родители">
-          <a href="/priem" className="hp-blue">
-            <i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5zM6 11v5c3 2.5 9 2.5 12 0v-5M22 9v6" /></svg></i>
-            <span><b>Прием</b><span>Първи, пети и осми клас – заповеди, графици и документи</span></span>
-          </a>
-          <a href="/zayavleniya" className="hp-orange">
-            <i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h6" /></svg></i>
-            <span><b>Заявления и бланки</b><span>Образци за родители и ученици</span></span>
-          </a>
-          <a href="/kontakti" className="hp-lime">
-            <i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 3h3l2 5-2.5 1.5a11 11 0 0 0 7 7L16 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z" /></svg></i>
-            <span><b>Свържете се с нас</b><span>{info.contact.phone}, деловодство {info.hours.admin} ч.</span></span>
-          </a>
-        </nav>
-      </section>
-
-      {/* ===== Какво правим: голямо изречение + снимки 2 и 3 ===== */}
-      <section className="hs hx-about" aria-labelledby="about-h">
-        <Handprints slots={[{ top: '6%', left: '-2%' }, { bottom: '4%', left: '30%' }, { top: '2%', right: '1%' }]} />
-        <div className="wrap ab-grid">
-          <div className="ab-text">
-            <h2 id="about-h" className="ab-say">
-              Над 140 години история и училище, в което всеки ученик може да намери своя път.
-            </h2>
-            <p>
-              Сградата от 1987 г. има 22 класни стаи, ученически стол, актова зала, два физкултурни салона
-              и работилници. Учениците имат профилирани и професионални паралелки, проекти, клубове и училищни вестници.
-            </p>
-            <a className="more" href="/istoriya">Историята на училището</a>
-          </div>
-          <div className="ab-photos" aria-hidden="true">
-            <div className="ab-fl ab-p1" style={{ ['--fl' as any]: DAISY_A, ['--fl2' as any]: DAISY_A_BACK }}><span /><img src={about[0]} alt="" loading="lazy" /></div>
-            <div className="ab-fl ab-p2" style={{ ['--fl' as any]: DAISY_B, ['--fl2' as any]: DAISY_B_BACK }}><span /><img src={about[1]} alt="" loading="lazy" /></div>
+        <div className="wrap hh-in">
+          <p className="hh-kicker">Средно училище · гр. Вълчи дол · от 1880 г.</p>
+          <h1 id="hh-title">СУ „Васил Левски“</h1>
+          <p className="hh-motto">Училище с традиции – училище с бъдеще.</p>
+          <div className="btn-row">
+            <a className="btn btn-primary" href="/priem">Прием на ученици</a>
+            <a className="btn hh-ghost" href="/za-uchilishteto">За училището</a>
           </div>
         </div>
       </section>
 
-      <SectionJoin from="var(--paper)" flip />
+      {/* ===== Бързи връзки — най-търсеното, като плочки върху долния ръб на снимката ===== */}
+      <nav className="wrap hq" aria-label="Бързи връзки">
+        {QUICK.map((q) => (
+          <a key={q.href} href={q.href} {...(q.ext ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+            <span className="hq-ic"><Ic d={q.icon} /></span>
+            <b>{q.t}</b>
+            <small>{q.d}</small>
+          </a>
+        ))}
+      </nav>
 
-      {/* ===== Записване: истинска последователност I–III, на плътно оранжево ===== */}
-      <section className="hs hx-steps" aria-labelledby="priem-h">
-        <Handprints count={2} slots={[{ top: '10%', right: '4%' }, { top: '6%', right: '22%' }, { bottom: '8%', right: '6%' }, { bottom: '4%', right: '30%' }]} />
-        <div className="wrap">
-          <div className="hs-head">
-            <h2 id="priem-h">Прием на ученици</h2>
-            <p>Приемаме ученици в първи, пети и осми клас. Всичко за приема за новата учебна година е на едно място.</p>
-          </div>
-          <ol className="hx-steplist">
-            {STEPS.map((s, i) => (
-              <li key={s.title}>
-                <span className="hx-n" aria-hidden="true">{['I', 'II', 'III'][i]}</span>
-                <h3>{s.title}</h3>
-                <p>{s.text}</p>
-              </li>
-            ))}
-          </ol>
-          <a className="btn btn-ink" href="/priem">Всичко за приема</a>
-        </div>
-      </section>
-
-      <SectionJoin from="var(--sky)" />
+      {/* ===== Важно — постоянна обява за правилата ===== */}
+      <div className="wrap">
+        <a className="hh-alert" href="/za-roditeli">
+          <span className="hh-alert-ic"><Ic d={ICON.alert} /></span>
+          <span><b>Важно:</b> правила за използване на мобилни устройства в училище и за превенция на рисковото поведение.</span>
+          <span className="hh-alert-go">Прочетете</span>
+        </a>
+      </div>
 
       {/* ===== Новини + събития ===== */}
-      <section className="hs tone-lime" aria-labelledby="news-h">
+      <section className="hs" aria-labelledby="news-h">
         <div className="wrap">
-          <div className="hs-head row">
-            <h2 id="news-h">Новини от училище</h2>
+          <div className="hs-head">
+            <h2 id="news-h">Новини</h2>
             <a className="more" href="/novini">Всички новини</a>
           </div>
-          {!feat ? (
-            <p className="empty">Скоро тук ще има новини от училище.</p>
-          ) : (
-            <div className="hn-grid">
-              {/* водеща новина — снимка и текст един до друг (като в новинарските сайтове), с мек кръг зад снимката */}
-              <a className="hn-feat" href={`/novini/${feat.slug}`}>
-                <div className="hn-img">
-                  {feat.cover_url ? <img src={feat.cover_url} alt="" /> : <span className="hn-noimg" />}
-                </div>
-                <div className="hn-ftext">
-                  <p className="hn-meta"><span className="tag">{feat.category}</span> <time>{fmtDate(feat.published_at)}</time></p>
-                  <h3>{feat.title}</h3>
-                  {feat.excerpt && <p className="hn-ex">{feat.excerpt}</p>}
-                  <span className="hn-read">Прочетете</span>
-                </div>
-              </a>
-
-              <div className="hn-events">
-                <h3>Предстоящи събития</h3>
-                {events.length === 0 ? (
-                  <p className="muted">Няма обявени събития в момента.</p>
-                ) : (
-                  <ul>
-                    {events.map((e) => (
-                      <li key={e.id}>
-                        <span className="ev-day"><b>{new Date(e.event_date).getDate()}</b>{monthShort(e.event_date)}</span>
-                        <span>
-                          <b>{e.title}</b>
-                          {(e.event_time || e.location) && (
-                            <small>{[e.event_time && `${e.event_time} ч.`, e.location].filter(Boolean).join(', ')}</small>
-                          )}
-                        </span>
+          <div className="hn">
+            {!feat ? (
+              <p className="empty">Скоро тук ще има новини от училище.</p>
+            ) : (
+              <div className="hn-news">
+                <a className="hn-feat" href={`/novini/${feat.slug}`}>
+                  <span className="hn-img">{feat.cover_url ? <img src={feat.cover_url} alt="" /> : <span className="hn-noimg" />}</span>
+                  <span className="hn-body">
+                    <span className="hn-meta"><span className="tag">{feat.category}</span><time>{fmtDate(feat.published_at)}</time></span>
+                    <b className="hn-title">{feat.title}</b>
+                    {feat.excerpt && <span className="hn-ex">{feat.excerpt}</span>}
+                  </span>
+                </a>
+                {rest.length > 0 && (
+                  <ul className="hn-list">
+                    {rest.map((n) => (
+                      <li key={n.id}>
+                        <a href={`/novini/${n.slug}`}>
+                          <span className="hn-thumb">{n.cover_url ? <img src={n.cover_url} alt="" loading="lazy" /> : <span className="hn-noimg" />}</span>
+                          <span>
+                            <time>{fmtDate(n.published_at)}</time>
+                            <b>{n.title}</b>
+                          </span>
+                        </a>
                       </li>
                     ))}
                   </ul>
                 )}
-                <a className="more" href="/sabitiya">Всички събития</a>
               </div>
+            )}
 
-              {rest.length > 0 && (
-                <ul className="hn-cards">
-                  {rest.map((n, i) => (
-                    <li key={n.id} className={`hn-c${i % 3}`}>
-                      <a href={`/novini/${n.slug}`}>
-                        <span className="hn-cimg">
-                          {n.cover_url ? <img src={n.cover_url} alt="" loading="lazy" /> : <span className="hn-noimg" />}
-                        </span>
-                        <time>{fmtDate(n.published_at)}</time>
-                        <b>{n.title}</b>
-                      </a>
+            <aside className="hn-events" aria-labelledby="ev-h">
+              <h3 id="ev-h">Предстоящи събития</h3>
+              {events.length === 0 ? (
+                <p className="muted">Няма обявени събития в момента.</p>
+              ) : (
+                <ul>
+                  {events.map((e) => (
+                    <li key={e.id}>
+                      <span className="ev-day"><b>{new Date(e.event_date).getDate()}</b>{monthShort(e.event_date)}</span>
+                      <span>
+                        <b>{e.title}</b>
+                        {(e.event_time || e.location) && (
+                          <small>{[e.event_time && `${e.event_time} ч.`, e.location].filter(Boolean).join(', ')}</small>
+                        )}
+                      </span>
                     </li>
                   ))}
                 </ul>
               )}
+              <a className="more" href="/sabitiya">Всички събития</a>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== Училището в числа ===== */}
+      <section className="hstats" aria-label="Училището в числа">
+        <div className="wrap">
+          <ul>
+            {STATS.map((s) => (
+              <li key={s.n}><b>{s.n}</b><span>{s.t}</span></li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ===== За ученици, родители и учители ===== */}
+      <section className="hs" aria-labelledby="aud-h">
+        <div className="wrap">
+          <div className="hs-head">
+            <div>
+              <h2 id="aud-h">Информация за</h2>
+              <p>Най-нужното за всеки — на едно място.</p>
             </div>
-          )}
+          </div>
+          <div className="ha">
+            {AUDIENCE.map((a) => (
+              <div key={a.t} className={`ha-card tone-${a.tone}`}>
+                <div className="ha-top">
+                  <span className="ha-ic"><Ic d={a.icon} /></span>
+                  <h3><a href={a.href}>{a.t}</a></h3>
+                </div>
+                <p>{a.text}</p>
+                <ul>
+                  {a.links.map((l) => <li key={l.href}><a href={l.href}>{l.label}</a></li>)}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== За училището ===== */}
+      <section className="hs tint" aria-labelledby="about-h">
+        <div className="wrap hab">
+          <div className="hab-photos" aria-hidden="true">
+            <img className="hab-p1" src={about[0]} alt="" loading="lazy" />
+            {isPhoto(about[1]) && <img className="hab-p2" src={about[1]} alt="" loading="lazy" />}
+            <span className="hab-year"><b>140+</b>години история</span>
+          </div>
+          <div className="hab-text">
+            <p className="kicker">За училището</p>
+            <h2 id="about-h">Над 140 години училище, в което всеки ученик може да намери своя път</h2>
+            <p>
+              Сградата от 1987 г. има 22 класни стаи, ученически стол, актова зала, два физкултурни салона
+              и работилници. Учениците учат в профилирани и професионални паралелки, участват в проекти, клубове
+              и списват училищни вестници.
+            </p>
+            <ul className="feature-list">
+              {VALUES.map((v) => <li key={v}>{v}</li>)}
+            </ul>
+            <div className="btn-row">
+              <a className="btn btn-dark" href="/istoriya">История</a>
+              <a className="btn btn-ghost" href="/patron-i-simvoli">Патрон и символи</a>
+              <a className="btn btn-ghost" href="/misiya-i-tseli">Мисия и цели</a>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* ===== Галерия ===== */}
       {photos.length > 0 && (
-        <section className="hs hx-gal tone-lime" aria-labelledby="gal-h">
+        <section className="hs" aria-labelledby="gal-h">
           <div className="wrap">
-            <div className="hs-head row">
+            <div className="hs-head">
               <h2 id="gal-h">Моменти от училище</h2>
               <a className="more" href="/galeriya">Към галерията</a>
             </div>
@@ -227,77 +264,43 @@ export default async function Home() {
         </section>
       )}
 
-      <SectionJoin from="var(--paper)" flip />
-
-      {/* ===== Ценности — на тъмно морско синьо ===== */}
-      <section className="hs hx-vals" aria-labelledby="val-h">
-        <Handprints dark count={2} slots={[{ bottom: '-6%', right: '3%' }, { bottom: '-10%', left: '-2%' }, { bottom: '-8%', left: '38%' }]} />
+      {/* ===== Документи и прозрачност ===== */}
+      <section className="hs tint" aria-labelledby="prz-h">
         <div className="wrap">
-          <div className="hs-head row">
-            <h2 id="val-h">Нашите цели</h2>
-            <a className="more" href="/misiya-i-tseli">Мисия и цели</a>
-          </div>
-          <div className="hx-vlist">
-            {VALUES.map((v) => (
-              <div key={v.t} className="hx-v">
-                <h3>{v.t}</h3>
-                <p>{v.d}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <SectionJoin from="var(--j-sea)" />
-
-      {/* ===== Покана за разговор ===== */}
-      <section className="hs hx-ask" aria-labelledby="ask-h">
-        <div className="wrap hd-grid">
-          <h2 id="ask-h">Имате въпрос към училището?</h2>
-          <div>
-            <p>Ръководството приема родители всеки делничен ден от 13:00 до 14:30 ч. Можете и да се обадите или да ни пишете.</p>
-            <div className="btn-row">
-              <a className="btn btn-dark" href={info.contact.phoneHref}>{info.contact.phone}</a>
-              <a className="btn btn-ghost" href="/kontakti">Всички контакти</a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Прозрачност ===== */}
-      <section className="hs tone-blue" aria-labelledby="prz-h">
-        <div className="wrap">
-          <div className="hs-head row">
+          <div className="hs-head">
             <div>
-              <h2 id="prz-h">Документи</h2>
+              <h2 id="prz-h">Документи и прозрачност</h2>
               <p>Правилниците, плановете и отчетите на училището са публични.</p>
             </div>
             <a className="more" href="/dokumenti">Всички документи</a>
           </div>
-          <div className="link-list" style={{ ['--cols' as any]: 3 }}>
+          <div className="hd">
             {DOCS.map((d) => (
-              <a key={d.href} href={d.href}>
-                <span className="ll-ic" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={d.icon} /></svg>
-                </span>
-                <span><span className="ll-t">{d.t}</span><span className="ll-d">{d.d}</span></span>
+              <a key={d.t} href={d.href} {...(d.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+                <span className="hd-ic"><Ic d={d.icon} /></span>
+                <span><b>{d.t}</b><small>{d.d}</small></span>
               </a>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===== Важно за родители ===== */}
-      <section className="hs hx-donate tone-orange" aria-labelledby="imp-h">
-        <Handprints slots={[{ top: '6%', right: '3%' }, { bottom: '2%', right: '18%' }, { top: '14%', left: '46%' }]} />
-        <div className="wrap">
-          <div className="hd-grid">
-            <h2 id="imp-h">Важно: правила за мобилните устройства</h2>
-            <div>
-              <p>За безопасна, спокойна и продуктивна училищна среда са въведени правила за използването на мобилни устройства в часовете и за превенция на рисковото поведение.</p>
-              <a className="btn btn-primary" href="/za-roditeli">Правилата и заповедите</a>
+      {/* ===== Контакт ===== */}
+      <section className="hs hc" aria-labelledby="ask-h">
+        <div className="wrap hc-grid">
+          <div>
+            <h2 id="ask-h">Имате въпрос към училището?</h2>
+            <p>Ръководството приема родители всеки делничен ден от {info.hours.director.replace(/^пон – пет,\s*/, '')} ч. Можете и да се обадите или да ни пишете.</p>
+            <div className="btn-row">
+              <a className="btn btn-primary" href={info.contact.phoneHref}>{info.contact.phone}</a>
+              <a className="btn hh-ghost" href="/kontakti">Всички контакти</a>
             </div>
           </div>
+          <ul className="hc-facts">
+            <li><Ic d={ICON.pin} /><span><b>Адрес</b><a href={info.contact.maps} target="_blank" rel="noopener noreferrer">{info.contact.address}, {info.contact.city}</a></span></li>
+            <li><Ic d={ICON.mail} /><span><b>Имейл</b><a href={`mailto:${info.contact.email}`}>{info.contact.email}</a></span></li>
+            <li><Ic d={ICON.clock} /><span><b>Деловодство</b>{info.hours.admin} ч.</span></li>
+          </ul>
         </div>
       </section>
     </div>

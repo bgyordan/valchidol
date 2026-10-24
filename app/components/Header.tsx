@@ -13,7 +13,7 @@ export default function Header() {
   const [open, setOpen] = useState<string | null>(null); // отворено падащо меню (desktop)
   const [mobile, setMobile] = useState(false);
   const [mobGroup, setMobGroup] = useState<string | null>(null);
-  const [stuck, setStuck] = useState(false); // страницата е превъртяна → капсулата става „стъклена“ и по-ниска
+  const [stuck, setStuck] = useState(false); // страницата е превъртяна → лентата става по-ниска и със сянка
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // затваря менютата при смяна на страница
@@ -57,7 +57,7 @@ export default function Header() {
           <img src="/logo.svg" alt="" width={56} height={56} />
           <span>
             <b>СУ „Васил Левски“</b>
-            <small>гр. Вълчи дол</small>
+            <small>гр. Вълчи дол · от 1880 г.</small>
           </span>
         </a>
 
@@ -81,11 +81,15 @@ export default function Header() {
               >
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
               </button>
-              <div className="sh-panel" hidden={open !== g.href}>
+              <div className={`sh-panel tone-${g.tone}`} hidden={open !== g.href}>
+                <p className="sh-panel-intro">{g.intro}</p>
                 <ul>
                   {g.links.filter((l) => l.href !== g.href).map((l) => (
                     <li key={l.href}>
-                      <a href={l.href} aria-current={pathname === l.href ? 'page' : undefined}>{l.label}</a>
+                      <a href={l.href} aria-current={pathname === l.href ? 'page' : undefined}>
+                        <b>{l.label}</b>
+                        {l.desc && <small>{l.desc}</small>}
+                      </a>
                     </li>
                   ))}
                 </ul>
@@ -98,7 +102,7 @@ export default function Header() {
         {/* листче-иконка за обявата (NoticeNote.tsx я слага тук, когато има активна обява) */}
         <span id="sh-notice-slot" />
         <ThemeToggle />
-        <a href="https://app.shkolo.bg/" className="sh-donate" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={BOOK} /></svg>Дневник</a>
+        <a href="https://app.shkolo.bg/" className="sh-donate" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={BOOK} /></svg>Е-дневник</a>
         <button type="button" className="sh-menu" aria-expanded={mobile} aria-controls="mob-nav" onClick={() => setMobile(!mobile)}>
           {mobile ? 'Затвори' : 'Меню'}
         </button>

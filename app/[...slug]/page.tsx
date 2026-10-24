@@ -42,6 +42,9 @@ export default async function SitePageView({ params }: Props) {
     g.list.push(d);
   }
   const parent = slug.includes('/') ? await getPage(slug.split('/')[0]) : null;
+  // разделът от менюто, в който е страницата — връзките му стоят в страничната колона
+  const navPath = slug.startsWith('proekti/') ? '/proekti' : path;
+  const section = group ? undefined : NAV.find((g) => g.links.some((l) => l.href === navPath));
 
   return (
     <>
@@ -54,11 +57,25 @@ export default async function SitePageView({ params }: Props) {
 
       {page?.body && (
         <section className="section">
-          <div className="wrap">
-            {parent && <p className="page-back"><a href={'/' + parent.slug}>← {parent.title}</a></p>}
-            <div className="prose-block page-body">
-              <RichText text={stripTitle(page.body, page.title)} />
+          <div className={`wrap${section ? ' page-layout' : ''}`}>
+            <div>
+              {parent && <p className="page-back"><a href={'/' + parent.slug}>← {parent.title}</a></p>}
+              <div className="prose-block page-body">
+                <RichText text={stripTitle(page.body, page.title)} />
+              </div>
             </div>
+            {section && (
+              <nav className={`page-side tone-${section.tone}`} aria-label={`Раздел „${section.label}“`}>
+                <p className="page-side-h"><a href={section.href}>{section.label}</a></p>
+                <ul>
+                  {section.links.map((l) => (
+                    <li key={l.href}>
+                      <a href={l.href} aria-current={l.href === navPath ? 'page' : undefined} {...(l.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{l.label}</a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            )}
           </div>
         </section>
       )}

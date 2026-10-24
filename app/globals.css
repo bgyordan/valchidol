@@ -1,8 +1,9 @@
 /* =====================================================================
-   ЦСОП Варна — дизайн система
-   Трите цвята от логото подреждат сайта:
-     оранжево = родители и прием, синьо = центърът и прозрачност, зелено = ежедневие и новини
-   Шрифтове: Unbounded (заглавия) + Sofia Sans (текст, българска кирилица), self-hosted (без Google).
+   СУ „Васил Левски“ – Вълчи дол — дизайн система
+   Класическа визия на средно училище: тъмносиньо (доверие, традиция), червено за главните действия
+   и зелено за ученическото. Трите цвята различават и разделите в менюто:
+     синьо = училището и документите, червено = родители и прием, зелено = ученици и новини.
+   Шрифтове: Golos Text (заглавия) + Sofia Sans (текст, българска кирилица), self-hosted (без Google).
    ===================================================================== */
 
 :root {
@@ -11,63 +12,66 @@
   --fs: 1; --fs-ui: calc(1 + (var(--fs) - 1) * .5);
   /* основа */
   --paper: #FFFFFF;
-  --sky: #EAF6FE;     /* чисто светлосиньо (без сиво) — фон на редуващите се секции */
-  --sky-2: #D5ECFC;
-  --ink: #0C2638;
-  --ink-2: #46596A;
-  --ink-3: #6A7D8D;
-  --line: #DCEAF5;
-  --line-strong: #BCD7EC;
+  --sky: #F1F5F9;     /* светлосив-син фон на редуващите се секции */
+  --sky-2: #E2E9F1;
+  --ink: #14202E;
+  --ink-2: #4A5869;
+  --ink-3: #6B7888;
+  --line: #DFE5EC;
+  --line-strong: #C5CFDA;
 
-  /* трите цвята от логото: запълване / текст върху бяло / мек фон */
-  /* цветовете на логото — само за логото и детелината на началната */
-  --brand-orange: #F39A1E; --brand-lime: #8CC63F; --brand-blue: #1D8BD1;
+  /* училищните цветове */
+  --navy: #0B3A6B; --navy-2: #072849; --navy-soft: #E8EFF7;
+  --red: #B8232B;  --red-soft: #FBEDEE;
+  --green: #2A7A4B; --green-soft: #E7F3EC;
+  --gold: #D9A23A;
+  /* старите имена на цветовете от логото — за обявата, формите и админ панела */
+  --brand-orange: var(--gold); --brand-lime: var(--green); --brand-blue: #1F5FA8;
 
-  /* интерфейсът е монохромен: тъмносиньо мастило, бяло и светлосива мъгла.
-     Старите имена (orange/blue/lime и *-ink/*-soft) остават, но вече сочат към мастилото и мъглата. */
-  --accent: #0C2638;
-  --orange: var(--accent); --orange-ink: var(--accent); --orange-soft: var(--sky);
-  --blue: var(--accent);   --blue-ink: var(--accent);   --blue-soft: var(--sky);
-  --lime: var(--accent);   --lime-ink: var(--accent);   --lime-soft: var(--sky);
+  --accent: var(--navy);
+  --orange: var(--red);   --orange-ink: var(--red);   --orange-soft: var(--red-soft);
+  --blue: var(--navy);    --blue-ink: var(--navy);    --blue-soft: var(--navy-soft);
+  --lime: var(--green);   --lime-ink: var(--green);   --lime-soft: var(--green-soft);
   --on-orange: #FFFFFF;
 
   /* текущ цвят на раздела (задава се с .tone-*) */
-  --tone: var(--accent); --tone-ink: var(--accent); --tone-soft: var(--sky);
+  --tone: var(--navy); --tone-ink: var(--navy); --tone-soft: var(--navy-soft);
 
-  --display: 'Unbounded Variable', 'Unbounded', 'Arial Black', system-ui, sans-serif;
+  --display: 'Golos Text Variable', 'Golos Text', 'Segoe UI', system-ui, sans-serif;
   --body: 'Sofia Sans Variable', 'Sofia Sans', 'Segoe UI', system-ui, sans-serif;
 
-  --r-sm: 10px; --r: 16px; --r-lg: 24px; --r-pill: 999px;
-  --shadow: 0 24px 48px -28px rgba(12, 38, 56, .35);
-  --header-h: 96px;  /* лепкавото меню: капсула 72px + 12px въздух отгоре и отдолу */
-  --topbar-h: 40px;  /* тънкият горен ред (превърта се) */
+  --r-sm: 6px; --r: 10px; --r-lg: 14px; --r-pill: 999px;
+  --shadow: 0 18px 40px -24px rgba(11, 34, 60, .35);
+  --header-h: 84px;
+  --topbar-h: 40px;
 
   /* --- съвместимост със старите имена (за компонентите, които още ги ползват) --- */
   --sans: var(--body); --serif: var(--display);
   --sand: var(--paper); --sand-2: var(--sky); --sand-3: var(--sky-2);
   --card-bg: var(--paper); --card-bg-subtle: var(--paper); --modal-bg: var(--paper); --input-bg: var(--paper);
-  --green: var(--lime-ink); --green-deep: var(--lime-ink); --green-soft: var(--lime-soft); --em-d: var(--lime-ink);
+  --green-deep: var(--green); --em-d: var(--green);
   --clay: var(--orange); --clay-deep: var(--orange-ink); --clay-soft: var(--orange-soft);
   --blue-accent: var(--blue-ink);
-  --shadow-sm: 0 2px 8px rgba(21, 50, 74, .06); --shadow-lg: 0 30px 70px -30px rgba(21, 50, 74, .4);
-  --header-bg: rgba(255, 255, 255, .92); --header-solid: rgba(255, 255, 255, .97);
+  --shadow-sm: 0 2px 8px rgba(11, 34, 60, .06); --shadow-lg: 0 30px 70px -30px rgba(11, 34, 60, .4);
+  --header-bg: rgba(255, 255, 255, .96); --header-solid: rgba(255, 255, 255, .98);
 }
 
 :root[data-theme="dark"], .dark {
-  --paper: #0D1A25; --sky: #12273A; --sky-2: #18324A;
-  --ink: #E6F0F7; --ink-2: #A9BDCC; --ink-3: #87A0B3;
-  --line: #25415A; --line-strong: #31536F;
-  --accent: #E6F0F7;
-  --orange: var(--accent); --orange-ink: var(--accent); --orange-soft: var(--sky);
-  --blue: var(--accent);   --blue-ink: var(--accent);   --blue-soft: var(--sky);
-  --lime: var(--accent);   --lime-ink: var(--accent);   --lime-soft: var(--sky);
-  --on-orange: #0C2638;
+  --paper: #0E1722; --sky: #142131; --sky-2: #1B2C40;
+  --ink: #E8EEF5; --ink-2: #AEBBCA; --ink-3: #8A99AB;
+  --line: #24364B; --line-strong: #31475F;
+  --navy: #8DB8EA; --navy-2: #06111D; --navy-soft: #16273B;
+  --red: #F0868A;  --red-soft: #2A1A1F;
+  --green: #7CCB9B; --green-soft: #132A21;
+  --on-orange: #14202E;
   --shadow: 0 18px 40px -24px rgba(0, 0, 0, .7);
-  --header-bg: rgba(13, 26, 37, .92); --header-solid: rgba(13, 26, 37, .97);
+  --header-bg: rgba(14, 23, 34, .96); --header-solid: rgba(14, 23, 34, .98);
   color-scheme: dark;
 }
 
-.tone-orange, .tone-blue, .tone-lime { --tone: var(--accent); --tone-ink: var(--accent); --tone-soft: var(--sky); }
+.tone-blue   { --tone: var(--navy);  --tone-ink: var(--navy);  --tone-soft: var(--navy-soft); }
+.tone-orange { --tone: var(--red);   --tone-ink: var(--red);   --tone-soft: var(--red-soft); }
+.tone-lime   { --tone: var(--green); --tone-ink: var(--green); --tone-soft: var(--green-soft); }
 
 /* ---------- база ---------- */
 *, *::before, *::after { box-sizing: border-box; }
@@ -89,15 +93,15 @@ button, input, select, textarea { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 6px; }
 
 h1, h2, h3, h4 { font-family: var(--display); color: var(--ink); text-wrap: balance; letter-spacing: -.01em; }
-h1 { font-size: calc(clamp(34px, 4.6vw, 64px) * var(--fs-ui, 1)); line-height: 1.06; font-weight: 300; letter-spacing: -.03em; }
-h2 { font-size: calc(clamp(24px, 2.7vw, 38px) * var(--fs-ui, 1)); line-height: 1.15; font-weight: 400; letter-spacing: -.02em; }
-h3 { font-size: calc(18px * var(--fs, 1)); line-height: 1.32; font-weight: 500; }
-h4 { font-size: calc(16px * var(--fs, 1)); line-height: 1.35; font-weight: 500; }
+h1 { font-size: calc(clamp(30px, 3.6vw, 50px) * var(--fs-ui, 1)); line-height: 1.1; font-weight: 700; letter-spacing: -.02em; }
+h2 { font-size: calc(clamp(24px, 2.3vw, 34px) * var(--fs-ui, 1)); line-height: 1.18; font-weight: 700; letter-spacing: -.015em; }
+h3 { font-size: calc(18px * var(--fs, 1)); line-height: 1.32; font-weight: 600; }
+h4 { font-size: calc(16px * var(--fs, 1)); line-height: 1.35; font-weight: 600; }
 
 /* мрежата расте с екрана: на широк монитор съдържанието стига почти до краищата, а текстът си пази удобната ширина */
-.wrap { max-width: 1880px; margin-inline: auto; padding-inline: clamp(16px, 5vw, 112px); }
+.wrap { max-width: 1320px; margin-inline: auto; padding-inline: clamp(16px, 4vw, 48px); }
 .wrap.narrow, .narrow { max-width: 840px; }
-.wrap-wide { max-width: 1880px; margin-inline: auto; padding-inline: clamp(16px, 5vw, 112px); }
+.wrap-wide { max-width: 1600px; margin-inline: auto; padding-inline: clamp(16px, 4vw, 48px); }
 
 .skip { position: absolute; left: 12px; top: -60px; z-index: 100; background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: var(--r-sm); font-weight: 600; }
 .skip:focus { top: 12px; }
@@ -117,7 +121,7 @@ h4 { font-size: calc(16px * var(--fs, 1)); line-height: 1.35; font-weight: 500; 
 .more:hover { border-bottom-width: 3px; }
 
 /* ---------- бутони ---------- */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; font-size: calc(16px * var(--fs, 1)); line-height: 1.2; padding: 14px 24px; border-radius: var(--r-pill); border: 2px solid transparent; cursor: pointer; transition: transform .15s, background .2s; text-align: center; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; font-size: calc(16px * var(--fs, 1)); line-height: 1.2; padding: 13px 22px; border-radius: var(--r-sm); border: 2px solid transparent; cursor: pointer; transition: transform .15s, background .2s; text-align: center; }
 .btn:hover { transform: translateY(-1px); }
 .btn svg { width: 18px; height: 18px; flex-shrink: 0; }
 .btn-primary, .btn.primary, .btn-warm { background: var(--orange); color: var(--on-orange); }
@@ -367,7 +371,7 @@ html.a11y-links a { text-decoration: underline !important; text-underline-offset
 .db-cats button.on { background: var(--ink); color: var(--paper); }
 .db-cats button.on span { color: inherit; opacity: .7; }
 .db-group + .db-group { margin-top: clamp(40px, 4vw, 64px); }
-.db-group-h { display: flex; align-items: baseline; gap: 12px; font: 300 calc(clamp(22px, 1.8vw, 30px) * var(--fs-ui, 1))/1.15 var(--display); letter-spacing: -.02em; margin-bottom: 14px; }
+.db-group-h { display: flex; align-items: baseline; gap: 12px; font: 700 calc(clamp(20px, 1.6vw, 26px) * var(--fs-ui, 1))/1.15 var(--display); letter-spacing: -.02em; margin-bottom: 14px; }
 .db-group-h span { font: 500 calc(14px * var(--fs, 1)) var(--body); color: var(--ink-3); }
 @media (max-width: 900px) {
   .db-layout { grid-template-columns: 1fr; }
@@ -377,12 +381,12 @@ html.a11y-links a { text-decoration: underline !important; text-underline-offset
 }
 
 /* правни и справочни страници — индекс: заглавие вляво, текст вдясно */
-.wrap.narrow.legal { max-width: 1880px; }
+.wrap.narrow.legal { max-width: 1320px; }
 .legal { gap: 0; }
 .legal > .prose-block { max-width: none; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); column-gap: clamp(32px, 6vw, 120px); row-gap: 0; align-content: start;
   padding-block: clamp(32px, 3.5vw, 56px); border-top: 1px solid var(--line); }
 .legal > .prose-block:first-child { border-top: 0; padding-top: 0; }
-.legal > .prose-block > h2 { grid-column: 1; grid-row: 1 / span 60; align-self: start; margin: 0; font-size: calc(clamp(22px, 1.9vw, 32px) * var(--fs-ui, 1)); font-weight: 300; letter-spacing: -.02em; }
+.legal > .prose-block > h2 { grid-column: 1; grid-row: 1 / span 60; align-self: start; margin: 0; font-size: calc(clamp(20px, 1.7vw, 26px) * var(--fs-ui, 1)); font-weight: 700; letter-spacing: -.02em; }
 .legal > .prose-block > *:not(h2) { grid-column: 2; max-width: 46rem; }
 .legal > .prose-block > .docs-wide, .legal > .prose-block > .db-layout, .legal > .prose-block > .doc-rows { max-width: none; }
 .legal .prose-block > p + p, .legal .prose-block > p + ul, .legal .prose-block > ul + p { margin-top: 14px; }
@@ -414,16 +418,6 @@ html.a11y-links a { text-decoration: underline !important; text-underline-offset
 .pr-before li a { color: var(--ink); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 .pr-before .pr-q { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line-strong); font-weight: 600; }
 
-/* ===== 3D сфери — кръговете на фона (голям син диск, зелен, оранжев) =====
-   Всеки кръг задава --c (основен цвят), --hi (отблясък) и --lo (по-наситения ръб).
-   Светлината идва горе-вляво: отблясък там, ръбът долу-вдясно е малко по-тъмен, а под кръга има мека сянка. */
-.hx::before, .home-dots span, .ph-dots span {
-  background: radial-gradient(circle at 33% 27%, var(--hi) 0%, color-mix(in srgb, var(--hi) 45%, var(--c)) 15%, var(--c) 50%, var(--lo) 100%);
-  box-shadow: 0 1.3vw 2.4vw -.8vw var(--sh, color-mix(in srgb, var(--lo) 80%, transparent)); }
-:root[data-theme="dark"] .hx::before, .dark .hx::before,
-:root[data-theme="dark"] .home-dots span, .dark .home-dots span,
-:root[data-theme="dark"] .ph-dots span, .dark .ph-dots span { --sh: rgba(0, 0, 0, .5); }
-
 /* текстови страници от базата */
 .page-body { max-width: 860px; }
 .page-body h2 { margin-top: 32px; }
@@ -432,3 +426,14 @@ html.a11y-links a { text-decoration: underline !important; text-underline-offset
 .page-body ul { margin: 8px 0; }
 .page-body a { overflow-wrap: anywhere; }
 .page-back { margin-bottom: 16px; }
+
+/* текстова страница + странична колона с връзките от раздела */
+.page-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 300px); gap: clamp(32px, 5vw, 80px); align-items: start; }
+.page-side { position: sticky; top: calc(var(--header-h) + 24px); border: 1px solid var(--line); border-top: 4px solid var(--tone); border-radius: var(--r); background: var(--paper); padding: 8px; }
+.page-side-h { font: 700 calc(17px * var(--fs, 1))/1.3 var(--display); padding: 12px 12px 10px; }
+.page-side-h a:hover { color: var(--tone-ink); }
+.page-side ul { list-style: none; display: grid; gap: 1px; }
+.page-side li a { display: block; padding: 9px 12px; border-radius: var(--r-sm); font-size: calc(15.5px * var(--fs, 1)); line-height: 1.35; color: var(--ink-2); }
+.page-side li a:hover { background: var(--sky); color: var(--ink); }
+.page-side li a[aria-current] { background: var(--tone-soft); color: var(--tone-ink); font-weight: 700; box-shadow: inset 3px 0 0 var(--tone); }
+@media (max-width: 960px) { .page-layout { grid-template-columns: 1fr; } .page-side { position: static; } }
