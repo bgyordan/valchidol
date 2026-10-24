@@ -60,3 +60,29 @@ export async function moveHomePhoto(f: FormData) {
   [list[i], list[j]] = [list[j], list[i]];
   await write(t, list, all);
 }
+
+// Текстове, бързи връзки и числа → site_settings.home. Празните редове се махат.
+const tx = (f: FormData, k: string, max = 300) => String(f.get(k) ?? '').trim().slice(0, max);
+
+export async function saveHomeTexts(f: FormData) {
+  await requireAdmin();
+  const d = await db();
+  if (!d) throw new Error('Няма връзка с базата');
+  const quick = [], stats = [];
+  for (let i = 0; i < 12; i++) {
+    const t = tx(f, `q_t${i}`, 60), href = tx(f, `q_h${i}`, 500);
+    if (t && href) quick.push({ t, href, icon: tx(f, `q_i${i}`, 20) || 'folder' });
+  }
+  for (let i = 0; i < 8; i++) {
+    const n = tx(f, `s_n${i}`, 20);
+    if (n) stats.push({ n, t: tx(f, `s_t${i}`, 80) });
+  }
+  const home = {
+    kicker: tx(f, 'kicker', 120), title: tx(f, 'title', 120), motto: tx(f, 'motto', 200),
+    about_title: tx(f, 'about_title', 200), about_text: tx(f, 'about_text', 3000),
+    quick, stats,
+  };
+  await d.prepare(`INSERT INTO site_settings (key, value) VALUES ('home', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`)
+    .bind(JSON.stringify(home)).run();
+  revalidatePath('/', 'layout');
+}

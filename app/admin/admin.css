@@ -65,3 +65,9 @@
 .adm-msg.ok { background: #e8f5e9; color: #1e6b2a; }
 .adm-table details form { display: flex; gap: 8px; margin: 6px 0; flex-wrap: wrap; }
 .adm-table details input { font: inherit; padding: 6px 8px; border: 1px solid var(--line-strong); border-radius: 8px; }
+
+/* Меню */
+.adm-menu-row { grid-template-columns: 80px 1fr 160px; }
+.adm-menu-row.sub { padding-left: 24px; }
+.adm-menu-row input[type=number] { width: 100%; }
+@media (max-width: 600px) { .adm-menu-row { grid-template-columns: 64px 1fr; } .adm-menu-row.sub { padding-left: 0; } }

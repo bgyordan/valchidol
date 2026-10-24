@@ -1,6 +1,7 @@
 import { getHeroPhotos, getPagePhotos } from '../../../lib/data';
 import Confirm from '../Confirm';
-import { addHomePhotos, moveHomePhoto, removeHomePhoto } from './actions';
+import { getHome, QUICK_ICONS } from '../../../lib/home';
+import { addHomePhotos, moveHomePhoto, removeHomePhoto, saveHomeTexts } from './actions';
 
 const GROUPS = [
   { target: 'hero', title: 'Снимки най-горе (голямата снимка)', note: 'Показват се първите 3 и се сменят плавно. Най-добре хоризонтални снимки, поне 1600 px широки.' },
@@ -9,6 +10,9 @@ const GROUPS = [
 
 export default async function AdminFrontPage() {
   const lists = { hero: await getHeroPhotos(), 'nachalna-pod': await getPagePhotos('nachalna-pod') };
+  const h = await getHome();
+  const quick = [...h.quick, ...Array(Math.max(0, 9 - h.quick.length)).fill({ t: '', href: '', icon: 'folder' })].slice(0, 12);
+  const stats = [...h.stats, ...Array(Math.max(0, 6 - h.stats.length)).fill({ n: '', t: '' })].slice(0, 8);
   return (
     <>
       <h1>Начална страница</h1>
@@ -43,6 +47,52 @@ export default async function AdminFrontPage() {
           </section>
         );
       })}
+
+      <section>
+        <h2>Текстове</h2>
+        <form action={saveHomeTexts} className="adm-form">
+          <fieldset>
+            <legend>Най-горе</legend>
+            <label>Ред над името<input name="kicker" defaultValue={h.kicker} /></label>
+            <label>Име<input name="title" defaultValue={h.title} /></label>
+            <label>Мото<input name="motto" defaultValue={h.motto} /></label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Бързи връзки (плочките под снимката)</legend>
+            <p className="adm-muted">Редът тук е редът на сайта. Празен ред не се показва. Връзка към друг сайт започва с https://</p>
+            {quick.map((q, i) => (
+              <div key={i} className="adm-row">
+                <label>{i + 1}. Надпис<input name={`q_t${i}`} defaultValue={q.t} /></label>
+                <label>Връзка<input name={`q_h${i}`} defaultValue={q.href} placeholder="/priem или https://" /></label>
+                <label>Иконка
+                  <select name={`q_i${i}`} defaultValue={q.icon}>
+                    {QUICK_ICONS.map((o) => <option key={o.key} value={o.key}>{o.label}</option>)}
+                  </select>
+                </label>
+              </div>
+            ))}
+          </fieldset>
+
+          <fieldset>
+            <legend>Училището в числа</legend>
+            {stats.map((s, i) => (
+              <div key={i} className="adm-row">
+                <label>{i + 1}. Число<input name={`s_n${i}`} defaultValue={s.n} /></label>
+                <label>Текст<input name={`s_t${i}`} defaultValue={s.t} /></label>
+              </div>
+            ))}
+          </fieldset>
+
+          <fieldset>
+            <legend>„За училището“</legend>
+            <label>Заглавие<input name="about_title" defaultValue={h.about_title} /></label>
+            <label>Текст (нов абзац с празен ред)<textarea name="about_text" rows={5} defaultValue={h.about_text} /></label>
+          </fieldset>
+
+          <p><button type="submit" className="adm-btn primary">Запази текстовете</button></p>
+        </form>
+      </section>
     </>
   );
 }

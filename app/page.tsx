@@ -1,6 +1,7 @@
 import { getNews, getUpcomingEvents, getHeroPhotos, getLatestPhotos, getPagePhotos, fmtDate, monthShort } from '../lib/data';
 import { getSiteInfo } from '../lib/siteinfo';
-import { NAV } from './components/nav';
+import { getNav } from '../lib/menu';
+import { getHome } from '../lib/home';
 import PhotoBand from './components/PhotoBand';
 import './home.css';
 
@@ -9,7 +10,7 @@ import './home.css';
 // „за ученици / родители / учители“ → за училището → галерия → документи → контакт.
 // Снимките в началото са от настройката hero_photos; ако няма — от най-новите новини.
 
-const ICON = {
+const ICON: Record<string, string> = {
   book: 'M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3zM4 17a3 3 0 0 1 3-3h11',
   cap: 'M2 9l10-5 10 5-10 5zM6 11v5c3 2.5 9 2.5 12 0v-5M22 9v6',
   seat: 'M4 20v-6h16v6M6 14V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v6M9 10h6',
@@ -31,34 +32,19 @@ function Ic({ d }: { d: string }) {
   );
 }
 
-const QUICK = [
-  { t: 'Е-дневник', href: 'https://app.shkolo.bg/', icon: ICON.book, ext: true },
-  { t: 'Прием', href: '/priem', icon: ICON.cap },
-  { t: 'Свободни места', href: '/svobodni-mesta', icon: ICON.seat },
-  { t: 'Заявления и бланки', href: '/zayavleniya', icon: ICON.form },
-  { t: 'Документи', href: '/dokumentatsiya', icon: ICON.folder },
-  { t: 'Контакти', href: '/kontakti', icon: ICON.phone },
-];
-
-const STATS = [
-  { n: '1880', t: 'година на основаване' },
-  { n: '1–12', t: 'клас – от началото до дипломата' },
-  { n: '22', t: 'класни стаи и кабинети' },
-  { n: '2', t: 'физкултурни салона' },
-];
-
 // връзките за всяка група посетители — от главното меню
-const pick = (hrefs: string[]) => {
-  const all = NAV.flatMap((g) => g.links);
+type Nav = Awaited<ReturnType<typeof getNav>>;
+const pick = (nav: Nav, hrefs: string[]) => {
+  const all = nav.flatMap((g) => g.links);
   return hrefs.map((h) => all.find((l) => l.href === h)).filter((l): l is NonNullable<typeof l> => !!l);
 };
-const AUDIENCE = [
+const audience = (nav: Nav) => [
   { t: 'Ученици', tone: 'lime', icon: ICON.student, href: '/za-uchenika',
-    links: pick(['/za-uchenika', '/stipendii', '/zanimaniya-po-interesi', '/sfo', '/parlament']) },
+    links: pick(nav, ['/za-uchenika', '/stipendii', '/zanimaniya-po-interesi', '/sfo', '/parlament']) },
   { t: 'Родители', tone: 'orange', icon: ICON.family, href: '/za-roditeli',
-    links: pick(['/priem', '/zayavleniya', '/za-roditeli', '/roditelski-klub', '/patuvaniya']) },
+    links: pick(nav, ['/priem', '/zayavleniya', '/za-roditeli', '/roditelski-klub', '/patuvaniya']) },
   { t: 'Учители', tone: 'blue', icon: ICON.teacher, href: '/za-uchitelya',
-    links: pick(['/za-uchitelya', '/kriterii-dtv', '/profesionalni-obshtnosti', '/organizirane-na-ekskurzii', '/dokumentatsiya']) },
+    links: pick(nav, ['/za-uchitelya', '/kriterii-dtv', '/profesionalni-obshtnosti', '/organizirane-na-ekskurzii', '/dokumentatsiya']) },
 ];
 
 const VALUES = ['Знания и умения по всички предмети', 'Взаимно уважение и толерантност', 'Квалифицирани учители', 'Национални и европейски проекти'];
@@ -75,9 +61,10 @@ const DOCS = [
 const isPhoto = (u: string) => u !== '/logo.svg';
 
 export default async function Home() {
-  const [hero, news, recent, events, photos, info, chosenAbout] = await Promise.all([
-    getHeroPhotos(), getNews(4), getNews(12), getUpcomingEvents(4), getLatestPhotos(8), getSiteInfo(), getPagePhotos('nachalna-pod'),
+  const [hero, news, recent, events, photos, info, chosenAbout, home, nav] = await Promise.all([
+    getHeroPhotos(), getNews(4), getNews(12), getUpcomingEvents(4), getLatestPhotos(8), getSiteInfo(), getPagePhotos('nachalna-pod'), getHome(), getNav(),
   ]);
+  const AUDIENCE = audience(nav);
   // без избрани снимки → корици на последните новини
   const covers = recent.map((n) => n.cover_url).filter((u): u is string => !!u);
   const slides = [0, 1, 2].map((i) => hero[i] || covers[i]).filter((u): u is string => !!u);
@@ -93,9 +80,9 @@ export default async function Home() {
           {slides.map((src, i) => <img key={src + i} src={src} alt="" fetchPriority={i === 0 ? 'high' : 'low'} />)}
         </div>
         <div className="wrap hh-in">
-          <p className="hh-kicker">Средно училище · гр. Вълчи дол · от 1880 г.</p>
-          <h1 id="hh-title">СУ „Васил Левски“</h1>
-          <p className="hh-motto">Училище с традиции – училище с бъдеще.</p>
+          <p className="hh-kicker">{home.kicker}</p>
+          <h1 id="hh-title">{home.title}</h1>
+          <p className="hh-motto">{home.motto}</p>
           <div className="btn-row">
             <a className="btn btn-primary" href="/priem">Прием на ученици</a>
             <a className="btn hh-ghost" href="/za-uchilishteto">За училището</a>
@@ -105,9 +92,9 @@ export default async function Home() {
 
       {/* ===== Бързи връзки — най-търсеното, като плочки върху долния ръб на снимката ===== */}
       <nav className="wrap hq" aria-label="Бързи връзки">
-        {QUICK.map((q, i) => (
-          <a key={q.href} href={q.href} style={{ ['--i' as any]: i }} {...(q.ext ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
-            <span className="hq-ic"><Ic d={q.icon} /></span>
+        {home.quick.map((q, i) => (
+          <a key={q.href + i} href={q.href} style={{ ['--i' as any]: i }} {...(q.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+            <span className="hq-ic"><Ic d={ICON[q.icon] || ICON.folder} /></span>
             <b>{q.t}</b>
           </a>
         ))}
@@ -189,8 +176,8 @@ export default async function Home() {
       <section className="hstats" aria-label="Училището в числа">
         <div className="wrap">
           <ul>
-            {STATS.map((s) => (
-              <li key={s.n}><b>{s.n}</b><span>{s.t}</span></li>
+            {home.stats.map((s, i) => (
+              <li key={s.n + i}><b>{s.n}</b><span>{s.t}</span></li>
             ))}
           </ul>
         </div>
@@ -230,12 +217,8 @@ export default async function Home() {
           </div>
           <div className="hab-text">
             <p className="kicker">За училището</p>
-            <h2 id="about-h">Над 140 години училище, в което всеки ученик може да намери своя път</h2>
-            <p>
-              Сградата от 1987 г. има 22 класни стаи, ученически стол, актова зала, два физкултурни салона
-              и работилници. Учениците учат в профилирани и професионални паралелки, участват в проекти, клубове
-              и списват училищни вестници.
-            </p>
+            <h2 id="about-h">{home.about_title}</h2>
+            {home.about_text.split(/\n+/).map((t, i) => <p key={i}>{t}</p>)}
             <ul className="feature-list">
               {VALUES.map((v) => <li key={v}>{v}</li>)}
             </ul>
