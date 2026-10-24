@@ -1,132 +1,124 @@
-/* ===== Горен ред + плаващо меню =====
-   Най-горе: тънък тъмносин ред със служебното (телефон, имейл, часове, сигнали). Превърта се със страницата.
-   Под него: менюто като бяла заоблена „капсула“, отделена от ръба. Тя лепне при превъртане,
-   става по-ниска и полупрозрачна с размиване (.is-stuck).
-   Разделите са с нормални букви; всеки се отваря в обикновен списък в една колона. */
+/* ===== Горен ред + меню =====
+   Най-горе: тънък тъмносин ред със служебното (телефон, имейл, часове, бързи връзки). Превърта се със страницата.
+   Под него: бяла лента на цялата ширина с герба и името вляво и менюто вдясно. Лепне при превъртане
+   и става по-ниска (.is-stuck). Падащите менюта показват връзките в две колони с кратко описание. */
 
 /* --- горният ред --- */
-.topbar { --tb-bg: #0C2638; background: var(--tb-bg); color: #DCE7F0; font-size: calc(14px * var(--fs-ui, 1)); line-height: 1; }
-:root[data-theme="dark"] .topbar, .dark .topbar { --tb-bg: #081521; }
+.topbar { --tb-bg: var(--navy-2); background: var(--tb-bg); color: #D6E1EE; font-size: calc(14px * var(--fs-ui, 1)); line-height: 1; }
+:root[data-theme="dark"] .topbar, .dark .topbar { --tb-bg: #06101B; }
 .tb-in { height: var(--topbar-h); display: flex; align-items: center; justify-content: space-between; gap: 12px 28px; }
-.tb-group { display: flex; align-items: center; gap: 8px clamp(16px, 2vw, 32px); min-width: 0; }
+.tb-group { display: flex; align-items: center; gap: 8px clamp(16px, 2vw, 28px); min-width: 0; }
 .tb-item { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; color: inherit; }
 .tb-item svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; opacity: .75; flex-shrink: 0; }
 a.tb-item:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+.tb-sep { width: 1px; height: 16px; background: rgba(214, 225, 238, .25); }
 .topbar :focus-visible { outline-color: #fff; }
 /* „Към съдържанието“ — скрито, докато не се стигне с клавиатурата */
 .site-head .skip { top: auto; bottom: 100%; translate: 0 -200px; }
 .site-head .skip:focus { translate: 0 calc(100% + 12px); }
 
-/* --- капсулата --- */
-.site-head { position: sticky; top: 0; z-index: 50; padding-block: 12px; color: var(--ink); pointer-events: none; }
-.site-head > * { pointer-events: auto; }
-.sh-bar { display: flex; align-items: center; gap: clamp(12px, 1.4vw, 24px); height: 72px; padding: 0 10px 0 12px;
-  background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-pill);
-  box-shadow: 0 10px 30px -22px rgba(12, 38, 56, .35);
-  transition: height .35s cubic-bezier(.2, .8, .2, 1), background .3s, box-shadow .3s, border-color .3s; }
-.site-head.is-stuck .sh-bar { height: 62px; background: color-mix(in srgb, var(--paper) 92%, transparent); border-color: color-mix(in srgb, var(--line) 70%, transparent);
-  backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4); box-shadow: 0 18px 40px -20px rgba(12, 38, 56, .4); }
-/* .wrap дава страничния отстъп на капсулата; самата капсула е с вътрешен */
-.site-head > .wrap.sh-bar { margin-inline: auto; width: calc(100% - 2 * clamp(16px, 5vw, 112px)); max-width: calc(1880px - 2 * clamp(16px, 5vw, 112px)); padding-inline: 12px 10px; }
+/* --- лентата --- */
+.site-head { position: sticky; top: 0; z-index: 50; background: var(--header-solid); color: var(--ink); border-bottom: 1px solid var(--line);
+  border-top: 4px solid var(--red); transition: box-shadow .3s; }
+.site-head.is-stuck { box-shadow: 0 10px 30px -18px rgba(11, 34, 60, .35); }
+.sh-bar { display: flex; align-items: center; gap: clamp(12px, 1.4vw, 22px); height: var(--header-h); transition: height .3s cubic-bezier(.2, .8, .2, 1); }
+.site-head.is-stuck .sh-bar { height: 68px; }
 
 .sh-brand { display: flex; align-items: center; gap: 14px; min-width: 0; margin-right: auto; flex-shrink: 0; }
-.sh-brand img { width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0; transition: width .35s, height .35s; }
-.site-head.is-stuck .sh-brand img { width: 44px; height: 44px; }
-.sh-brand b { display: block; font-family: var(--display); font-weight: 500; font-size: calc(18px * var(--fs-ui, 1)); line-height: 1.15; letter-spacing: -.015em; white-space: nowrap; }
-.sh-brand small { display: block; font-size: calc(13px * var(--fs-ui, 1)); color: var(--ink-3); line-height: 1.3; margin-top: 2px; }
+.sh-brand img { width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0; transition: width .3s, height .3s; }
+.site-head.is-stuck .sh-brand img { width: 46px; height: 46px; }
+.sh-brand b { display: block; font-family: var(--display); font-weight: 700; font-size: calc(19px * var(--fs-ui, 1)); line-height: 1.15; letter-spacing: -.01em; white-space: nowrap; color: var(--navy); }
+.sh-brand small { display: block; font-size: calc(13.5px * var(--fs-ui, 1)); color: var(--ink-3); line-height: 1.3; margin-top: 3px; }
 
-.sh-nav { display: flex; align-items: center; gap: 2px; }
-.sh-item { position: relative; }
+.sh-nav { display: flex; align-items: center; gap: 0; align-self: stretch; }
+.sh-item { position: relative; display: flex; align-items: center; height: 100%; }
 
-/* разделите — нормални букви */
-.sh-link { position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 11px 16px; border: 0; border-radius: var(--r-pill); background: none; cursor: pointer;
-  font: 600 calc(16px * var(--fs-ui, 1))/1 var(--body); letter-spacing: -.005em; white-space: nowrap; color: var(--ink);
-  transition: background .2s, color .2s; }
-/* името и стрелката стоят като едно „хапче“: името води към раздела, стрелката отваря подменюто */
-.sh-item:has(.sh-caret) { display: flex; align-items: center; border-radius: var(--r-pill); transition: background .2s; }
-.sh-item:has(.sh-caret) .sh-link { padding-right: 4px; }
-.sh-caret { display: grid; place-items: center; width: 30px; height: 38px; margin-right: 6px; padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; border-radius: var(--r-pill); }
-.sh-caret svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; opacity: .5; transition: transform .25s cubic-bezier(.2, .8, .2, 1), opacity .2s; }
-.sh-link.solo:hover, .sh-item:has(.sh-caret):hover, .sh-item.open { background: var(--sky); }
+.sh-link { position: relative; display: inline-flex; align-items: center; height: 100%; padding: 0 12px; border: 0; background: none; cursor: pointer;
+  font: 600 calc(16px * var(--fs-ui, 1))/1 var(--body); white-space: nowrap; color: var(--ink); transition: color .2s; }
+.sh-item:has(.sh-caret) .sh-link { padding-right: 2px; }
+.sh-caret { display: grid; place-items: center; width: 26px; height: 36px; margin-right: 4px; padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; border-radius: var(--r-sm); }
+.sh-caret svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; opacity: .55; transition: transform .25s cubic-bezier(.2, .8, .2, 1), opacity .2s; }
+.sh-link:hover, .sh-item.open .sh-link, .sh-item.open .sh-caret { color: var(--navy); }
 .sh-item.open .sh-caret svg { transform: rotate(180deg); opacity: 1; }
-.sh-link:hover { text-decoration: none; }
-/* текущият раздел: тънка черта отдолу */
-.sh-link.current::after { content: ""; position: absolute; left: 16px; right: 16px; bottom: 4px; height: 2px; border-radius: 2px; background: currentColor; }
-.sh-item:has(.sh-caret) .sh-link.current::after { right: 4px; }
+/* текущият раздел и отвореното меню: червена черта по долния ръб на лентата */
+.sh-item::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px; height: 3px; background: var(--red); transform: scaleX(0); transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.sh-item:has(.current)::after, .sh-item.open::after, .sh-item:hover::after { transform: none; }
+.sh-item:hover:not(:has(.current)):not(.open)::after { background: var(--line-strong); }
 
-/* падащото меню — обикновен списък в една колона */
-.sh-panel { position: absolute; top: calc(100% + 10px); left: 0; min-width: 240px; padding: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 18px;
-  box-shadow: 0 24px 48px -24px rgba(8, 31, 49, .4), 0 2px 6px rgba(8, 31, 49, .05); animation: sh-pop .16s ease-out both; }
-.sh-item:nth-last-child(2) .sh-panel { left: auto; right: 0; }
+/* падащото меню — две колони: заглавие и кратко описание */
+.sh-panel { position: absolute; top: 100%; left: -8px; width: min(600px, 80vw); padding: 22px; margin-top: 1px; background: var(--paper); border: 1px solid var(--line); border-top: 3px solid var(--tone);
+  border-radius: 0 0 var(--r) var(--r); box-shadow: 0 24px 48px -24px rgba(8, 31, 49, .4); animation: sh-pop .16s ease-out both; }
+.sh-item:nth-last-child(-n+3) .sh-panel { left: auto; right: -8px; }
 .sh-panel[hidden] { display: none; }
-.sh-panel::before { content: ""; position: absolute; left: 0; right: 0; top: -14px; height: 14px; } /* мост за мишката */
-@keyframes sh-pop { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
-.sh-panel ul { list-style: none; display: grid; }
-.sh-panel li a { display: block; padding: 11px 14px; border-radius: 11px; font-size: calc(16px * var(--fs-ui, 1)); line-height: 1.3; white-space: nowrap; color: var(--ink); transition: background .15s; }
-.sh-panel li a:hover { background: var(--sky); }
-.sh-panel li a[aria-current] { font-weight: 600; background: var(--sky); }
+@keyframes sh-pop { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.sh-panel-intro { font-size: calc(14.5px * var(--fs-ui, 1)); color: var(--ink-2); line-height: 1.45; padding: 0 12px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--line); }
+.sh-panel ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; }
+.sh-panel li a { display: block; padding: 10px 12px; border-radius: var(--r-sm); line-height: 1.3; color: var(--ink); transition: background .15s; }
+.sh-panel li b { display: block; font-weight: 600; font-size: calc(15.5px * var(--fs-ui, 1)); }
+.sh-panel li small { display: block; margin-top: 2px; font-size: calc(13.5px * var(--fs-ui, 1)); color: var(--ink-3); }
+.sh-panel li a:hover { background: var(--tone-soft); }
+.sh-panel li a:hover b { color: var(--tone-ink); }
+.sh-panel li a[aria-current] { background: var(--tone-soft); }
 
-/* вдясно */
-/* „Дари“ — спокоен бутон: тънък контур, сърце в оранжевото от логото; без пулсиране */
+/* вдясно: бутонът за е-дневника и смяна на темата */
 .sh-donate { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: 600 calc(15px * var(--fs-ui, 1))/1 var(--body);
-  padding: 12px 20px; border-radius: var(--r-pill); background: transparent; color: var(--ink); border: 1px solid var(--line-strong); transition: background .2s, border-color .2s; }
-.sh-donate svg { width: 16px; height: 16px; fill: var(--brand-orange); transition: transform .3s cubic-bezier(.2, .9, .3, 1.4); }
-.sh-donate:hover { background: color-mix(in srgb, var(--brand-orange) 10%, var(--paper)); border-color: color-mix(in srgb, var(--brand-orange) 45%, var(--line-strong)); }
-.sh-donate:hover svg { transform: scale(1.15); }
-.theme-btn { flex-shrink: 0; width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line-strong); background: transparent; color: var(--ink); cursor: pointer; transition: background .2s; }
+  padding: 12px 18px; border-radius: var(--r-sm); background: var(--red); color: #fff; border: 0; transition: background .2s; }
+.sh-donate svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sh-donate:hover { background: color-mix(in srgb, var(--red) 85%, #000); }
+:root[data-theme="dark"] .sh-donate { color: #14202E; }
+.theme-btn { flex-shrink: 0; width: 42px; height: 42px; display: grid; place-items: center; border-radius: var(--r-sm); border: 1px solid var(--line-strong); background: transparent; color: var(--ink); cursor: pointer; transition: background .2s; }
 .theme-btn:hover { background: var(--sky); }
 .theme-btn svg { width: 19px; height: 19px; }
-.sh-menu { display: none; flex-shrink: 0; cursor: pointer; font: 600 calc(15px * var(--fs-ui, 1))/1 var(--body); padding: 13px 20px; border-radius: var(--r-pill); border: 1px solid var(--line-strong); background: transparent; color: var(--ink); }
-.sh-menu[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.sh-menu { display: none; flex-shrink: 0; align-items: center; gap: 8px; cursor: pointer; font: 600 calc(15px * var(--fs-ui, 1))/1 var(--body); padding: 12px 16px; border-radius: var(--r-sm); border: 1px solid var(--line-strong); background: transparent; color: var(--ink); }
+.sh-menu[aria-expanded="true"] { background: var(--navy); border-color: var(--navy); color: var(--paper); }
 
-/* мобилно меню — на цял екран, големи спокойни надписи */
+/* мобилно меню — на цял екран */
 .sh-mob { position: fixed; inset: 0; z-index: -1; background: var(--paper); color: var(--ink); overflow-y: auto; padding-block: calc(var(--header-h) + var(--topbar-h) + 8px) 48px; animation: sh-mob-in .3s cubic-bezier(.2, .8, .2, 1) both; }
 @keyframes sh-mob-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 .sh-mob[hidden] { display: none; }
 .sh-mob-g { border-bottom: 1px solid var(--line); }
 .sh-mob-row { display: flex; align-items: center; gap: 12px; }
-.sh-mob-row > a { flex: 1; padding: 20px 0; font: 500 calc(21px * var(--fs-ui, 1))/1.1 var(--display); letter-spacing: -.015em; color: var(--ink); }
-.sh-mob-row > button { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--ink); cursor: pointer; }
+.sh-mob-row > a { flex: 1; padding: 18px 0; font: 700 calc(19px * var(--fs-ui, 1))/1.1 var(--display); color: var(--ink); }
+.sh-mob-row > button { display: grid; place-items: center; width: 46px; height: 46px; border-radius: var(--r-sm); border: 1px solid var(--line); background: none; color: var(--ink); cursor: pointer; }
 .sh-mob-row > button svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; transition: transform .25s; }
 .sh-mob-row > button[aria-expanded="true"] svg { transform: rotate(180deg); }
-.sh-mob-g ul { list-style: none; padding: 0 0 18px; display: grid; gap: 0; }
-.sh-mob-g ul a { display: block; padding: 10px 0; font-size: calc(17px * var(--fs-ui, 1)); color: var(--ink-2); }
-.sh-mob-solo { display: flex; align-items: center; gap: 16px; padding: 20px 0; font: 500 calc(21px * var(--fs-ui, 1))/1.1 var(--display); letter-spacing: -.015em; border-bottom: 1px solid var(--line); }
+.sh-mob-g ul { list-style: none; padding: 0 0 16px; display: grid; gap: 0; border-left: 3px solid var(--red); margin-left: 2px; }
+.sh-mob-g ul a { display: block; padding: 9px 0 9px 16px; font-size: calc(17px * var(--fs-ui, 1)); color: var(--ink-2); }
+.sh-mob-solo { display: flex; align-items: center; gap: 16px; padding: 18px 0; font: 700 calc(19px * var(--fs-ui, 1))/1.1 var(--display); border-bottom: 1px solid var(--line); }
 .sh-mob-donate { margin-top: 28px; width: 100%; padding: 17px 24px; }
 
-@media (max-width: 1500px) { .sh-brand small { display: none; } }
-@media (max-width: 1320px) {
+@media (max-width: 1360px) {
+  .sh-brand small { display: none; }
+  .sh-link { padding: 0 9px; font-size: calc(15px * var(--fs-ui, 1)); }
+}
+@media (max-width: 1220px) {
   .sh-nav, .sh-bar > .sh-donate { display: none; }
-  .sh-menu { display: inline-block; }
+  .sh-menu { display: inline-flex; }
+  .sh-brand small { display: block; }
 }
 @media (max-width: 900px) {
-  .tb-mail, .tb-hours { display: none; }
+  .tb-mail, .tb-hours, .tb-sep, .tb-extra { display: none; }
 }
 @media (max-width: 680px) {
-  .site-head { padding-block: 8px; }
-  .site-head > .wrap.sh-bar { width: calc(100% - 20px); }
-  .sh-bar { height: 64px; }
-  .site-head.is-stuck .sh-bar { height: 58px; }
+  :root { --header-h: 68px; }
+  .site-head.is-stuck .sh-bar { height: 62px; }
+  .sh-brand img, .site-head.is-stuck .sh-brand img { width: 44px; height: 44px; }
 }
 @media (max-width: 480px) {
-  .sh-bar { gap: 10px; }
+  .sh-bar { gap: 8px; }
   .sh-brand { gap: 10px; }
-  .sh-brand img, .site-head.is-stuck .sh-brand img { width: 42px; height: 42px; }
-  .sh-brand b { font-size: calc(15px * var(--fs-ui, 1)); }
+  .sh-brand b { font-size: calc(16px * var(--fs-ui, 1)); }
+  .sh-brand small { font-size: calc(12.5px * var(--fs-ui, 1)); }
   .theme-btn { width: 40px; height: 40px; }
-  .sh-menu { padding: 12px 16px; }
+  .sh-menu { padding: 11px 13px; }
 }
 @media (max-width: 380px) {
   .sh-brand span { min-width: 0; }
-  .sh-brand b { white-space: normal; font-size: calc(14px * var(--fs-ui, 1)); line-height: 1.05; }
-  .sh-menu { padding: 11px 13px; font-size: calc(12px * var(--fs-ui, 1)); }
+  .sh-brand b { white-space: normal; font-size: calc(14.5px * var(--fs-ui, 1)); line-height: 1.1; }
+  .sh-brand small { display: none; }
 }
-@media (max-width: 1500px) {
-  .sh-nav { gap: 0; }
-  .sh-link { padding: 10px 12px; font-size: calc(15px * var(--fs-ui, 1)); gap: 8px; }
-}
-@media (prefers-reduced-motion: reduce) { .sh-panel, .sh-mob { animation: none; } .sh-bar, .sh-brand img { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .sh-panel, .sh-mob { animation: none; } .sh-bar, .sh-brand img, .sh-item::after { transition: none; } }
 
 /* БГ / EN в горната лента */
-.tb-lang { font-weight: 700; letter-spacing: .04em; padding: 5px 10px; margin-right: -10px; border-radius: var(--r-pill); border: 1px solid rgba(220, 231, 240, .35); }
+.tb-lang { font-weight: 700; letter-spacing: .04em; padding: 5px 10px; margin-right: -10px; border-radius: var(--r-sm); border: 1px solid rgba(214, 225, 238, .35); }
 .tb-lang:hover { background: rgba(255, 255, 255, .1); text-decoration: none !important; }

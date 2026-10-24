@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import '@fontsource-variable/unbounded';
+import '@fontsource-variable/golos-text';
 import './fonts.css';
 import './globals.css';
 import Header from './components/Header';
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#FFFFFF' },
-    { media: '(prefers-color-scheme: dark)', color: '#081B2B' },
+    { media: '(prefers-color-scheme: dark)', color: '#0E1722' },
   ],
 };
 

@@ -4,7 +4,7 @@
    и снимките един до друг. На телефон — едно под друго.
    ===================================================================== */
 .article-hero { background: var(--paper); padding-block: clamp(40px, 5vw, 88px) 0; }
-.article-hero h1 { font-size: calc(clamp(32px, 4.4vw, 76px) * var(--fs-ui, 1)); line-height: 1.05; font-weight: 300; letter-spacing: -.03em; max-width: 18em; }
+.article-hero h1 { font-size: calc(clamp(28px, 3.4vw, 48px) * var(--fs-ui, 1)); line-height: 1.05; font-weight: 700; letter-spacing: -.02em; max-width: 22em; }
 .article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: clamp(18px, 2vw, 28px); font-size: calc(15px * var(--fs, 1)); color: var(--ink-2); }
 .article-meta .tag { background: var(--sky); color: var(--ink); }
 .article-cover { margin: clamp(32px, 4vw, 56px) 0 0; border-radius: var(--r-lg); overflow: hidden; aspect-ratio: 21 / 9; }
@@ -14,14 +14,14 @@
 .art-grid.has-photos { grid-template-columns: minmax(0, 46rem) minmax(0, 1fr); justify-content: stretch; align-items: start; }
 .art-text { min-width: 0; }
 .art-photos { position: sticky; top: calc(var(--header-h) + 24px); min-width: 0; }
-.art-photos-h { display: flex; align-items: baseline; gap: 10px; font: 300 calc(clamp(22px, 1.8vw, 30px) * var(--fs-ui, 1))/1.1 var(--display); letter-spacing: -.02em; margin-bottom: 18px; }
+.art-photos-h { display: flex; align-items: baseline; gap: 10px; font: 700 calc(clamp(20px, 1.6vw, 26px) * var(--fs-ui, 1))/1.1 var(--display); letter-spacing: -.02em; margin-bottom: 18px; }
 .art-photos-h span { font: 500 calc(14px * var(--fs, 1)) var(--body); color: var(--ink-3); }
 
 .article-body { padding: 0; }
 .article-lead { font-size: calc(clamp(20px, 1.6vw, 25px) * var(--fs-ui, 1)); line-height: 1.55; color: var(--ink); font-weight: 400; margin-bottom: clamp(24px, 2.4vw, 36px); padding: 0; border: 0; }
 .article-body p { font-size: calc(clamp(17.5px, 1.15vw, 19.5px) * var(--fs-ui, 1)); line-height: 1.8; color: var(--ink-2); }
 .article-body > * + * { margin-top: 20px; }
-.article-body h2 { font-size: calc(clamp(24px, 2vw, 32px) * var(--fs-ui, 1)); line-height: 1.2; font-weight: 300; letter-spacing: -.02em; color: var(--ink); margin-top: clamp(36px, 3vw, 52px); }
+.article-body h2 { font-size: calc(clamp(24px, 2vw, 32px) * var(--fs-ui, 1)); line-height: 1.2; font-weight: 700; letter-spacing: -.015em; color: var(--ink); margin-top: clamp(36px, 3vw, 52px); }
 .article-body ul { padding-left: 1.3em; font-size: calc(18px * var(--fs, 1)); line-height: 1.7; color: var(--ink-2); }
 .article-body li + li { margin-top: 6px; }
 .article-body li::marker { color: var(--ink-3); }

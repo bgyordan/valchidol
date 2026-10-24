@@ -33,19 +33,8 @@ export default async function PageHero({
   const t: Tone = group?.tone ?? (tone === 'em' ? 'lime' : tone === 'bl' ? 'blue' : (tone as Tone) ?? 'blue');
   const photos = !photoProp && page ? await getPagePhotos(page) : [];
   const photo = photoProp || photos[0];
-  // меки кръгове на фона (както на началната) — подредбата зависи от страницата, за да не са навсякъде еднакви
-  const key = path || title;
-  let h = 0;
-  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
-  const v = h % 4;
-
   return (
-    <div className={`page-hero tone-${t} ph-v${v}${photo ? ' has-photo' : ''}`}>
-      <div className="ph-dots" aria-hidden="true">
-        <span className="pd-b" />
-        <span className="pd-g" />
-        <span className="pd-o" />
-      </div>
+    <div className={`page-hero tone-${t}${photo ? ' has-photo' : ''}`}>
       <div className="wrap ph-grid">
         <div className="ph-text">
           {group ? (
