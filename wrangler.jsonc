@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "souvalchidol",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  // Базата: създава се с `npx wrangler d1 create souvalchidol` → постави тук получения database_id.
+  "d1_databases": [
+    { "binding": "DB", "database_name": "souvalchidol", "database_id": "PLACEHOLDER-SET-AFTER-d1-create", "migrations_dir": "migrations" }
+  ],
+  // Снимки и документи: `npx wrangler r2 bucket create souvalchidol-files`
+  "r2_buckets": [
+    { "binding": "FILES", "bucket_name": "souvalchidol-files" }
+  ],
+  "observability": { "enabled": true }
+}

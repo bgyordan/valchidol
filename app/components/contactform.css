@@ -1,0 +1,35 @@
+/* Контактна форма */
+.cf { display: grid; gap: 22px; padding: clamp(24px, 3vw, 44px); border-radius: var(--r-lg); background: var(--sky); }
+.cf-head p { margin-top: 8px; }
+.cf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 20px; }
+.cf-f { display: grid; gap: 7px; min-width: 0; }
+.cf-f > span { font-size: calc(14.5px * var(--fs, 1)); font-weight: 600; color: var(--ink); }
+.cf-f > span i { font-style: normal; font-weight: 400; color: var(--ink-2); }
+.cf-wide { grid-column: 1 / -1; }
+.cf input, .cf select, .cf textarea { width: 100%; padding: 13px 16px; border: 1px solid var(--line-strong); border-radius: 14px; background: var(--paper); color: var(--ink); outline: none; transition: border-color .15s, box-shadow .15s; }
+.cf textarea { resize: vertical; min-height: 140px; line-height: 1.55; }
+.cf input:focus, .cf select:focus, .cf textarea:focus { border-color: var(--brand-blue); box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-blue) 18%, transparent); }
+.cf-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.cf-consent { display: flex; gap: 12px; align-items: flex-start; font-size: calc(15px * var(--fs, 1)); color: var(--ink-2); cursor: pointer; }
+.cf-consent input { width: 20px; height: 20px; flex-shrink: 0; margin-top: 2px; accent-color: var(--brand-blue); }
+.cf-consent a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.cf-err { padding: 12px 16px; border-radius: 12px; background: color-mix(in srgb, #e5484d 12%, var(--paper)); color: var(--ink); font-size: calc(15px * var(--fs, 1)); }
+.cf-err a { text-decoration: underline; }
+.cf-send { justify-self: start; min-width: 180px; }
+.cf-send:disabled { opacity: .6; cursor: wait; transform: none; }
+.cf-done { justify-items: start; }
+.cf-done p { font-size: calc(19px * var(--fs, 1)); color: var(--ink); max-width: 30em; }
+.cf-tick { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--brand-lime) 30%, var(--paper)); }
+.cf-tick svg { width: 26px; height: 26px; fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+@media (max-width: 640px) { .cf-grid { grid-template-columns: 1fr; } .cf-send { width: 100%; } }
+.cf-wrap { max-width: 920px; }
+
+/* Бележка след изпращане — листът от тетрадка (общият вид е в notepaper.css):
+   изскача в средата на екрана с уголемяване, без затъмнен фон; сама изчезва след ~8 с. */
+.cf-note { position: fixed; z-index: 90; left: 50%; top: 50%; width: min(440px, calc(100vw - 32px)); translate: -50% -50%; pointer-events: none; }
+.cf-note .np-paper { pointer-events: auto; transform-origin: 50% 60%; }
+.cf-note.is-out .np-paper { animation: np-out .38s cubic-bezier(.5, 0, .75, 0) both; }
+@keyframes np-out { to { opacity: 0; transform: scale(.6) rotate(6deg) translateY(30px); } }
+.cf-note .np-timer { animation: np-time 8s linear .55s both; }
+.cf-note.is-hold .np-timer { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .cf-note.is-out .np-paper { animation: np-fade .3s ease reverse both; } }

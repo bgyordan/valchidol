@@ -1,0 +1,15 @@
+.pband { display: grid; gap: 10px; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); grid-auto-rows: clamp(140px, 18vw, 220px); }
+.pband.n1 { --n: 1; grid-auto-rows: clamp(200px, 32vw, 380px); }
+.pband.n2 { --n: 2; }
+.pband.n3 { --n: 3; }
+.pband.n4 { --n: 4; }
+.pband.n5 { --n: 4; }
+.pband.n5 .pband-item:first-child { grid-row: span 2; grid-column: span 2; }
+.pband-item { position: relative; padding: 0; border: 0; border-radius: var(--r); overflow: hidden; cursor: zoom-in; background: var(--sky); }
+.pband-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+.pband-item:hover img { transform: scale(1.04); }
+.pband-more { position: absolute; inset: 0; display: grid; place-items: center; font: 600 calc(28px * var(--fs, 1)) var(--display); color: #fff; background: rgba(13, 26, 37, .5); }
+@media (max-width: 640px) {
+  .pband, .pband.n3, .pband.n4, .pband.n5 { --n: 2; grid-auto-rows: 140px; }
+  .pband.n5 .pband-item:first-child { grid-row: span 1; }
+}
