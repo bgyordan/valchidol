@@ -3,7 +3,7 @@
    Класическа визия на средно училище: тъмносиньо (доверие, традиция), червено за главните действия
    и зелено за ученическото. Трите цвята различават и разделите в менюто:
      синьо = училището и документите, червено = родители и прием, зелено = ученици и новини.
-   Шрифтове: Golos Text (заглавия) + Sofia Sans (текст, българска кирилица), self-hosted (без Google).
+   Шрифтове (като на сайта на ЦСОП): Unbounded (заглавия) + Sofia Sans (текст, българска кирилица), self-hosted (без Google).
    ===================================================================== */
 
 :root {
@@ -37,10 +37,10 @@
   /* текущ цвят на раздела (задава се с .tone-*) */
   --tone: var(--navy); --tone-ink: var(--navy); --tone-soft: var(--navy-soft);
 
-  --display: 'Golos Text Variable', 'Golos Text', 'Segoe UI', system-ui, sans-serif;
+  --display: 'Unbounded Variable', 'Unbounded', 'Arial Black', system-ui, sans-serif;
   --body: 'Sofia Sans Variable', 'Sofia Sans', 'Segoe UI', system-ui, sans-serif;
 
-  --r-sm: 6px; --r: 10px; --r-lg: 14px; --r-pill: 999px;
+  --r-sm: 10px; --r: 16px; --r-lg: 24px; --r-pill: 999px;
   --shadow: 0 18px 40px -24px rgba(11, 34, 60, .35);
   --header-h: 84px;
   --topbar-h: 40px;
@@ -93,13 +93,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 6px; }
 
 h1, h2, h3, h4 { font-family: var(--display); color: var(--ink); text-wrap: balance; letter-spacing: -.01em; }
-h1 { font-size: calc(clamp(30px, 3.6vw, 50px) * var(--fs-ui, 1)); line-height: 1.1; font-weight: 700; letter-spacing: -.02em; }
-h2 { font-size: calc(clamp(24px, 2.3vw, 34px) * var(--fs-ui, 1)); line-height: 1.18; font-weight: 700; letter-spacing: -.015em; }
-h3 { font-size: calc(18px * var(--fs, 1)); line-height: 1.32; font-weight: 600; }
-h4 { font-size: calc(16px * var(--fs, 1)); line-height: 1.35; font-weight: 600; }
+h1 { font-size: calc(clamp(32px, 4vw, 56px) * var(--fs-ui, 1)); line-height: 1.08; font-weight: 300; letter-spacing: -.03em; }
+h2 { font-size: calc(clamp(24px, 2.5vw, 36px) * var(--fs-ui, 1)); line-height: 1.15; font-weight: 400; letter-spacing: -.02em; }
+h3 { font-size: calc(18px * var(--fs, 1)); line-height: 1.32; font-weight: 500; }
+h4 { font-size: calc(16px * var(--fs, 1)); line-height: 1.35; font-weight: 500; }
 
 /* мрежата расте с екрана: на широк монитор съдържанието стига почти до краищата, а текстът си пази удобната ширина */
-.wrap { max-width: 1320px; margin-inline: auto; padding-inline: clamp(16px, 4vw, 48px); }
+.wrap { max-width: 1480px; margin-inline: auto; padding-inline: clamp(16px, 4vw, 48px); }
 .wrap.narrow, .narrow { max-width: 840px; }
 .wrap-wide { max-width: 1600px; margin-inline: auto; padding-inline: clamp(16px, 4vw, 48px); }
 
@@ -121,7 +121,7 @@ h4 { font-size: calc(16px * var(--fs, 1)); line-height: 1.35; font-weight: 600; 
 .more:hover { border-bottom-width: 3px; }
 
 /* ---------- бутони ---------- */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; font-size: calc(16px * var(--fs, 1)); line-height: 1.2; padding: 13px 22px; border-radius: var(--r-sm); border: 2px solid transparent; cursor: pointer; transition: transform .15s, background .2s; text-align: center; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; font-size: calc(16px * var(--fs, 1)); line-height: 1.2; padding: 14px 24px; border-radius: var(--r-pill); border: 2px solid transparent; cursor: pointer; transition: transform .15s, background .2s; text-align: center; }
 .btn:hover { transform: translateY(-1px); }
 .btn svg { width: 18px; height: 18px; flex-shrink: 0; }
 .btn-primary, .btn.primary, .btn-warm { background: var(--orange); color: var(--on-orange); }
@@ -371,7 +371,7 @@ html.a11y-links a { text-decoration: underline !important; text-underline-offset
 .db-cats button.on { background: var(--ink); color: var(--paper); }
 .db-cats button.on span { color: inherit; opacity: .7; }
 .db-group + .db-group { margin-top: clamp(40px, 4vw, 64px); }
-.db-group-h { display: flex; align-items: baseline; gap: 12px; font: 700 calc(clamp(20px, 1.6vw, 26px) * var(--fs-ui, 1))/1.15 var(--display); letter-spacing: -.02em; margin-bottom: 14px; }
+.db-group-h { display: flex; align-items: baseline; gap: 12px; font: 300 calc(clamp(22px, 1.8vw, 30px) * var(--fs-ui, 1))/1.15 var(--display); letter-spacing: -.02em; margin-bottom: 14px; }
 .db-group-h span { font: 500 calc(14px * var(--fs, 1)) var(--body); color: var(--ink-3); }
 @media (max-width: 900px) {
   .db-layout { grid-template-columns: 1fr; }
@@ -381,12 +381,12 @@ html.a11y-links a { text-decoration: underline !important; text-underline-offset
 }
 
 /* правни и справочни страници — индекс: заглавие вляво, текст вдясно */
-.wrap.narrow.legal { max-width: 1320px; }
+.wrap.narrow.legal { max-width: 1480px; }
 .legal { gap: 0; }
 .legal > .prose-block { max-width: none; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); column-gap: clamp(32px, 6vw, 120px); row-gap: 0; align-content: start;
   padding-block: clamp(32px, 3.5vw, 56px); border-top: 1px solid var(--line); }
 .legal > .prose-block:first-child { border-top: 0; padding-top: 0; }
-.legal > .prose-block > h2 { grid-column: 1; grid-row: 1 / span 60; align-self: start; margin: 0; font-size: calc(clamp(20px, 1.7vw, 26px) * var(--fs-ui, 1)); font-weight: 700; letter-spacing: -.02em; }
+.legal > .prose-block > h2 { grid-column: 1; grid-row: 1 / span 60; align-self: start; margin: 0; font-size: calc(clamp(22px, 1.9vw, 32px) * var(--fs-ui, 1)); font-weight: 300; letter-spacing: -.02em; }
 .legal > .prose-block > *:not(h2) { grid-column: 2; max-width: 46rem; }
 .legal > .prose-block > .docs-wide, .legal > .prose-block > .db-layout, .legal > .prose-block > .doc-rows { max-width: none; }
 .legal .prose-block > p + p, .legal .prose-block > p + ul, .legal .prose-block > ul + p { margin-top: 14px; }
@@ -429,11 +429,11 @@ html.a11y-links a { text-decoration: underline !important; text-underline-offset
 
 /* текстова страница + странична колона с връзките от раздела */
 .page-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 300px); gap: clamp(32px, 5vw, 80px); align-items: start; }
-.page-side { position: sticky; top: calc(var(--header-h) + 24px); border: 1px solid var(--line); border-top: 4px solid var(--tone); border-radius: var(--r); background: var(--paper); padding: 8px; }
-.page-side-h { font: 700 calc(17px * var(--fs, 1))/1.3 var(--display); padding: 12px 12px 10px; }
+.page-side { position: sticky; top: calc(var(--header-h) + 24px); border-radius: var(--r-lg); background: var(--sky); padding: 10px; }
+.page-side-h { font: 400 calc(17px * var(--fs, 1))/1.3 var(--display); padding: 12px 12px 10px; }
 .page-side-h a:hover { color: var(--tone-ink); }
 .page-side ul { list-style: none; display: grid; gap: 1px; }
 .page-side li a { display: block; padding: 9px 12px; border-radius: var(--r-sm); font-size: calc(15.5px * var(--fs, 1)); line-height: 1.35; color: var(--ink-2); }
-.page-side li a:hover { background: var(--sky); color: var(--ink); }
-.page-side li a[aria-current] { background: var(--tone-soft); color: var(--tone-ink); font-weight: 700; box-shadow: inset 3px 0 0 var(--tone); }
+.page-side li a:hover { background: var(--paper); color: var(--ink); }
+.page-side li a[aria-current] { background: var(--tone-soft); color: var(--tone-ink); font-weight: 600; }
 @media (max-width: 960px) { .page-layout { grid-template-columns: 1fr; } .page-side { position: static; } }
