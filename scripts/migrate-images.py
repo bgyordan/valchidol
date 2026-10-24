@@ -53,21 +53,30 @@ def live_images(page: str) -> list[str]:
 
 def main():
     pairs, report = [], []
+    lives = {}
     for page, old in OLD.items():
         if page == 'COMMON' or not old:
             continue
         try:
-            fresh = live_images(page)
+            lives[page] = live_images(page)
         except Exception as e:  # noqa: BLE001
             report.append((page, len(old), f'ГРЕШКА {e}'))
-            continue
-        # махаме общите снимки (лого и т.н.), ако ги няма в описа на страницата
-        olds = [base(u) for u in old]
+    # снимките на целия сайт (лого, шапка…) са на всяка страница → не са в описа на страницата
+    from collections import Counter
+    cnt = Counter(base(u) for l in lives.values() for u in l)
+    common = {b for b, n in cnt.items() if n >= len(lives) * 0.8}
+    print('Общи за всички страници:', len(common))
+    for page, fresh in lives.items():
+        old = OLD[page]
+        pos = [i for i, u in enumerate(fresh) if base(u) in common]
+        fresh = [u for u in fresh if base(u) not in common]
+        if len(fresh) == len(old) + 3 and not common:
+            fresh = fresh[3:]
         status = 'OK' if len(fresh) == len(old) else f'live={len(fresh)}'
-        report.append((page, len(old), status))
+        report.append((page, len(old), status + f' общи@{pos}'))
         if len(fresh) == len(old):
             pairs += [(o, f) for o, f in zip(old, fresh)]
-    ok = sum(1 for r in report if r[2] == 'OK')
+    ok = sum(1 for r in report if r[2].startswith('OK'))
     for r in report:
         print(f'{r[2]:>12}  opis={r[1]:<4} {urllib.parse.unquote(r[0])[38:]}')
     print(f'\nСтраници: {ok}/{len(report)} съвпадат; снимки за сваляне: {len(pairs)}')
