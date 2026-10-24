@@ -1,8 +1,8 @@
 /* =====================================================================
    СУ „Васил Левски“ – Вълчи дол — дизайн система
-   Класическа визия на средно училище: тъмносиньо (доверие, традиция), червено за главните действия
+   Класическа визия на средно училище: тъмносиньо (доверие, традиция), топло слънчево жълто за главните действия
    и зелено за ученическото. Трите цвята различават и разделите в менюто:
-     синьо = училището и документите, червено = родители и прием, зелено = ученици и новини.
+     синьо = училището и документите, жълто = родители и прием, зелено = ученици и новини.
    Шрифтове (като на сайта на ЦСОП): Unbounded (заглавия) + Sofia Sans (текст, българска кирилица), self-hosted (без Google).
    ===================================================================== */
 
@@ -22,17 +22,17 @@
 
   /* училищните цветове */
   --navy: #0B3A6B; --navy-2: #072849; --navy-soft: #E8EFF7;
-  --red: #B8232B;  --red-soft: #FBEDEE;
+  --warm: #F2AE2E; --warm-ink: #A35F00; --warm-soft: #FFF4DF; --on-warm: #0B2440;  /* топло слънчево жълто за главните бутони */
   --green: #2A7A4B; --green-soft: #E7F3EC;
   --gold: #D9A23A;
   /* старите имена на цветовете от логото — за обявата, формите и админ панела */
   --brand-orange: var(--gold); --brand-lime: var(--green); --brand-blue: #1F5FA8;
 
   --accent: var(--navy);
-  --orange: var(--red);   --orange-ink: var(--red);   --orange-soft: var(--red-soft);
+  --orange: var(--warm);  --orange-ink: var(--warm-ink); --orange-soft: var(--warm-soft);
   --blue: var(--navy);    --blue-ink: var(--navy);    --blue-soft: var(--navy-soft);
   --lime: var(--green);   --lime-ink: var(--green);   --lime-soft: var(--green-soft);
-  --on-orange: #FFFFFF;
+  --on-orange: var(--on-warm);
 
   /* текущ цвят на раздела (задава се с .tone-*) */
   --tone: var(--navy); --tone-ink: var(--navy); --tone-soft: var(--navy-soft);
@@ -61,16 +61,16 @@
   --ink: #E8EEF5; --ink-2: #AEBBCA; --ink-3: #8A99AB;
   --line: #24364B; --line-strong: #31475F;
   --navy: #8DB8EA; --navy-2: #06111D; --navy-soft: #16273B;
-  --red: #F0868A;  --red-soft: #2A1A1F;
+  --warm: #F4B84A; --warm-ink: #F4B84A; --warm-soft: #2A2414; --on-warm: #0B2440;
   --green: #7CCB9B; --green-soft: #132A21;
-  --on-orange: #14202E;
+  --on-orange: var(--on-warm);
   --shadow: 0 18px 40px -24px rgba(0, 0, 0, .7);
   --header-bg: rgba(14, 23, 34, .96); --header-solid: rgba(14, 23, 34, .98);
   color-scheme: dark;
 }
 
 .tone-blue   { --tone: var(--navy);  --tone-ink: var(--navy);  --tone-soft: var(--navy-soft); }
-.tone-orange { --tone: var(--red);   --tone-ink: var(--red);   --tone-soft: var(--red-soft); }
+.tone-orange { --tone: var(--warm);  --tone-ink: var(--warm-ink); --tone-soft: var(--warm-soft); }
 .tone-lime   { --tone: var(--green); --tone-ink: var(--green); --tone-soft: var(--green-soft); }
 
 /* ---------- база ---------- */
@@ -437,3 +437,15 @@ html.a11y-links a { text-decoration: underline !important; text-underline-offset
 .page-side li a:hover { background: var(--paper); color: var(--ink); }
 .page-side li a[aria-current] { background: var(--tone-soft); color: var(--tone-ink); font-weight: 600; }
 @media (max-width: 960px) { .page-layout { grid-template-columns: 1fr; } .page-side { position: static; } }
+
+/* учебни години на една страница (YearTabs) */
+.yt { margin-top: 8px; }
+.prose-block + .yt { margin-top: clamp(24px, 3vw, 36px); }
+.yt-bar { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px; margin-bottom: clamp(20px, 2.4vw, 32px); border-radius: var(--r-pill); background: var(--sky); width: fit-content; max-width: 100%; }
+.yt-bar button { padding: 10px 18px; border: 0; border-radius: var(--r-pill); background: transparent; color: var(--ink-2); font-weight: 500; font-size: calc(15.5px * var(--fs, 1)); font-variant-numeric: tabular-nums; cursor: pointer; transition: background .2s, color .2s; }
+.yt-bar button:hover { color: var(--ink); background: var(--paper); }
+.yt-bar button.on { background: var(--navy); color: #fff; }
+:root[data-theme="dark"] .yt-bar button.on { color: #0E1722; }
+.yt-panel { animation: yt-in .35s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes yt-in { from { opacity: 0; transform: translateY(6px); } }
+@media (max-width: 640px) { .yt-bar { border-radius: var(--r); width: 100%; } .yt-bar button { padding: 9px 14px; } }
