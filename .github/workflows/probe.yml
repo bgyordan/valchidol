@@ -4,8 +4,9 @@ jobs:
   p:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          curl -s -o /dev/null -w 'sitesref %{http_code} %{size_download}\n' -H 'Referer: https://sites.google.com/' '**Бележки:** Датите на новините са взети от самия им текст — сайтът не пази дата на публикуване. Където в текста има само ден и месец, годината е изведена от учебната година и това е отбелязано. Снимките в Google Sites са на адреси на Google (sites.google.com/sitesv-images-rt/…, lh3.googleusercontent.com/…); те работят, докато сайтът съществува, затова трябва да се свалят преди сайтът да бъде изтрит. Връзките в текста са запазени като Markdown връзки; пренасочванията на Google (google.com/url?q=…) са заменени с истинския адрес.'
+      - shell: bash {0}
+        run: |
+          curl -s -o /dev/null -w 'sitesref %{http_code} %{size_download}\n' -H 'Referer: https://sites.google.com/' 'https://sites.google.com/sitesv-images-rt/AMxu72vVpPhRCEFQDcKEXF5wez7RN5Uu_Us6n30L3xQ1RfeYUKdom0PKwZ4-rgRPv-GEYdJkuivPNfvzjMQJ0ki_ScZ7Y-Tls0QCJ1PuEqezzBguf1xuPnMx_chXNn65WCEB1xj_dCtTsJ9d1W4gtwJ4E57-yPrwJI6PCIXEoBctUqfVmir_V0uGwickjYeVxA8=w16383' || true
           curl -sL 'https://sites.google.com/view/suvasillevski/%D1%81%D0%B5%D0%BA%D1%86%D0%B8%D1%8F-%D0%B0%D0%BA%D1%82%D1%83%D0%B0%D0%BB%D0%BD%D0%BE' -o page.html -w 'page %{http_code} %{size_download}\n'
           grep -oE 'https://sites\.google\.com/sitesv-images-rt/[^"&\\ ]+' page.html | sort -u > imgs.txt; wc -l imgs.txt
           grep -oE 'https://lh[0-9]\.googleusercontent\.com/[^"&\\ ]+' page.html | sort -u | wc -l
