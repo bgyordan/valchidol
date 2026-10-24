@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone',
   // стари адреси → нови (за запазени връзки и търсачките)
   async redirects() {
     return [
@@ -11,3 +10,6 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
+
+// Локалната разработка (next dev) вижда D1/R2 връзките от wrangler.jsonc
+require('@opennextjs/cloudflare').initOpenNextCloudflareForDev();

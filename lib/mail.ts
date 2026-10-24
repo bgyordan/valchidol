@@ -22,7 +22,7 @@ async function accessToken() {
     }),
     cache: 'no-store',
   });
-  const j = await res.json();
+  const j: any = await res.json();
   if (!j.access_token) {
     console.error('[mail] token', res.status, JSON.stringify(j).slice(0, 300));
     throw new Error('Gmail вход неуспешен');
@@ -60,7 +60,7 @@ export async function sendMail(m: { to: string; subject: string; text: string; r
     });
     if (res.ok) return;
     if (res.status === 401 && attempt === 0) { cached = null; continue; }
-    const j = await res.json().catch(() => ({}));
+    const j: any = await res.json().catch(() => ({}));
     console.error('[mail] send', res.status, JSON.stringify(j?.error || {}).slice(0, 400));
     throw new Error('Писмото не беше изпратено');
   }

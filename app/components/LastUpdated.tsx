@@ -1,39 +1,16 @@
 import { unstable_noStore as noStore } from 'next/cache';
-import { supabase } from '../../lib/supabase';
+import { first } from '../../lib/db';
 
 // Датата = най-скорошното реално съдържание (публикувана новина или качен документ).
 // Обновява се сама при добавяне на съдържание; не се задава на ръка.
 async function latestUpdate(): Promise<Date | null> {
-  const dates: Date[] = [];
-
-  try {
-    const { data } = await supabase
-      .from('site_news')
-      .select('published_at')
-      .eq('status', 'published')
-      .lte('published_at', new Date().toISOString())
-      .order('published_at', { ascending: false })
-      .limit(1);
-    const v = data?.[0]?.published_at;
-    if (v) dates.push(new Date(v));
-  } catch {
-    /* игнорирай — падаме към наличните дати */
-  }
-
-  try {
-    const { data, error } = await supabase
-      .from('site_documents')
-      .select('created_at')
-      .order('created_at', { ascending: false })
-      .limit(1);
-    const v = !error ? data?.[0]?.created_at : null;
-    if (v) dates.push(new Date(v));
-  } catch {
-    /* колоната може да липсва — просто я пропускаме */
-  }
-
+  const [n, d] = await Promise.all([
+    first<{ v: string }>(`SELECT MAX(published_at) AS v FROM site_news WHERE status = 'published' AND published_at <= ?`, new Date().toISOString()),
+    first<{ v: string }>('SELECT MAX(created_at) AS v FROM site_documents'),
+  ]);
+  const dates = [n?.v, d?.v].filter((x): x is string => !!x).map((x) => new Date(x));
   if (!dates.length) return null;
-  return new Date(Math.max(...dates.map((d) => d.getTime())));
+  return new Date(Math.max(...dates.map((x) => x.getTime())));
 }
 
 export default async function LastUpdated() {

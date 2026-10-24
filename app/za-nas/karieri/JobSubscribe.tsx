@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '../../../lib/supabase';
 
 export default function JobSubscribe() {
   const [email, setEmail] = useState('');
@@ -16,16 +15,13 @@ export default function JobSubscribe() {
       return;
     }
     setState('busy'); setMsg('');
-    const { error } = await supabase.from('job_subscribers').insert({ email: value });
-    if (error) {
-      // дублиран имейл = вече е абониран (не е грешка за потребителя)
-      if (error.code === '23505' || /duplicate|unique/i.test(error.message)) {
-        setState('done'); setMsg('Този имейл вече е абониран. Благодарим!');
-      } else {
-        setState('err'); setMsg('Възникна грешка. Опитайте отново по-късно.');
-      }
-      return;
-    }
+    let r: { ok?: boolean; dup?: boolean } = {};
+    try {
+      const res = await fetch('/api/abonament', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: value }) });
+      r = (await res.json()) as typeof r;
+    } catch { /* r остава празен → грешка */ }
+    if (r.dup) { setState('done'); setMsg('Този имейл вече е абониран. Благодарим!'); return; }
+    if (!r.ok) { setState('err'); setMsg('Възникна грешка. Опитайте отново по-късно.'); return; }
     setState('done'); setMsg('Готово! Ще ви известим при нова обява.');
     setEmail('');
   }

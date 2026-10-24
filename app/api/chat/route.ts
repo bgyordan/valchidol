@@ -89,7 +89,7 @@ export async function POST(req: Request) {
       signal: AbortSignal.timeout(25_000),
       cache: 'no-store',
     });
-    const j = await res.json().catch(() => ({}));
+    const j: any = await res.json().catch(() => ({}));
     if (!res.ok) {
       console.error('[chat] gemini', res.status, JSON.stringify(j?.error || {}).slice(0, 300));
       return NextResponse.json({ ok: false, error: res.status === 429 ? 'busy' : 'ai' }, { status: 502 });

@@ -1,5 +1,5 @@
 import PageHero from '../../components/PageHero';
-import { db } from '../../../lib/supabase';
+import { all } from '../../../lib/db';
 import { getSiteInfo } from '../../../lib/siteinfo';
 import JobSubscribe from './JobSubscribe';
 import './karieri.css';
@@ -13,13 +13,7 @@ export const dynamic = 'force-dynamic';
 type Job = { id: string; title: string; employment: string | null; description: string | null; requirements: string | null; location: string | null };
 
 async function getJobs(): Promise<Job[]> {
-  const s = db();
-  if (!s) return [];
-  try {
-    const { data } = await s.from('site_jobs').select('id, title, employment, description, requirements, location')
-      .eq('status', 'active').order('sort_order', { ascending: true });
-    return data ?? [];
-  } catch { return []; }
+  return all<Job>(`SELECT id, title, employment, description, requirements, location FROM site_jobs WHERE status = 'active' ORDER BY sort_order ASC`);
 }
 
 export default async function CareersPage() {

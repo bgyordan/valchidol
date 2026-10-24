@@ -1,5 +1,5 @@
 import { unstable_noStore as noStore } from 'next/cache';
-import { db } from './supabase';
+import { all, first, json } from './db';
 
 /* ---------------- Новини ---------------- */
 export type NewsCard = {
@@ -14,21 +14,14 @@ export type NewsCard = {
 
 export async function getNews(limit?: number): Promise<NewsCard[]> {
   noStore();
-  const s = db();
-  if (!s) return [];
-  try {
-    let q = s
-      .from('site_news')
-      .select('id, title, excerpt, cover_url, category, published_at')
-      .eq('status', 'published')
-      .lte('published_at', new Date().toISOString()) // насрочените излизат чак в уречения час
-      .order('published_at', { ascending: false });
-    if (limit) q = q.limit(limit);
-    const { data } = await q;
-    return (data ?? []).map((n: any) => ({ ...n, slug: n.id }));
-  } catch {
-    return [];
-  }
+  // насрочените излизат чак в уречения час
+  const rows = await all<Omit<NewsCard, 'slug'>>(
+    `SELECT id, title, excerpt, cover_url, category, published_at FROM site_news
+     WHERE status = 'published' AND published_at <= ?
+     ORDER BY published_at DESC LIMIT ?`,
+    new Date().toISOString(), limit ?? -1,
+  );
+  return rows.map((n) => ({ ...n, slug: n.id }));
 }
 
 export type Article = NewsCard & {
@@ -39,32 +32,14 @@ export type Article = NewsCard & {
 
 export async function getArticle(id: string): Promise<Article | null> {
   noStore();
-  const s = db();
-  if (!s) return null;
-  try {
-    const { data, error } = await s
-      .from('site_news')
-      .select('id, title, excerpt, content, cover_url, gallery_images, category, published_at, status, staff_profiles(first_name, last_name)')
-      .eq('id', id)
-      .single();
-    if (error || !data || data.status !== 'published') return null;
-    if (data.published_at && new Date(data.published_at) > new Date()) return null; // още е насрочена
-    const a = (data as any).staff_profiles;
-    return {
-      id: data.id,
-      slug: data.id,
-      title: data.title,
-      excerpt: data.excerpt,
-      content: data.content,
-      cover_url: data.cover_url,
-      gallery_images: Array.isArray(data.gallery_images) ? data.gallery_images : [],
-      category: data.category,
-      published_at: data.published_at,
-      author_name: a ? `${a.first_name} ${a.last_name}` : null,
-    };
-  } catch {
-    return null;
-  }
+  const d = await first<any>(
+    `SELECT id, title, excerpt, content, cover_url, gallery_images, category, published_at, author_name
+     FROM site_news WHERE id = ? AND status = 'published' AND published_at <= ?`,
+    id, new Date().toISOString(),
+  );
+  if (!d) return null;
+  const g = json<unknown>(d.gallery_images, []);
+  return { ...d, slug: d.id, gallery_images: Array.isArray(g) ? g.filter((x): x is string => typeof x === 'string') : [] };
 }
 
 /* ---------------- Събития ---------------- */
@@ -79,14 +54,7 @@ export type EventItem = {
 
 export async function getEvents(): Promise<EventItem[]> {
   noStore();
-  const s = db();
-  if (!s) return [];
-  try {
-    const { data } = await s.from('site_events').select('*').order('event_date', { ascending: true });
-    return data ?? [];
-  } catch {
-    return [];
-  }
+  return all<EventItem>('SELECT id, title, event_date, event_time, location, description FROM site_events ORDER BY event_date ASC');
 }
 
 export async function getUpcomingEvents(limit = 4): Promise<EventItem[]> {
@@ -100,49 +68,28 @@ export type Photo = { id: string; album_id: string; photo_url: string; caption: 
 
 export async function getGallery(): Promise<{ albums: Album[]; photos: Photo[] }> {
   noStore();
-  const s = db();
-  if (!s) return { albums: [], photos: [] };
-  try {
-    const [{ data: a }, { data: p }] = await Promise.all([
-      s.from('gallery_albums').select('id, title, cover_url, event_date')
-        .order('sort_order', { ascending: true }).order('event_date', { ascending: false }),
-      s.from('gallery_photos').select('id, album_id, photo_url, caption').order('sort_order', { ascending: true }),
-    ]);
-    const photos: Photo[] = p ?? [];
-    const albums: Album[] = (a ?? []).map((x: any) => ({ ...x, photo_count: photos.filter((ph) => ph.album_id === x.id).length }));
-    return { albums, photos };
-  } catch {
-    return { albums: [], photos: [] };
-  }
+  const [a, photos] = await Promise.all([
+    all<Omit<Album, 'photo_count'>>('SELECT id, title, cover_url, event_date FROM gallery_albums ORDER BY sort_order ASC, event_date DESC'),
+    all<Photo>('SELECT id, album_id, photo_url, caption FROM gallery_photos ORDER BY sort_order ASC'),
+  ]);
+  const albums: Album[] = a.map((x) => ({ ...x, photo_count: photos.filter((ph) => ph.album_id === x.id).length }));
+  return { albums, photos };
 }
 
 export async function getLatestPhotos(limit = 8): Promise<{ id: string; photo_url: string; caption: string | null }[]> {
   noStore();
-  const s = db();
-  if (!s) return [];
-  try {
-    const { data } = await s.from('gallery_photos').select('id, photo_url, caption').order('created_at', { ascending: false }).limit(limit);
-    return data ?? [];
-  } catch {
-    return [];
-  }
+  return all('SELECT id, photo_url, caption FROM gallery_photos ORDER BY created_at DESC LIMIT ?', limit);
 }
 
-/* ---------------- Снимки по страниците (от ЕИС → „Снимки за сайта“) ----------------
+/* ---------------- Снимки по страниците ----------------
    site_settings:
      key 'hero_photos' → ["url", ...]               (началната страница)
      key 'page_photos' → { "za-nas": ["url", ...], "priem": [...], ... }
 */
 export async function getSetting<T = unknown>(key: string): Promise<T | null> {
   noStore();
-  const s = db();
-  if (!s) return null;
-  try {
-    const { data } = await s.from('site_settings').select('value').eq('key', key).maybeSingle();
-    return (data?.value as T) ?? null;
-  } catch {
-    return null;
-  }
+  const r = await first<{ value: string }>('SELECT value FROM site_settings WHERE key = ?', key);
+  return r ? json<T | null>(r.value, null) : null;
 }
 
 export async function getHeroPhotos(): Promise<string[]> {
@@ -170,7 +117,7 @@ export function monthShort(iso: string): string {
   return MONTHS[new Date(iso).getMonth()].slice(0, 3);
 }
 
-/* ---------------- Документи (от ЕИС → „Сайт“) ---------------- */
+/* ---------------- Документи ---------------- */
 export type DocRow = {
   id: string;
   name: string;
@@ -184,22 +131,16 @@ export type DocRow = {
 
 export async function getDocuments(section: string, onlyOnSite = false): Promise<DocRow[]> {
   noStore();
-  const s = db();
-  if (!s) return [];
-  try {
-    let q = s
-      .from('site_documents')
-      .select('id, name, file_url, academic_year, section, sort_order, category, on_site')
-      .eq('section', section);
-    if (onlyOnSite) q = q.eq('on_site', true);
-    const { data } = await q.order('academic_year', { ascending: false }).order('sort_order', { ascending: true });
-    return data ?? [];
-  } catch {
-    return [];
-  }
+  const rows = await all<DocRow & { on_site: number | boolean }>(
+    `SELECT id, name, file_url, academic_year, section, sort_order, category, on_site FROM site_documents
+     WHERE section = ?${onlyOnSite ? ' AND on_site = 1' : ''}
+     ORDER BY academic_year DESC, sort_order ASC`,
+    section,
+  );
+  return rows.map((r) => ({ ...r, on_site: !!r.on_site }));
 }
 
-// Екипът: от изгледа public_team в базата (служителите в ЕИС). null → сайтът ползва вградения списък.
+// Екипът: от таблицата team_members. null → сайтът ползва вградения списък.
 const TEAM_GROUPS: { key: string; label: string; compact?: boolean }[] = [
   { key: 'admin', label: 'Администрация' },
   { key: 'therapy', label: 'Терапевти и специалисти' },
@@ -221,19 +162,13 @@ function teamTone(grp: string, title: string): string {
 }
 export async function getTeam(): Promise<{ label: string; compact?: boolean; members: { name: string; role: string; tone: string }[] }[] | null> {
   noStore();
-  const s = db();
-  if (!s) return null;
-  try {
-    const { data, error } = await s.from('public_team').select('name, grp, title, sort');
-    if (error || !data?.length) return null;
-    return TEAM_GROUPS.map((g) => ({
-      label: g.label,
-      compact: g.compact,
-      members: data
-        .filter((r: any) => r.grp === g.key)
-        .map((r: any) => ({ name: r.name as string, role: r.title as string, tone: teamTone(g.key, r.title || '') })),
-    })).filter((g) => g.members.length > 0);
-  } catch {
-    return null;
-  }
+  const data = await all<{ name: string; grp: string; title: string | null }>('SELECT name, grp, title FROM team_members ORDER BY sort ASC');
+  if (!data.length) return null;
+  return TEAM_GROUPS.map((g) => ({
+    label: g.label,
+    compact: g.compact,
+    members: data
+      .filter((r) => r.grp === g.key)
+      .map((r) => ({ name: r.name, role: r.title || '', tone: teamTone(g.key, r.title || '') })),
+  })).filter((g) => g.members.length > 0);
 }

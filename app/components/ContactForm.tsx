@@ -74,7 +74,7 @@ export default function ContactForm({ lang = 'bg', email, topic = 'general' }: {
           message: f.get('message'), consent: f.get('consent') === 'on', website: f.get('website'), t: t0, lang,
         }),
       });
-      const j = await res.json().catch(() => ({}));
+      const j: any = await res.json().catch(() => ({}));
       if (j.ok) { form.reset(); setState('ok'); setNote('open'); return; }
       setState('error');
       setMsg(j.error === 'rate' ? t.rate : j.error === 'invalid' ? t.invalid : '');

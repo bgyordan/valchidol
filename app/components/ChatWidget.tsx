@@ -82,7 +82,7 @@ export default function ChatWidget({ phone, phoneHref }: { phone: string; phoneH
     setMsgs(next); setText(''); setBusy(true); setError('');
     try {
       const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: next, lang }) });
-      const j = await res.json().catch(() => ({}));
+      const j: any = await res.json().catch(() => ({}));
       if (j.ok && j.reply) setMsgs([...next, { role: 'assistant', text: j.reply }]);
       else fail(j.error === 'rate' ? t.rate : j.error === 'busy' ? 'busy' : 'err');
     } catch {
