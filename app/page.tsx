@@ -32,12 +32,12 @@ function Ic({ d }: { d: string }) {
 }
 
 const QUICK = [
-  { t: 'Е-дневник', d: 'Школо', href: 'https://app.shkolo.bg/', icon: ICON.book, ext: true },
-  { t: 'Прием', d: '1., 5. и 8. клас', href: '/priem', icon: ICON.cap },
-  { t: 'Свободни места', d: 'Към момента', href: '/svobodni-mesta', icon: ICON.seat },
-  { t: 'Заявления и бланки', d: 'Образци', href: '/zayavleniya', icon: ICON.form },
-  { t: 'Документи', d: 'Правилници и планове', href: '/dokumentatsiya', icon: ICON.folder },
-  { t: 'Контакти', d: 'Телефони и адрес', href: '/kontakti', icon: ICON.phone },
+  { t: 'Е-дневник', href: 'https://app.shkolo.bg/', icon: ICON.book, ext: true },
+  { t: 'Прием', href: '/priem', icon: ICON.cap },
+  { t: 'Свободни места', href: '/svobodni-mesta', icon: ICON.seat },
+  { t: 'Заявления и бланки', href: '/zayavleniya', icon: ICON.form },
+  { t: 'Документи', href: '/dokumentatsiya', icon: ICON.folder },
+  { t: 'Контакти', href: '/kontakti', icon: ICON.phone },
 ];
 
 const STATS = [
@@ -53,23 +53,23 @@ const pick = (hrefs: string[]) => {
   return hrefs.map((h) => all.find((l) => l.href === h)).filter((l): l is NonNullable<typeof l> => !!l);
 };
 const AUDIENCE = [
-  { t: 'Ученици', tone: 'lime', icon: ICON.student, href: '/za-uchenika', text: 'Изпити, стипендии, занимания по интереси и ученическо самоуправление.',
+  { t: 'Ученици', tone: 'lime', icon: ICON.student, href: '/za-uchenika',
     links: pick(['/za-uchenika', '/stipendii', '/zanimaniya-po-interesi', '/sfo', '/parlament']) },
-  { t: 'Родители', tone: 'orange', icon: ICON.family, href: '/za-roditeli', text: 'Прием, заявления, правила в училище и всичко за пътуванията и безопасността.',
+  { t: 'Родители', tone: 'orange', icon: ICON.family, href: '/za-roditeli',
     links: pick(['/priem', '/zayavleniya', '/za-roditeli', '/roditelski-klub', '/patuvaniya']) },
-  { t: 'Учители', tone: 'blue', icon: ICON.teacher, href: '/za-uchitelya', text: 'Вътрешни документи, критерии и организиране на изяви и екскурзии.',
+  { t: 'Учители', tone: 'blue', icon: ICON.teacher, href: '/za-uchitelya',
     links: pick(['/za-uchitelya', '/kriterii-dtv', '/profesionalni-obshtnosti', '/organizirane-na-ekskurzii', '/dokumentatsiya']) },
 ];
 
 const VALUES = ['Знания и умения по всички предмети', 'Взаимно уважение и толерантност', 'Квалифицирани учители', 'Национални и европейски проекти'];
 
 const DOCS = [
-  { t: 'Документация', d: 'Правилници, планове, графици', href: '/dokumentatsiya', icon: 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h6' },
-  { t: 'Бюджет', d: 'Бюджет и отчети по тримесечия', href: '/dokumentatsiya', icon: 'M4 20V10M10 20V4M16 20v-7M22 20H2' },
-  { t: 'Профил на купувача', d: 'Обществени поръчки в ЦАИС ЕОП', href: 'https://app.eop.bg/buyer/21179', icon: 'M3 7h18v13H3zM8 7V4h8v3' },
-  { t: 'Достъп до информация', d: 'Заявления и отчети по ЗДОИ', href: '/dostap-do-informatsiya', icon: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4' },
-  { t: 'Лични данни', d: 'Защита на личните данни', href: '/lichni-danni', icon: 'M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z' },
-  { t: 'Административни услуги', d: 'Удостоверения и заявления', href: '/administrativni-uslugi', icon: 'M4 5h16v11H9l-5 4z' },
+  { t: 'Документация', href: '/dokumentatsiya', icon: 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h6' },
+  { t: 'Бюджет', href: '/dokumentatsiya', icon: 'M4 20V10M10 20V4M16 20v-7M22 20H2' },
+  { t: 'Профил на купувача', href: 'https://app.eop.bg/buyer/21179', icon: 'M3 7h18v13H3zM8 7V4h8v3' },
+  { t: 'Достъп до информация', href: '/dostap-do-informatsiya', icon: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4' },
+  { t: 'Лични данни', href: '/lichni-danni', icon: 'M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z' },
+  { t: 'Административни услуги', href: '/administrativni-uslugi', icon: 'M4 5h16v11H9l-5 4z' },
 ];
 
 const isPhoto = (u: string) => u !== '/logo.svg';
@@ -108,7 +108,7 @@ export default async function Home() {
         {QUICK.map((q, i) => (
           <a key={q.href} href={q.href} style={{ ['--i' as any]: i }} {...(q.ext ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
             <span className="hq-ic"><Ic d={q.icon} /></span>
-            <span className="hq-t"><b>{q.t}</b><small>{q.d}</small></span>
+            <b>{q.t}</b>
           </a>
         ))}
       </nav>
@@ -202,7 +202,6 @@ export default async function Home() {
           <div className="hs-head">
             <div>
               <h2 id="aud-h">Информация за</h2>
-              <p>Най-нужното за всеки — на едно място.</p>
             </div>
           </div>
           <div className="ha">
@@ -212,7 +211,6 @@ export default async function Home() {
                   <span className="ha-ic"><Ic d={a.icon} /></span>
                   <h3><a href={a.href}>{a.t}</a></h3>
                 </div>
-                <p>{a.text}</p>
                 <ul>
                   {a.links.map((l) => <li key={l.href}><a href={l.href}>{l.label}</a></li>)}
                 </ul>
@@ -269,7 +267,6 @@ export default async function Home() {
           <div className="hs-head">
             <div>
               <h2 id="prz-h">Документи и прозрачност</h2>
-              <p>Правилниците, плановете и отчетите на училището са публични.</p>
             </div>
             <a className="more" href="/dokumenti">Всички документи</a>
           </div>
@@ -277,7 +274,7 @@ export default async function Home() {
             {DOCS.map((d) => (
               <a key={d.t} href={d.href} {...(d.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
                 <span className="hd-ic"><Ic d={d.icon} /></span>
-                <span><b>{d.t}</b><small>{d.d}</small></span>
+                <b>{d.t}</b>
               </a>
             ))}
           </div>

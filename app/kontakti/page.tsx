@@ -21,7 +21,6 @@ export default async function ContactsPage() {
       <PageHero
         path="/kontakti"
         title="Контакти"
-        intro="Телефони за връзка на родителите с ръководството на училището, имейл и адрес."
       />
       <section className="section tone-blue">
         <div className="wrap split">
