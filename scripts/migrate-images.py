@@ -86,9 +86,11 @@ def main():
     common = {b for b, n in cnt.items() if n >= len(lives) * 0.8}
     print('Общи за всички страници:', len(common))
 
+    # общите са винаги на едни и същи места: първата и последните две снимки на страницата.
+    # Адресите им се сменят при всяко отваряне, затова при второто отваряне махаме по място.
     def pairs_for(page, fresh):
         old = OLD[page]
-        fresh = [u for u in fresh if base(u) not in common]
+        fresh = fresh[1:-2] if len(fresh) >= 3 else []
         return [(o, f) for o, f in zip(old, fresh)] if len(fresh) == len(old) else None
 
     total, matched = 0, 0
