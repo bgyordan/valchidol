@@ -56,3 +56,12 @@
 .adm-photos .is-cover img { outline: 3px solid var(--brand-blue); outline-offset: 2px; }
 .adm-photos input { font: inherit; padding: 6px 8px; border: 1px solid var(--line-strong); border-radius: 8px; width: 100%; box-sizing: border-box; background: var(--paper); color: var(--ink); }
 .adm-photo-btns { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: .85rem; margin-top: 6px; }
+
+.adm-login { max-width: 420px; padding-top: 64px; }
+.adm-me { display: flex; gap: 12px; align-items: center; }
+.adm-me form { margin: 0; }
+.adm-msg { margin: 0; padding: 10px 12px; border-radius: var(--r-sm); font-weight: 600; }
+.adm-msg.err { background: #fdecea; color: #a8281b; }
+.adm-msg.ok { background: #e8f5e9; color: #1e6b2a; }
+.adm-table details form { display: flex; gap: 8px; margin: 6px 0; flex-wrap: wrap; }
+.adm-table details input { font: inherit; padding: 6px 8px; border: 1px solid var(--line-strong); border-radius: 8px; }

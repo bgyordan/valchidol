@@ -82,12 +82,9 @@ jobs:
           CONTACT_TO: ${{ secrets.CONTACT_TO }}
           MAIL_FROM: ${{ secrets.MAIL_FROM }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          ACCESS_TEAM_DOMAIN: ${{ secrets.ACCESS_TEAM_DOMAIN }}
-          ACCESS_AUD: ${{ secrets.ACCESS_AUD }}
-          ADMIN_DOMAIN: ${{ secrets.ADMIN_DOMAIN }}
-          ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
+          ADMIN_SETUP_CODE: ${{ secrets.ADMIN_SETUP_CODE }}
         run: |
-          jq -n 'env | with_entries(select(.key | IN("GMAIL_CLIENT_ID","GMAIL_CLIENT_SECRET","GMAIL_REFRESH_TOKEN","CONTACT_TO","MAIL_FROM","GEMINI_API_KEY","ACCESS_TEAM_DOMAIN","ACCESS_AUD","ADMIN_DOMAIN","ADMIN_EMAILS")) | select(.value != ""))' > /tmp/secrets.json
+          jq -n 'env | with_entries(select(.key | IN("GMAIL_CLIENT_ID","GMAIL_CLIENT_SECRET","GMAIL_REFRESH_TOKEN","CONTACT_TO","MAIL_FROM","GEMINI_API_KEY","ADMIN_SETUP_CODE")) | select(.value != ""))' > /tmp/secrets.json
           if [ "$(jq length /tmp/secrets.json)" -gt 0 ]; then
             npx wrangler secret bulk /tmp/secrets.json
           else
