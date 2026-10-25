@@ -1,6 +1,7 @@
 import PageHero from '../components/PageHero';
 
 export const metadata = {
+  alternates: { canonical: '/obshti-usloviya' },
   title: 'Общи условия за ползване — СУ „Васил Левски“ – Вълчи дол',
   description:
     'Общи условия за ползване на уебсайта на СУ „Васил Левски“ – гр. Вълчи дол: предназначение на съдържанието, авторски права, използване, външни връзки и отговорност.',

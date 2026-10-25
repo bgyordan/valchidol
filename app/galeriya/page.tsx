@@ -4,6 +4,7 @@ import { getGallery } from '../../lib/data';
 import './gallery.css';
 
 export const metadata = {
+  alternates: { canonical: '/galeriya' },
   title: 'Галерия — СУ „Васил Левски“ – Вълчи дол',
   description: 'Снимки от събития, празници и ежедневието в СУ „Васил Левски“ – гр. Вълчи дол.',
 };

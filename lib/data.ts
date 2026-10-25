@@ -175,11 +175,11 @@ export async function getTeam(): Promise<{ label: string; compact?: boolean; mem
 }
 
 /* ---------------- Текстови страници ---------------- */
-export type SitePage = { slug: string; title: string; grp: string | null; body: string; photos: string[]; updated_at: string };
+export type SitePage = { slug: string; title: string; grp: string | null; body: string; photos: string[]; updated_at: string; has_en?: number };
 
 export async function getPage(slug: string): Promise<SitePage | null> {
   noStore();
-  const r = await first<Omit<SitePage, 'photos'> & { photos: string }>('SELECT slug, title, grp, body, photos, updated_at FROM site_pages WHERE slug = ?', slug);
+  const r = await first<Omit<SitePage, 'photos'> & { photos: string }>("SELECT slug, title, grp, body, photos, updated_at, (title_en IS NOT NULL AND title_en <> '') AS has_en FROM site_pages WHERE slug = ?", slug);
   if (!r) return null;
   const ph = json<unknown>(r.photos, []);
   return { ...r, photos: Array.isArray(ph) ? ph.filter((x): x is string => typeof x === 'string') : [] };

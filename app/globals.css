@@ -544,6 +544,8 @@ html.dp-lock { overflow: hidden; }
 .d-left { left: max(3px, calc((100vw - 1480px) / 4)); rotate: calc(180deg + var(--r)); }
 .d-right { right: max(3px, calc((100vw - 1480px) / 4)); }
 @keyframes doodle-float { to { translate: 0 -14px; } }
+/* текстът е в data-t, за да не влиза в текста на страницата (Google, четци) */
+.doodle::before { content: attr(data-t); }
 @media (max-width: 1180px) { .doodles { display: none; } }
 @media (prefers-reduced-motion: reduce) { .doodle { animation: none; } }
 @media print { .doodles { display: none; } }

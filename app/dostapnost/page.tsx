@@ -2,6 +2,7 @@ import PageHero from '../components/PageHero';
 import { getSiteInfo } from '../../lib/siteinfo';
 
 export const metadata = {
+  alternates: { canonical: '/dostapnost' },
   title: 'Декларация за достъпност — СУ „Васил Левски“ – Вълчи дол',
   description:
     'Декларация за достъпност на уебсайта на СУ „Васил Левски“ – гр. Вълчи дол съгласно Директива (ЕС) 2016/2102 и Закона за електронното управление.',

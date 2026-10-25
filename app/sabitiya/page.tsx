@@ -1,7 +1,7 @@
 import PageHero from '../components/PageHero';
 import { getEvents, fmtDate, monthShort } from '../../lib/data';
 
-export const metadata = { title: 'Събития — СУ „Васил Левски“ – Вълчи дол', description: 'Предстоящи и минали събития в СУ „Васил Левски“ – гр. Вълчи дол.' };
+export const metadata = { alternates: { canonical: '/sabitiya' }, title: 'Събития — СУ „Васил Левски“ – Вълчи дол', description: 'Предстоящи и минали събития в СУ „Васил Левски“ – гр. Вълчи дол.' };
 export const dynamic = 'force-dynamic';
 
 export default async function EventsPage() {

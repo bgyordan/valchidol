@@ -1,6 +1,7 @@
 import PageHero from '../components/PageHero';
 
 export const metadata = {
+  alternates: { canonical: '/politika-za-biskvitki' },
   title: 'Политика за бисквитки — СУ „Васил Левски“ – Вълчи дол',
   description:
     'Политика за бисквитки на уебсайта на СУ „Васил Левски“ – гр. Вълчи дол: какви данни съхраняваме в браузъра, за какво служат и как да ги управлявате.',

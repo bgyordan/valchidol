@@ -4,6 +4,7 @@ import { getNews } from '../../lib/data';
 import './novini.css';
 
 export const metadata = {
+  alternates: { canonical: '/novini' },
   title: 'Новини — СУ „Васил Левски“ – Вълчи дол',
   description: 'Събития, празници, съобщения и истории от живота на учениците и учителите в СУ „Васил Левски“ – гр. Вълчи дол.',
 };

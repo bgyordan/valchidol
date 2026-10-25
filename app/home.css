@@ -87,6 +87,7 @@
 
 /* --- новини и събития --- */
 .hn { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(280px, 1fr); gap: clamp(24px, 3vw, 40px); align-items: start; }
+.hn.no-ev { grid-template-columns: 1fr; }
 .hn-news { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(20px, 2.4vw, 32px); }
 .hn-feat { display: grid; align-content: start; gap: 16px; }
 .hn-img { display: block; aspect-ratio: 16 / 10; border-radius: var(--r); overflow: hidden; background: var(--sky-2); }

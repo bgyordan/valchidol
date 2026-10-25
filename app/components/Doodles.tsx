@@ -37,9 +37,7 @@ export default function Doodles() {
         used.add(k);
         const rot = next(7) - 3;
         return (
-          <span key={i} className={`doodle d-${s.side}`} style={{ top: `${s.top}%`, ['--r' as string]: `${rot}deg`, ['--d' as string]: `${i * 1.7}s` } as React.CSSProperties}>
-            {ITEMS[k]}
-          </span>
+          <span key={i} className={`doodle d-${s.side}`} style={{ top: `${s.top}%`, ['--r' as string]: `${rot}deg`, ['--d' as string]: `${i * 1.7}s` } as React.CSSProperties} data-t={ITEMS[k]} />
         );
       })}
     </div>
