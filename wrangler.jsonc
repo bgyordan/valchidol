@@ -13,5 +13,7 @@
   "r2_buckets": [
     { "binding": "FILES", "bucket_name": "souvalchidol-files" }
   ],
+  // Изкуственият интелект на Cloudflare (Workers AI) — за чатбота на сайта
+  "ai": { "binding": "AI" },
   "observability": { "enabled": true }
 }

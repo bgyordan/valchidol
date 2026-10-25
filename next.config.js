@@ -14,4 +14,5 @@ const nextConfig = {
 module.exports = nextConfig;
 
 // Локалната разработка (next dev) вижда D1/R2 връзките от wrangler.jsonc
-require('@opennextjs/cloudflare').initOpenNextCloudflareForDev();
+// без отдалечени връзки (напр. Workers AI) — те работят само в Cloudflare, а билдът и локалният тест не ги изискват
+require('@opennextjs/cloudflare').initOpenNextCloudflareForDev({ remoteBindings: false });
