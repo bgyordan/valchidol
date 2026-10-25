@@ -1,5 +1,6 @@
 import { NAV, type NavGroup, type NavLink } from '../app/components/nav';
 import { getSetting } from './data';
+import { all } from './db';
 
 // Главното меню с промените от админа (site_settings.menu):
 // { groups: [{ href, label?, hidden?, links: [{ href, label?, hidden? }] }] }
@@ -26,5 +27,23 @@ export async function getNav(showHidden = false): Promise<MenuGroup[]> {
   const raw = await getSetting<{ groups?: SavedGroup[] }>('menu').catch(() => null);
   const saved = raw && Array.isArray(raw.groups) ? raw.groups : undefined;
   const groups = arrange(NAV, saved, showHidden);
-  return groups.map((g) => ({ ...g, links: arrange(g.links, saved?.find((s) => s.href === g.href)?.links, showHidden) }));
+  const cats = await newsCats();
+  return groups.map((g) => {
+    let links: NavLink[] = g.links;
+    // рубриките на новините (от админа) стоят в менюто „Новини“ като отделни връзки
+    if (g.href === '/novini') {
+      const have = new Set(links.map((l) => l.label.toLowerCase()));
+      links = [...links, ...cats.filter((c) => !have.has(c.toLowerCase())).map((c) => ({ label: c, href: `/novini?r=${encodeURIComponent(c)}` }))];
+    }
+    return { ...g, links: arrange(links, saved?.find((s) => s.href === g.href)?.links, showHidden) };
+  });
+}
+
+// рубриките с поне една публикувана новина, без общата „Новини“
+async function newsCats(): Promise<string[]> {
+  const rows = await all<{ category: string }>(
+    `SELECT category FROM site_news WHERE status = 'published' AND category IS NOT NULL AND category <> '' AND category <> 'Новини'
+     GROUP BY category ORDER BY COUNT(*) DESC LIMIT 8`,
+  ).catch(() => []);
+  return rows.map((r) => r.category);
 }

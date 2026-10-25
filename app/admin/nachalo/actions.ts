@@ -7,8 +7,11 @@ import { deleteFile, isFile, uploadFile } from '../../../lib/files';
 
 // Снимки за началната страница: „hero“ → site_settings.hero_photos,
 // друго (напр. „nachalna-pod“) → site_settings.page_photos[<ключ>].
-type Target = 'hero' | 'nachalna-pod';
-const target = (f: FormData): Target => (f.get('target') === 'nachalna-pod' ? 'nachalna-pod' : 'hero');
+type Target = 'hero' | 'nachalna-pod' | 'informatsiya-za';
+const target = (f: FormData): Target => {
+  const t = f.get('target');
+  return t === 'nachalna-pod' || t === 'informatsiya-za' ? t : 'hero';
+};
 
 async function read(t: Target): Promise<{ list: string[]; all: Record<string, unknown> }> {
   const key = t === 'hero' ? 'hero_photos' : 'page_photos';
@@ -36,6 +39,7 @@ export async function addHomePhotos(f: FormData) {
   for (const file of f.getAll('photos')) if (isFile(file)) list.push(await uploadFile(file, 'nachalo'));
   const link = String(f.get('link') ?? '').trim();
   if (/^https?:\/\//.test(link) || link.startsWith('/files/')) list.push(link);
+  for (const u of f.getAll('pick').map(String)) if (u.startsWith('/files/') && !list.includes(u)) list.push(u);
   await write(t, list, all);
 }
 
@@ -45,7 +49,7 @@ export async function removeHomePhoto(f: FormData) {
   const url = String(f.get('url') ?? '');
   const { list, all } = await read(t);
   await write(t, list.filter((u) => u !== url), all);
-  await deleteFile(url);
+  await deleteFile(url, 'nachalo'); // избрана от галерията/новините снимка не се трие
 }
 
 export async function moveHomePhoto(f: FormData) {

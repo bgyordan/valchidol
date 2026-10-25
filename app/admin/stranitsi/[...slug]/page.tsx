@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { first, json } from '../../../../lib/db';
 import { deletePage, savePage } from '../../actions';
 import Confirm from '../../Confirm';
+import PhotoPicker from '../../PhotoPicker';
 import { PAGE_GROUPS } from '../groups';
 
 type Row = { slug: string; title: string; grp: string | null; body: string; photos: string };
@@ -52,6 +53,7 @@ export default async function EditPage({ params }: { params: Promise<{ slug: str
             </div>
           )}
           <input type="file" name="photos" accept="image/*" multiple />
+          <PhotoPicker exclude={photos} />
         </fieldset>
         <p><button type="submit" className="adm-btn primary">Запази</button></p>
       </form>

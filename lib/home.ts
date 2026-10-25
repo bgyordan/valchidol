@@ -25,6 +25,10 @@ export const QUICK_ICONS: { key: string; label: string }[] = [
   { key: 'student', label: 'Ученик' },
   { key: 'family', label: 'Родители' },
   { key: 'teacher', label: 'Учител' },
+  { key: 'chart', label: 'Графика / бюджет' },
+  { key: 'calendar', label: 'Календар / графици' },
+  { key: 'coin', label: 'Монета / стипендии' },
+  { key: 'shield', label: 'Щит / безопасност' },
 ];
 
 export const HOME_DEFAULTS: HomeContent = {
@@ -35,12 +39,13 @@ export const HOME_DEFAULTS: HomeContent = {
   about_text:
     'Сградата от 1987 г. има 22 класни стаи, ученически стол, актова зала, два физкултурни салона и работилници. Учениците учат в профилирани и професионални паралелки, участват в проекти, клубове и списват училищни вестници.',
   quick: [
-    { t: 'Е-дневник', href: 'https://app.shkolo.bg/', icon: 'book' },
+    // без това, което вече има горе (е-дневник, контакти, административни услуги, профил на купувача)
     { t: 'Прием', href: '/priem', icon: 'cap' },
-    { t: 'Свободни места', href: '/svobodni-mesta', icon: 'seat' },
+    { t: 'Прозрачност и бюджет', href: '/dokumentatsiya#Бюджет', icon: 'chart' },
+    { t: 'Графици', href: '/dokumentatsiya#Графици', icon: 'calendar' },
     { t: 'Заявления и бланки', href: '/zayavleniya', icon: 'form' },
-    { t: 'Документи', href: '/dokumentatsiya', icon: 'folder' },
-    { t: 'Контакти', href: '/kontakti', icon: 'phone' },
+    { t: 'Стипендии', href: '/stipendii', icon: 'coin' },
+    { t: 'Свободни места', href: '/svobodni-mesta', icon: 'seat' },
   ],
   stats: [
     { n: '1880', t: 'година на основаване' },

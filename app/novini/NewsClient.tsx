@@ -6,9 +6,10 @@ import { fmtDate } from '../../lib/data';
 
 const PER_PAGE = 12;
 
-export default function NewsClient({ posts }: { posts: NewsCard[] }) {
+// initialCat: рубрика от адреса (/novini?r=Постижения) — връзките в менюто „Новини“
+export default function NewsClient({ posts, initialCat }: { posts: NewsCard[]; initialCat?: string }) {
   const cats = useMemo(() => Array.from(new Set(posts.map((p) => p.category).filter(Boolean))), [posts]);
-  const [cat, setCat] = useState('all');
+  const [cat, setCat] = useState(initialCat && posts.some((p) => p.category === initialCat) ? initialCat : 'all');
   const [q, setQ] = useState('');
   const [page, setPage] = useState(1);
 

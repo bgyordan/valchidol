@@ -5,6 +5,7 @@ import { all, first, json } from '../../../../lib/db';
 import { isoToSofia } from '../../../../lib/sofia';
 import { deleteNews, saveNews } from '../../actions';
 import Confirm from '../../Confirm';
+import PhotoPicker from '../../PhotoPicker';
 
 const NEWS_CATS = ['Новини', 'Събития', 'Моменти от работата', 'Постижения', 'Проекти', 'Обяви'];
 
@@ -69,6 +70,8 @@ export default async function EditNews({ params }: { params: Promise<{ id: strin
             </div>
           )}
           <input type="file" name="gallery" accept="image/*" multiple />
+          <PhotoPicker exclude={[...gallery, ...(n?.cover_url ? [n.cover_url] : [])]} />
+          <small>Ако новината няма основна снимка, първата избрана става основна.</small>
         </fieldset>
         <p><button type="submit" className="adm-btn primary">Запази</button></p>
       </form>

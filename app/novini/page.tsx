@@ -9,13 +9,13 @@ export const metadata = {
 };
 export const dynamic = 'force-dynamic';
 
-export default async function NewsArchivePage() {
-  const posts = await getNews();
+export default async function NewsArchivePage({ searchParams }: { searchParams: Promise<{ r?: string }> }) {
+  const [posts, { r }] = await Promise.all([getNews(), searchParams]);
   return (
     <>
       <PageHero path="/novini" title="Новини" />
       <section className="section tone-lime">
-        <div className="wrap"><NewsClient posts={posts} /></div>
+        <div className="wrap"><NewsClient key={r ?? ''} posts={posts} initialCat={r} /></div>
       </section>
     </>
   );

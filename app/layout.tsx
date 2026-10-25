@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import '@fontsource-variable/unbounded';
+import '@fontsource-variable/caveat';
 import './fonts.css';
 import './globals.css';
 import Header from './components/Header';
@@ -10,6 +11,7 @@ import ScrollTop from './components/ScrollTop';
 import AccessibilityWidget from './components/AccessibilityWidget';
 import CookieBanner from './components/CookieBanner';
 import DocPreview from './components/DocPreview';
+import Doodles from './components/Doodles';
 import { getLang } from '../lib/lang-server';
 import { getNav } from '../lib/menu';
 
@@ -55,7 +57,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {lang === 'bg' && <SiteNotice />}
         <TopBar lang={lang} />
         <Header nav={nav} />
-        <main id="main">{children}</main>
+        <main id="main"><Doodles />{children}</main>
         <Footer lang={lang} />
         <ScrollTop />
         <AccessibilityWidget />
