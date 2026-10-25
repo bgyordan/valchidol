@@ -4,12 +4,12 @@ import { all } from '../../../lib/db';
 import { fmtDate } from '../../../lib/data';
 import { PAGE_GROUPS } from './groups';
 
-type Row = { slug: string; title: string; grp: string | null; updated_at: string; n: number };
+type Row = { slug: string; title: string; grp: string | null; updated_at: string; n: number; en: string | null };
 
 export default async function AdminPages() {
   const no = await denied('stranitsi');
   if (no) return no;
-  const rows = await all<Row>('SELECT slug, title, grp, updated_at, length(body) AS n FROM site_pages ORDER BY sort');
+  const rows = await all<Row>('SELECT slug, title, grp, updated_at, length(body) AS n, title_en AS en FROM site_pages ORDER BY sort');
   const groups = [...PAGE_GROUPS, { key: '', title: 'Без група' }];
   return (
     <>
@@ -26,7 +26,7 @@ export default async function AdminPages() {
               <tbody>
                 {list.map((r) => (
                   <tr key={r.slug}>
-                    <td><Link href={`/admin/stranitsi/${r.slug}`}>{r.title}</Link></td>
+                    <td><Link href={`/admin/stranitsi/${r.slug}`}>{r.title}</Link>{r.en && <span className="adm-badge" title={r.en}>EN</span>}</td>
                     <td><a href={`/${r.slug}`} target="_blank">/{r.slug} ↗</a></td>
                     <td>{fmtDate(r.updated_at)}</td>
                   </tr>

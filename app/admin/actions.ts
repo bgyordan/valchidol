@@ -270,12 +270,15 @@ export async function savePage(f: FormData) {
   for (const u of f.getAll('pick').map(String)) if (u.startsWith('/files/') && !photos.includes(u)) photos.push(u);
 
   const body = String(f.get('body') ?? '').replace(/\r/g, '').slice(0, 400000);
+  // английската версия (по желание): без заглавие на английски страницата не се показва на /en
+  const titleEn = opt(f, 'title_en', 200);
+  const bodyEn = String(f.get('body_en') ?? '').replace(/\r/g, '').trim().slice(0, 200000) || null;
   if (old) {
-    await d.prepare(`UPDATE site_pages SET title=?, grp=?, body=?, photos=?, updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE slug=?`)
-      .bind(title, opt(f, 'grp', 30), body, JSON.stringify(photos), slug).run();
+    await d.prepare(`UPDATE site_pages SET title=?, grp=?, body=?, photos=?, title_en=?, body_en=?, updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE slug=?`)
+      .bind(title, opt(f, 'grp', 30), body, JSON.stringify(photos), titleEn, bodyEn, slug).run();
   } else {
-    await d.prepare('INSERT INTO site_pages (slug, title, grp, body, photos, sort) VALUES (?,?,?,?,?, (SELECT COALESCE(MAX(sort),0)+1 FROM site_pages))')
-      .bind(slug, title, opt(f, 'grp', 30), body, JSON.stringify(photos)).run();
+    await d.prepare('INSERT INTO site_pages (slug, title, grp, body, photos, title_en, body_en, sort) VALUES (?,?,?,?,?,?,?, (SELECT COALESCE(MAX(sort),0)+1 FROM site_pages))')
+      .bind(slug, title, opt(f, 'grp', 30), body, JSON.stringify(photos), titleEn, bodyEn).run();
   }
   revalidatePath('/', 'layout');
   redirect('/admin/stranitsi');

@@ -547,3 +547,4 @@ html.dp-lock { overflow: hidden; }
 @media (max-width: 1180px) { .doodles { display: none; } }
 @media (prefers-reduced-motion: reduce) { .doodle { animation: none; } }
 @media print { .doodles { display: none; } }
+.page-bg-note { margin-top: 28px; font-size: calc(16px * var(--fs, 1)); }

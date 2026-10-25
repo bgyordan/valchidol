@@ -47,3 +47,30 @@ async function newsCats(): Promise<string[]> {
   ).catch(() => []);
   return rows.map((r) => r.category);
 }
+
+// Менюто на английската версия: само страниците, които имат английски текст, по групите им.
+const EN_GROUPS: { key: string; label: string; tone: NavGroup['tone'] }[] = [
+  { key: 'uchilishte', label: 'About us', tone: 'blue' },
+  { key: 'proekti', label: 'About us', tone: 'blue' },
+  { key: 'roditeli', label: 'Parents', tone: 'orange' },
+  { key: 'uchenitsi', label: 'Students', tone: 'lime' },
+  { key: 'uchiteli', label: 'Teachers', tone: 'blue' },
+  { key: 'dokumenti', label: 'Documents', tone: 'blue' },
+  { key: 'novini', label: 'News', tone: 'orange' },
+];
+
+export async function getNavEn(): Promise<MenuGroup[]> {
+  const { getEnPages } = await import('./data');
+  const pages = await getEnPages();
+  const out: MenuGroup[] = [];
+  for (const p of pages) {
+    const g = EN_GROUPS.find((x) => x.key === (p.grp ?? '')) ?? { key: '', label: 'More', tone: 'blue' as const };
+    let grp = out.find((x) => x.label === g.label);
+    if (!grp) out.push((grp = { label: g.label, href: '/en/' + p.slug, tone: g.tone, intro: '', links: [] }));
+    grp.links.push({ label: p.title, href: '/en/' + p.slug });
+  }
+  out.sort((a, b) => EN_GROUPS.findIndex((x) => x.label === a.label) - EN_GROUPS.findIndex((x) => x.label === b.label));
+  // раздел с една страница става обикновена връзка (без подменю)
+  for (const g of out) if (g.links.length === 1) { g.label = g.links[0].label; g.links = []; }
+  return out;
+}
