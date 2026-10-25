@@ -113,11 +113,10 @@ export const CONTACT = {
 
 // Лентата с връзки за образованието на началната страница (под бързите връзки)
 export const EDU_LINKS = [
-  { short: 'Ш', label: 'Електронен дневник', note: 'Школо', href: 'https://app.shkolo.bg/' },
-  { short: 'Н', label: 'НЕИСПУО', note: '', href: 'https://neispuo.mon.bg/' },
-  { short: 'МОН', label: 'Министерство на образованието', note: '', href: 'https://www.mon.bg/' },
-  { short: 'РУО', label: 'РУО – Варна', note: '', href: 'https://ruo-varna.bg/' },
-  { short: '365', label: 'Microsoft 365', note: '@edu.mon.bg', href: 'https://www.office.com/' },
+  { label: 'Електронен дневник', href: 'https://app.shkolo.bg/' },
+  { label: 'НЕИСПУО', href: 'https://neispuo.mon.bg/' },
+  { label: 'МОН', href: 'https://www.mon.bg/' },
+  { label: 'РУО – Варна', href: 'https://ruo-varna.bg/' },
 ];
 
 // Полезни връзки (долната част на стария сайт)
