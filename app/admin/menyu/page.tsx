@@ -18,10 +18,8 @@ export default async function AdminMenu() {
       <form action={saveMenu} className="adm-form">
         <fieldset className="adm-menu-group">
           <legend>Главни букви</legend>
-          <div className="adm-row adm-menu-row">
-            <label className="adm-check"><input type="checkbox" name="caps" value="1" defaultChecked={caps.top} /> Разделите в менюто с главни букви</label>
-            <label className="adm-check"><input type="checkbox" name="caps_sub" value="1" defaultChecked={caps.sub} /> Подменютата с главни букви</label>
-          </div>
+          <p><label className="adm-check"><input type="checkbox" name="caps" value="1" defaultChecked={caps.top} /> Разделите в менюто с главни букви</label></p>
+          <p><label className="adm-check"><input type="checkbox" name="caps_sub" value="1" defaultChecked={caps.sub} /> Подменютата с главни букви</label></p>
         </fieldset>
         {nav.map((g, gpos) => {
           const k = gi(g.href);
@@ -37,6 +35,8 @@ export default async function AdminMenu() {
               {g.links.map((l, lpos) => {
                 const j = orig.links.findIndex((x) => x.href === l.href);
                 const o = orig.links[j];
+                // рубриките на новините се добавят сами (не са в кода) — тук не се редактират
+                if (!o) return null;
                 return (
                   <div key={l.href} className="adm-row adm-menu-row sub">
                     <label>№<input name={`g${k}_l${j}_pos`} type="number" step="any" defaultValue={lpos + 1} /></label>
