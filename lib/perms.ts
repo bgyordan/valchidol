@@ -5,6 +5,7 @@ export const AREAS = [
   { key: 'galeriya', label: 'Галерия' },
   { key: 'dokumenti', label: 'Документи' },
   { key: 'stranitsi', label: 'Страници' },
+  { key: 'baza', label: 'Материална база' },
   { key: 'nachalo', label: 'Начална страница и меню' },
   { key: 'nastroyki', label: 'Настройки (контакти, съобщение)' },
 ] as const;

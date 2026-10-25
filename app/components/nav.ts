@@ -15,6 +15,7 @@ export const NAV: NavGroup[] = [
       { label: 'Патрон и символи', desc: 'Васил Левски и песента на училището', href: '/patron-i-simvoli' },
       { label: 'Мисия и цели', desc: 'Какво искаме за учениците', href: '/misiya-i-tseli' },
       { label: 'Визия', desc: 'Накъде вървим', href: '/viziya' },
+      { label: 'Материална база', desc: 'STEM център, кабинети, салони', href: '/materialna-baza' },
       { label: 'Проекти', desc: 'Национални и европейски програми', href: '/proekti' },
       { label: 'Обществен съвет', desc: 'Протоколи от заседания', href: '/obshtestven-savet' },
       { label: 'Училищно настоятелство', desc: 'Сдружение към училището', href: '/uchilishtno-nastoyatelstvo' },
