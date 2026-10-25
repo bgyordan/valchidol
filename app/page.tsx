@@ -4,6 +4,7 @@ import { getNav } from '../lib/menu';
 import { getHome } from '../lib/home';
 import PhotoBand from './components/PhotoBand';
 import AudienceSwitch from './components/AudienceSwitch';
+import { EDU_LINKS } from './components/nav';
 import './home.css';
 
 export const metadata = { alternates: { canonical: '/', languages: { bg: '/', en: '/en' } } };
@@ -83,6 +84,8 @@ export default async function Home() {
   // снимките в трите панела „Информация за“: избрани (page_photos['informatsiya-za']) или следващите от галерията
   const audPh = [0, 1, 2].map((i) => chosenInfo[i] || auto.shift() || covers[i + 3] || slides[i]);
   const [feat, ...rest] = news;
+  // бързите връзки без това, което вече е в бутоните горе (Прием, За училището)
+  const quick = home.quick.filter((q) => !['/priem', '/za-uchilishteto'].includes(q.href.split('#')[0]));
 
   // данни за училището за Google (адрес, телефон, лого)
   const c = info.contact;
@@ -133,11 +136,22 @@ export default async function Home() {
       </section>
 
       {/* ===== Бързи връзки — най-търсеното, като плочки върху долния ръб на снимката ===== */}
-      <nav className="wrap hq" aria-label="Бързи връзки">
-        {home.quick.map((q, i) => (
+      <nav className="wrap hq" aria-label="Бързи връзки" style={{ ['--n' as any]: Math.min(6, Math.max(3, quick.length)) }}>
+        {quick.map((q, i) => (
           <a key={q.href + i} href={q.href} style={{ ['--i' as any]: i }} {...(q.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
             <span className="hq-ic"><Ic d={ICON[q.icon] || ICON.folder} /></span>
             <b>{q.t}</b>
+          </a>
+        ))}
+      </nav>
+
+      {/* ===== Лента с връзки за образованието: е-дневник, НЕИСПУО, МОН, РУО… ===== */}
+      <nav className="wrap hedu" aria-label="Връзки за образованието">
+        {EDU_LINKS.map((l, i) => (
+          <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer" style={{ ['--i' as any]: i }}>
+            <span className={`hedu-b c${i % 5}`} aria-hidden="true">{l.short}</span>
+            <span className="hedu-t">{l.label}{l.note && <small>{l.note}</small>}</span>
+            <svg className="hedu-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
           </a>
         ))}
       </nav>
