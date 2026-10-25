@@ -1,3 +1,4 @@
+import { denied } from '../guard';
 import { getHeroPhotos, getPagePhotos } from '../../../lib/data';
 import Confirm from '../Confirm';
 import { getHome, QUICK_ICONS } from '../../../lib/home';
@@ -9,6 +10,8 @@ const GROUPS = [
 ] as const;
 
 export default async function AdminFrontPage() {
+  const no = await denied('nachalo');
+  if (no) return no;
   const lists = { hero: await getHeroPhotos(), 'nachalna-pod': await getPagePhotos('nachalna-pod') };
   const h = await getHome();
   const quick = [...h.quick, ...Array(Math.max(0, 9 - h.quick.length)).fill({ t: '', href: '', icon: 'folder' })].slice(0, 12);

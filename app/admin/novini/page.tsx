@@ -1,3 +1,4 @@
+import { denied } from '../guard';
 import Link from 'next/link';
 import { all } from '../../../lib/db';
 import { fmtDate } from '../../../lib/data';
@@ -5,6 +6,8 @@ import { fmtDate } from '../../../lib/data';
 type Row = { id: string; title: string; status: string; published_at: string | null; category: string };
 
 export default async function AdminNews() {
+  const no = await denied('novini');
+  if (no) return no;
   const rows = await all<Row>('SELECT id, title, status, published_at, category FROM site_news ORDER BY COALESCE(published_at, created_at) DESC');
   const now = new Date().toISOString();
   return (

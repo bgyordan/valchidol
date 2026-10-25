@@ -8,7 +8,7 @@ import { db, first, json } from '../../../lib/db';
 const s = (f: FormData, k: string, max = 300) => String(f.get(k) ?? '').trim().slice(0, max);
 
 export async function saveSiteInfo(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('nastroyki');
   const d = await db();
   if (!d) throw new Error('Няма връзка с базата');
   const old = json<Record<string, unknown>>((await first<{ value: string }>(`SELECT value FROM site_settings WHERE key = 'site_info'`))?.value, {});

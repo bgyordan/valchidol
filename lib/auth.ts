@@ -1,12 +1,14 @@
 import { cookies } from 'next/headers';
 import { first, db } from './db';
+import { can, type Area } from './perms';
 
 // Вход в админ панела с имейл и парола. Хората са в таблицата admin_users (миграция 0003).
 // Ролята „admin“ добавя и маха хора; „editor“ само пише съдържание.
 // Първият главен админ се създава от формата за вход с кода ADMIN_SETUP_CODE (тайна в GitHub).
 // Локално (next dev) може DEV_ADMIN_EMAIL=някой@домейн без вход.
 
-export type Admin = { email: string; name: string | null; role: 'admin' | 'editor' };
+// perms: разделите, които редакторът може да пипа (null = всички) — виж lib/perms.ts
+export type Admin = { email: string; name: string | null; role: 'admin' | 'editor'; perms: string | null };
 
 export const SESSION_COOKIE = 'adm_s';
 export const SESSION_DAYS = 30;
@@ -70,20 +72,22 @@ export async function endSession(): Promise<void> {
 
 export async function getAdmin(): Promise<Admin | null> {
   if (process.env.NODE_ENV === 'development' && process.env.DEV_ADMIN_EMAIL) {
-    return { email: process.env.DEV_ADMIN_EMAIL, name: null, role: 'admin' };
+    return { email: process.env.DEV_ADMIN_EMAIL, name: null, role: 'admin', perms: null };
   }
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token) return null;
   return first<Admin>(
-    `SELECT u.email, u.name, u.role FROM admin_sessions s JOIN admin_users u ON u.email = s.email
+    `SELECT u.email, u.name, u.role, u.perms FROM admin_sessions s JOIN admin_users u ON u.email = s.email
      WHERE s.token_hash = ? AND s.expires_at > ?`,
     await sha256(token), new Date().toISOString(),
   );
 }
 
-export async function requireAdmin(): Promise<Admin> {
+// area: разделът, който се променя — редактор без право за него получава грешка
+export async function requireAdmin(area?: Area): Promise<Admin> {
   const a = await getAdmin();
   if (!a) throw new Error('Нямате достъп');
+  if (area && !can(a, area)) throw new Error('Нямате право за този раздел');
   return a;
 }
 

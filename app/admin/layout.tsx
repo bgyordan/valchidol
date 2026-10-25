@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getAdmin } from '../../lib/auth';
+import { can } from '../../lib/perms';
 import { first } from '../../lib/db';
 import ActionForm from './ActionForm';
 import { login, logout, setupFirstAdmin } from './auth-actions';
@@ -44,14 +45,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="adm">
       <nav className="adm-nav" aria-label="Админ меню">
         <Link href="/admin">Начало</Link>
-        <Link href="/admin/nachalo">Начална страница</Link>
-        <Link href="/admin/novini">Новини</Link>
-        <Link href="/admin/stranitsi">Страници</Link>
-        <Link href="/admin/dokumenti">Документи</Link>
-        <Link href="/admin/galeriya">Галерия</Link>
-        <Link href="/admin/sabitiya">Събития</Link>
-        <Link href="/admin/menyu">Меню</Link>
-        <Link href="/admin/nastroyki">Настройки</Link>
+        {can(me, 'nachalo') && <Link href="/admin/nachalo">Начална страница</Link>}
+        {can(me, 'novini') && <Link href="/admin/novini">Новини</Link>}
+        {can(me, 'stranitsi') && <Link href="/admin/stranitsi">Страници</Link>}
+        {can(me, 'dokumenti') && <Link href="/admin/dokumenti">Документи</Link>}
+        {can(me, 'galeriya') && <Link href="/admin/galeriya">Галерия</Link>}
+        {can(me, 'sabitiya') && <Link href="/admin/sabitiya">Събития</Link>}
+        {can(me, 'nachalo') && <Link href="/admin/menyu">Меню</Link>}
+        {can(me, 'nastroyki') && <Link href="/admin/nastroyki">Настройки</Link>}
         {me.role === 'admin' && <Link href="/admin/hora">Хора</Link>}
         <span className="adm-me">
           <Link href="/admin/profil">{me.name || me.email}</Link>

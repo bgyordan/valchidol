@@ -7,9 +7,10 @@ import type { Lang } from '../../lib/lang';
 
 export default async function Footer({ lang = 'bg' }: { lang?: Lang }) {
   const [{ contact: CONTACT, hours: HOURS }, NAV] = await Promise.all([getSiteInfo(), getNav()]);
-  // „Новини“ няма отделна колона — стои под „За училището“, за да останат пет колони и всички връзки да се виждат
-  const news = NAV.find((g) => g.href === '/novini');
-  const groups = NAV.filter((g) => g !== news);
+  // Футърът е кратък: без „Новини“ (тя е в менюто и на началната) и по най-много 5 връзки от раздел,
+  // в реда от админ → Меню; останалите са зад „Всичко в раздела“.
+  const groups = NAV.filter((g) => g.href !== '/novini');
+  const MAX = 5;
   return (
     <footer className="site-foot">
       <div className="wrap">
@@ -21,23 +22,14 @@ export default async function Footer({ lang = 'bg' }: { lang?: Lang }) {
             <a className="sf-fb" href={CONTACT.facebook} target="_blank" rel="noopener noreferrer">Facebook страница</a>
           </div>
 
-          {groups.map((g, i) => (
-            <div key={g.href} className="sf-col">
-              <nav className={`tone-${g.tone}`} aria-label={g.label}>
-                <p className="sf-h">{g.label}</p>
-                <ul>
-                  {g.links.map((l) => <li key={l.href}><a href={l.href}>{l.label}</a></li>)}
-                </ul>
-              </nav>
-              {i === 0 && news && (
-                <nav className={`sf-sub tone-${news.tone}`} aria-label={news.label}>
-                  <p className="sf-h">{news.label}</p>
-                  <ul>
-                    {news.links.map((l) => <li key={l.href}><a href={l.href}>{l.label}</a></li>)}
-                  </ul>
-                </nav>
-              )}
-            </div>
+          {groups.map((g) => (
+            <nav key={g.href} className="sf-col" aria-label={g.label}>
+              <p className="sf-h"><a href={g.href}>{g.label}</a></p>
+              <ul>
+                {g.links.slice(0, MAX).map((l) => <li key={l.href}><a href={l.href}>{l.label}</a></li>)}
+                {g.links.length > MAX && <li><a className="sf-more" href={g.href}>Всичко в раздела</a></li>}
+              </ul>
+            </nav>
           ))}
 
           <div className="sf-col sf-contact">

@@ -1,3 +1,4 @@
+import { denied } from '../guard';
 import Link from 'next/link';
 import { all } from '../../../lib/db';
 import { fmtDate } from '../../../lib/data';
@@ -6,6 +7,8 @@ import { PAGE_GROUPS } from './groups';
 type Row = { slug: string; title: string; grp: string | null; updated_at: string; n: number };
 
 export default async function AdminPages() {
+  const no = await denied('stranitsi');
+  if (no) return no;
   const rows = await all<Row>('SELECT slug, title, grp, updated_at, length(body) AS n FROM site_pages ORDER BY sort');
   const groups = [...PAGE_GROUPS, { key: '', title: 'Без група' }];
   return (

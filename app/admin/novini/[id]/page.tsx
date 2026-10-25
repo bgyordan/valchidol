@@ -1,18 +1,27 @@
+import { denied } from '../../guard';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { first, json } from '../../../../lib/db';
+import { all, first, json } from '../../../../lib/db';
 import { isoToSofia } from '../../../../lib/sofia';
 import { deleteNews, saveNews } from '../../actions';
 import Confirm from '../../Confirm';
 
+const NEWS_CATS = ['Новини', 'Събития', 'Моменти от работата', 'Постижения', 'Проекти', 'Обяви'];
+
 type Row = { id: string; title: string; excerpt: string | null; content: string | null; cover_url: string | null; gallery_images: string; category: string; status: string; published_at: string | null; author_name: string | null };
 
 export default async function EditNews({ params }: { params: Promise<{ id: string }> }) {
+  const no = await denied('novini');
+  if (no) return no;
   const { id } = await params;
   const isNew = id === 'nova';
   const n = isNew ? null : await first<Row>('SELECT * FROM site_news WHERE id = ?', id);
   if (!isNew && !n) notFound();
   const gallery = json<string[]>(n?.gallery_images, []);
+  // рубриките: основните + всички, които вече са ползвани
+  const used = await all<{ category: string }>('SELECT DISTINCT category FROM site_news WHERE category IS NOT NULL AND category <> \'\'');
+  const cats = [...new Set([...NEWS_CATS, ...used.map((u) => u.category)])];
+  const curCat = n?.category ?? 'Новини';
 
   return (
     <>
@@ -27,10 +36,15 @@ export default async function EditNews({ params }: { params: Promise<{ id: strin
           <small>Всеки ред е абзац. „## “ в началото на ред = подзаглавие, „- “ = точка от списък, **удебелен**, [текст](https://адрес).</small>
         </label>
         <div className="adm-row">
-          <label>Рубрика<input name="category" list="news-cats" defaultValue={n?.category ?? 'Новини'} /></label>
           <label>Автор<input name="author_name" defaultValue={n?.author_name ?? ''} placeholder="по подразбиране: вашият имейл" /></label>
         </div>
-        <datalist id="news-cats"><option value="Новини" /><option value="Събития" /><option value="Постижения" /><option value="Проекти" /><option value="Обяви" /></datalist>
+        <fieldset className="adm-cats">
+          <legend>Рубрика <small>(на сайта новините се филтрират по нея)</small></legend>
+          {cats.map((c) => (
+            <label key={c} className="adm-chip"><input type="radio" name="category" value={c} defaultChecked={c === curCat} /><span>{c}</span></label>
+          ))}
+          <label className="adm-chip-new">или нова<input name="category_new" placeholder="напр. Спорт" maxLength={60} /></label>
+        </fieldset>
         <div className="adm-row">
           <label>Състояние
             <select name="status" defaultValue={n?.status ?? 'published'}>

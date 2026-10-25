@@ -1,3 +1,4 @@
+import { denied } from '../../guard';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { first, json } from '../../../../lib/db';
@@ -8,6 +9,8 @@ import { PAGE_GROUPS } from '../groups';
 type Row = { slug: string; title: string; grp: string | null; body: string; photos: string };
 
 export default async function EditPage({ params }: { params: Promise<{ slug: string[] }> }) {
+  const no = await denied('stranitsi');
+  if (no) return no;
   const slug = (await params).slug.map(decodeURIComponent).join('/');
   const isNew = slug === 'nova';
   const p = isNew ? null : await first<Row>('SELECT slug, title, grp, body, photos FROM site_pages WHERE slug = ?', slug);

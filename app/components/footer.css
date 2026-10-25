@@ -37,3 +37,6 @@
 .sf-useful { display: flex; flex-wrap: wrap; gap: 8px 22px; padding: 18px 0; margin-top: 8px; border-top: 1px solid rgba(255,255,255,.12); font-size: .9rem; }
 .sf-useful a { color: inherit; opacity: .8; text-decoration: none; }
 .sf-useful a:hover { opacity: 1; text-decoration: underline; }
+.sf-h a { color: inherit; }
+.sf-more { opacity: .75; }
+.sf-more::after { content: " →"; }

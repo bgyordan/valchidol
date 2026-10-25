@@ -2,19 +2,20 @@ import { all } from '../../../lib/db';
 import { requireMainAdmin } from '../../../lib/auth';
 import ActionForm from '../ActionForm';
 import Confirm from '../Confirm';
-import { addUser, deleteUser, resetPassword, setRole } from '../auth-actions';
+import { addUser, deleteUser, resetPassword, setPerms, setRole } from '../auth-actions';
+import { AREAS, permsLabel } from '../../../lib/perms';
 
-type Row = { email: string; name: string | null; role: string; last_login: string | null };
+type Row = { email: string; name: string | null; role: string; last_login: string | null; perms: string | null };
 const fmt = (s: string | null) => (s ? new Date(s).toLocaleString('bg-BG', { timeZone: 'Europe/Sofia', dateStyle: 'short', timeStyle: 'short' }) : 'още не е влизал');
 
 export default async function AdminPeople() {
   const me = await requireMainAdmin().catch(() => null);
   if (!me) return <p>Само главният админ управлява хората.</p>;
-  const rows = await all<Row>('SELECT email, name, role, last_login FROM admin_users ORDER BY role, name, email');
+  const rows = await all<Row>('SELECT email, name, role, last_login, perms FROM admin_users ORDER BY role, name, email');
   return (
     <>
       <h1>Хора с достъп</h1>
-      <p className="adm-muted"><b>Редактор</b> пише новини, страници, документи, снимки и събития. <b>Главен админ</b> може освен това да добавя и маха хора.</p>
+      <p className="adm-muted"><b>Редактор</b> работи само в разделите, които са му отметнати (напр. само новини). <b>Главен админ</b> може всичко и добавя и маха хора.</p>
 
       <ActionForm action={addUser} className="adm-form adm-box" reset>
         <h2>Добави човек</h2>
@@ -28,6 +29,10 @@ export default async function AdminPeople() {
             <select name="role" defaultValue="editor"><option value="editor">Редактор</option><option value="admin">Главен админ</option></select>
           </label>
         </div>
+        <fieldset className="adm-perms">
+          <legend>Какво може да прави редакторът</legend>
+          {AREAS.map((a) => <label key={a.key} className="adm-check"><input type="checkbox" name="perm" value={a.key} defaultChecked /> {a.label}</label>)}
+        </fieldset>
         <p><button type="submit" className="adm-btn primary">Добави</button></p>
       </ActionForm>
 
@@ -46,6 +51,16 @@ export default async function AdminPeople() {
                     {r.role === 'admin' ? 'Главен админ' : 'Редактор'}{' '}
                     <button type="submit" className="adm-link">{r.role === 'admin' ? 'направи редактор' : 'направи главен'}</button>
                   </form>
+                )}
+                {r.role !== 'admin' && (
+                  <details className="adm-perm-edit">
+                    <summary className="adm-link">Може: {permsLabel(r.perms)}</summary>
+                    <form action={setPerms} className="adm-perms">
+                      <input type="hidden" name="email" value={r.email} />
+                      {AREAS.map((a) => <label key={a.key} className="adm-check"><input type="checkbox" name="perm" value={a.key} defaultChecked={r.perms == null || r.perms.split(',').includes(a.key)} /> {a.label}</label>)}
+                      <p><button type="submit" className="adm-btn">Запази правата</button></p>
+                    </form>
+                  </details>
                 )}
               </td>
               <td>

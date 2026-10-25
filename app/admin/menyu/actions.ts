@@ -12,7 +12,7 @@ const tx = (f: FormData, k: string, max = 80) => String(f.get(k) ?? '').trim().s
 const num = (f: FormData, k: string, d: number) => { const n = parseFloat(String(f.get(k) ?? '')); return Number.isFinite(n) ? n : d; };
 
 export async function saveMenu(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('nachalo');
   const d = await db();
   if (!d) throw new Error('Няма връзка с базата');
   const groups = NAV.map((g, k) => {
@@ -36,7 +36,7 @@ export async function saveMenu(f: FormData) {
 }
 
 export async function resetMenu() {
-  await requireAdmin();
+  await requireAdmin('nachalo');
   const d = await db();
   if (!d) throw new Error('Няма връзка с базата');
   await d.prepare(`DELETE FROM site_settings WHERE key = 'menu'`).run();
