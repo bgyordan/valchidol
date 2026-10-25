@@ -85,6 +85,7 @@ export async function saveHomeTexts(f: FormData) {
     kicker: tx(f, 'kicker', 120), title: tx(f, 'title', 120), motto: tx(f, 'motto', 200),
     about_title: tx(f, 'about_title', 200), about_text: tx(f, 'about_text', 3000),
     quick, stats,
+    en: { motto: tx(f, 'en_motto', 200), about_title: tx(f, 'en_about_title', 200), about_text: tx(f, 'en_about_text', 3000) },
   };
   await d.prepare(`INSERT INTO site_settings (key, value) VALUES ('home', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`)
     .bind(JSON.stringify(home)).run();

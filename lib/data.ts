@@ -195,3 +195,27 @@ export async function getChildPages(prefix: string): Promise<{ slug: string; tit
     return { slug: r.slug, title: r.title, photo: first ?? null };
   });
 }
+
+/* ---------------- английска версия ---------------- */
+// Страница на английски: само ако има заглавие на английски (title_en).
+export async function getPageEn(slug: string): Promise<SitePage | null> {
+  noStore();
+  const r = await first<{ slug: string; title: string; grp: string | null; body: string; photos: string; updated_at: string }>(
+    `SELECT slug, title_en AS title, grp, COALESCE(body_en, '') AS body, photos, updated_at FROM site_pages WHERE slug = ? AND title_en IS NOT NULL AND title_en <> ''`, slug,
+  ).catch(() => null);
+  if (!r) return null;
+  const ph = json<unknown>(r.photos, []);
+  return { ...r, photos: Array.isArray(ph) ? ph.filter((x): x is string => typeof x === 'string') : [] };
+}
+
+// Всички страници с английска версия — за менюто и превключвателя БГ/EN.
+export async function getEnPages(): Promise<{ slug: string; title: string; grp: string | null; photo: string | null }[]> {
+  noStore();
+  const rows = await all<{ slug: string; title: string; grp: string | null; photos: string }>(
+    `SELECT slug, title_en AS title, grp, photos FROM site_pages WHERE title_en IS NOT NULL AND title_en <> '' ORDER BY sort`,
+  ).catch(() => []);
+  return rows.map((r) => {
+    const ph = json<unknown>(r.photos, []);
+    return { slug: r.slug, title: r.title, grp: r.grp, photo: Array.isArray(ph) && typeof ph[0] === 'string' ? ph[0] : null };
+  });
+}

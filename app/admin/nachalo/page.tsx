@@ -97,6 +97,13 @@ export default async function AdminFrontPage() {
             <label>Текст (нов абзац с празен ред)<textarea name="about_text" rows={5} defaultValue={h.about_text} /></label>
           </fieldset>
 
+          <fieldset lang="en">
+            <legend>На английски (souvalchidol.com/en)</legend>
+            <label>Мото<input name="en_motto" defaultValue={h.en.motto} /></label>
+            <label>Заглавие на „За училището“<input name="en_about_title" defaultValue={h.en.about_title} /></label>
+            <label>Текст (нов абзац с празен ред)<textarea name="en_about_text" rows={5} defaultValue={h.en.about_text} /></label>
+          </fieldset>
+
           <p><button type="submit" className="adm-btn primary">Запази текстовете</button></p>
         </form>
       </section>

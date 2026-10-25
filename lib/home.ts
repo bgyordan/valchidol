@@ -8,6 +8,7 @@ export type HomeContent = {
   kicker: string; title: string; motto: string;
   about_title: string; about_text: string;
   quick: QuickLink[]; stats: Stat[];
+  en: { motto: string; about_title: string; about_text: string }; // началната страница на английски (/en)
 };
 
 // имената на иконките за бързите връзки (рисунките са в app/page.tsx)
@@ -53,6 +54,12 @@ export const HOME_DEFAULTS: HomeContent = {
     { n: '22', t: 'класни стаи и кабинети' },
     { n: '2', t: 'физкултурни салона' },
   ],
+  en: {
+    motto: 'A school with traditions – a school with a future.',
+    about_title: 'More than 140 years of a school where every student can find their own path',
+    about_text:
+      'Vasil Levski Secondary School in Valchi Dol, Varna Province, Bulgaria, was founded in 1880. Today it teaches students from 1st to 12th grade.\n\nThe school building from 1987 has 22 classrooms, a canteen, an assembly hall, two gyms and workshops. Students study in specialised and vocational classes, take part in national and European projects, clubs and school newspapers.',
+  },
 };
 
 const str = (v: unknown, d: string) => (typeof v === 'string' && v.trim() ? v.trim() : d);
@@ -74,5 +81,10 @@ export async function getHome(): Promise<HomeContent> {
     about_text: str(raw.about_text, D.about_text),
     quick: quick.length ? quick : D.quick,
     stats: stats.length ? stats : D.stats,
+    en: {
+      motto: str(raw.en?.motto, D.en.motto),
+      about_title: str(raw.en?.about_title, D.en.about_title),
+      about_text: str(raw.en?.about_text, D.en.about_text),
+    },
   };
 }

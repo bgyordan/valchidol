@@ -1,21 +1,10 @@
 export type Lang = 'bg' | 'en';
 
-// Сайтът на училището е само на български; двойките остават празни.
-export const PAIRS: { bg: string; en: string }[] = [];
-const BG_TO_EN: Record<string, string> = {};
-
 export const isEnPath = (p: string) => p === '/en' || p.startsWith('/en/');
 
-/** Адресът на същата страница на другия език (или началото му, ако няма превод). */
-export function counterpart(path: string): string {
-  const p = path.replace(/\/+$/, '') || '/';
-  if (isEnPath(p)) return PAIRS.find((x) => x.en === p)?.bg ?? '/';
-  return PAIRS.find((x) => x.bg === p)?.en ?? BG_TO_EN[p] ?? '/en';
-}
-
-/** hreflang връзки за metadata.alternates на двойка страници */
-export function alternates(path: string) {
-  const pair = PAIRS.find((x) => x.bg === path || x.en === path);
-  if (!pair) return undefined;
-  return { canonical: path, languages: { bg: pair.bg, en: pair.en, 'x-default': pair.bg } };
+/** „пон – пет, 8:00 – 17:00“ → „Mon – Fri, 8:00 – 17:00“ (за английската версия) */
+export function enDays(s: string): string {
+  const D: [RegExp, string][] = [[/понеделник|пон/gi, 'Mon'], [/вторник|вт/gi, 'Tue'], [/сряда|ср/gi, 'Wed'], [/четвъртък|чет|чт/gi, 'Thu'],
+    [/петък|пет/gi, 'Fri'], [/събота|съб/gi, 'Sat'], [/неделя|нед/gi, 'Sun'], [/\s*ч\.?$/i, '']];
+  return D.reduce((t, [re, v]) => t.replace(re, v), s);
 }

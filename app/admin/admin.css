@@ -117,3 +117,8 @@
 .adm-size { position: absolute; right: 6px; bottom: 6px; padding: 2px 8px; border-radius: 999px; font-size: .75rem; background: rgba(255, 255, 255, .9); color: #234; pointer-events: none; }
 .adm-photos figure .adm-size { bottom: auto; top: 6px; }
 .adm-size.small { background: #c0392b; color: #fff; }
+/* английската версия на страница — сгъваема част във формата */
+.adm-en { border: 1px solid var(--line, #d6dde6); border-radius: 14px; padding: 12px 16px; margin: 8px 0 16px; }
+.adm-en summary { cursor: pointer; font-weight: 500; }
+.adm-en[open] summary { margin-bottom: 10px; }
+.adm-badge { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 99px; background: #0B2A4A; color: #fff; margin-left: 6px; vertical-align: 1px; }

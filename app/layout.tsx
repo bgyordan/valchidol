@@ -13,7 +13,7 @@ import CookieBanner from './components/CookieBanner';
 import DocPreview from './components/DocPreview';
 import Doodles from './components/Doodles';
 import { getLang } from '../lib/lang-server';
-import { getNav } from '../lib/menu';
+import { getNav, getNavEn } from '../lib/menu';
 
 const SITE = 'https://souvalchidol.com';
 
@@ -47,7 +47,8 @@ export const viewport: Viewport = {
 const THEME_SCRIPT = `(function(){try{var s=localStorage.getItem('su-theme');var d=s?s==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;var h=document.documentElement;h.setAttribute('data-theme',d?'dark':'light');h.classList.toggle('dark',d);}catch(e){}try{var a=JSON.parse(localStorage.getItem('su-a11y')||'null');if(a){var F=[1,1.12,1.25,1.4];if(a.font)document.documentElement.style.setProperty('--fs',String(F[a.font]||1));if(a.contrast)document.documentElement.classList.add('a11y-contrast');if(a.links)document.documentElement.classList.add('a11y-links');}}catch(e){}})();`;
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [lang, nav] = await Promise.all([getLang(), getNav()]);
+  const lang = await getLang();
+  const nav = lang === 'en' ? await getNavEn() : await getNav();
   return (
     <html lang={lang} suppressHydrationWarning>
       <head>
@@ -56,7 +57,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         {lang === 'bg' && <SiteNotice />}
         <TopBar lang={lang} />
-        <Header nav={nav} />
+        <Header nav={nav} lang={lang} />
         <main id="main"><Doodles />{children}</main>
         <Footer lang={lang} />
         <ScrollTop />

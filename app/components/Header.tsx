@@ -9,8 +9,11 @@ const BOOK = 'M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3zM4 17a3 3 0 0 1 3-3h11';
 import './header.css';
 
 // менюто идва от layout (с промените от админа); без него — менюто от кода
-export default function Header({ nav }: { nav?: NavGroup[] }) {
+export default function Header({ nav, lang = 'bg' }: { nav?: NavGroup[]; lang?: 'bg' | 'en' }) {
   const NAV = nav || DEFAULT_NAV;
+  const en = lang === 'en';
+  const home = en ? '/en' : '/';
+  const contacts = en ? '/en/contacts' : '/kontakti';
   const pathname = usePathname() || '/';
   const [open, setOpen] = useState<string | null>(null); // отворено падащо меню (desktop)
   const [mobile, setMobile] = useState(false);
@@ -55,30 +58,30 @@ export default function Header({ nav }: { nav?: NavGroup[] }) {
     <header className={`site-head${open ? ' is-open' : ''}${stuck ? ' is-stuck' : ''}${mobile ? ' is-mob' : ''}`}>
       <a className="skip" href="#main">Към съдържанието</a>
       <div className="wrap sh-bar">
-        <a href="/" className="sh-brand" aria-label="СУ „Васил Левски“ – начална страница">
+        <a href={home} className="sh-brand" aria-label={en ? 'Vasil Levski Secondary School – home' : 'СУ „Васил Левски“ – начална страница'}>
           <img src="/logo.png" alt="" width={56} height={56} />
           <span>
-            <b>СУ „Васил Левски“</b>
-            <small>гр. Вълчи дол · от 1880 г.</small>
+            <b>{en ? 'Vasil Levski School' : 'СУ „Васил Левски“'}</b>
+            <small>{en ? 'Valchi Dol, Bulgaria · since 1880' : 'гр. Вълчи дол · от 1880 г.'}</small>
           </span>
         </a>
 
-        <nav className="sh-nav" aria-label="Основно меню">
-          <div className="sh-item"><a href="/" className={`sh-link solo${pathname === '/' ? ' current' : ''}`}>Начало</a></div>
+        <nav className="sh-nav" aria-label={en ? 'Main menu' : 'Основно меню'}>
+          <div className="sh-item"><a href={home} className={`sh-link solo${pathname === home ? ' current' : ''}`}>{en ? 'Home' : 'Начало'}</a></div>
           {NAV.map((g) => (
             <div
               key={g.href}
               className={`sh-item${open === g.href ? ' open' : ''}`}
-              onMouseEnter={() => enter(g.href)}
+              onMouseEnter={() => g.links.length && enter(g.href)}
               onMouseLeave={leave}
             >
               {/* самото име води към страницата на раздела; стрелката (или посочване с мишката) отваря подменюто */}
               <a href={g.href} className={`sh-link${isActive(g.href) ? ' current' : ''}`}>{g.label}</a>
-              <button
+              {g.links.length > 0 && <><button
                 type="button"
                 className="sh-caret"
                 aria-expanded={open === g.href}
-                aria-label={`Подменю „${g.label}“`}
+                aria-label={en ? `Submenu “${g.label}”` : `Подменю „${g.label}“`}
                 onClick={() => setOpen(open === g.href ? null : g.href)}
               >
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
@@ -91,18 +94,18 @@ export default function Header({ nav }: { nav?: NavGroup[] }) {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </div></>}
             </div>
           ))}
-          <div className="sh-item"><a href="/kontakti" className={`sh-link solo${pathname === '/kontakti' ? ' current' : ''}`}>Контакти</a></div>
+          <div className="sh-item"><a href={contacts} className={`sh-link solo${pathname === contacts ? ' current' : ''}`}>{en ? 'Contacts' : 'Контакти'}</a></div>
         </nav>
 
         {/* листче-иконка за обявата (NoticeNote.tsx я слага тук, когато има активна обява) */}
         <span id="sh-notice-slot" />
         <ThemeToggle />
-        <a href="https://app.shkolo.bg/" className="sh-donate" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={BOOK} /></svg>Е-дневник</a>
+        {!en && <a href="https://app.shkolo.bg/" className="sh-donate" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={BOOK} /></svg>Е-дневник</a>}
         {/* три чертички (сандвич) — при отваряне стават на X */}
-        <button type="button" className="sh-menu" aria-expanded={mobile} aria-controls="mob-nav" aria-label={mobile ? 'Затвори менюто' : 'Меню'} onClick={() => setMobile(!mobile)}>
+        <button type="button" className="sh-menu" aria-expanded={mobile} aria-controls="mob-nav" aria-label={en ? (mobile ? 'Close menu' : 'Menu') : mobile ? 'Затвори менюто' : 'Меню'} onClick={() => setMobile(!mobile)}>
           <span className="sh-burger" aria-hidden="true"><i /><i /><i /></span>
         </button>
       </div>
@@ -110,14 +113,14 @@ export default function Header({ nav }: { nav?: NavGroup[] }) {
       {/* Мобилно меню */}
       <div id="mob-nav" className="sh-mob" hidden={!mobile}>
         <div className="wrap">
-          <a className="sh-mob-solo" href="/">Начало</a>
+          <a className="sh-mob-solo" href={home}>{en ? 'Home' : 'Начало'}</a>
           {NAV.map((g) => (
             <div key={g.href} className="sh-mob-g">
               <div className="sh-mob-row">
                 <a href={g.href}>{g.label}</a>
-                <button type="button" aria-expanded={mobGroup === g.href} aria-label={`Подменю „${g.label}“`} onClick={() => setMobGroup(mobGroup === g.href ? null : g.href)}>
+                {g.links.length > 0 && <button type="button" aria-expanded={mobGroup === g.href} aria-label={en ? `Submenu “${g.label}”` : `Подменю „${g.label}“`} onClick={() => setMobGroup(mobGroup === g.href ? null : g.href)}>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
-                </button>
+                </button>}
               </div>
               <ul hidden={mobGroup !== g.href}>
                 {g.links.filter((l) => l.href !== g.href).map((l) => (
@@ -126,8 +129,8 @@ export default function Header({ nav }: { nav?: NavGroup[] }) {
               </ul>
             </div>
           ))}
-          <a className="sh-mob-solo" href="/kontakti">Контакти</a>
-          <a className="sh-donate sh-mob-donate" href="https://app.shkolo.bg/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={BOOK} /></svg>Електронен дневник</a>
+          <a className="sh-mob-solo" href={contacts}>{en ? 'Contacts' : 'Контакти'}</a>
+          {!en && <a className="sh-donate sh-mob-donate" href="https://app.shkolo.bg/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={BOOK} /></svg>Електронен дневник</a>}
         </div>
       </div>
     </header>
