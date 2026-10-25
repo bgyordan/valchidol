@@ -76,7 +76,9 @@ export async function findSources(q: string, lang: 'bg' | 'en'): Promise<Source[
     const s = score(p.title, p.body, ts, w) + (p.title_en ? score(p.title_en, p.body_en || '', ts, w) : 0) + (hinted ? 1000 : 0);
     if (s > 0) {
       const useEn = lang === 'en' && p.title_en && p.body_en;
-      out.push({ kind: 'page', s, t: useEn ? p.title_en! : p.title, href: (useEn ? '/en/' : '/') + p.slug, text: excerpt(useEn ? p.body_en! : p.body, ts) });
+      // при „подсказана“ страница — началото ѝ (там е текущото, напр. приемът за новата година)
+      const txt = useEn ? p.body_en! : p.body;
+      out.push({ kind: 'page', s, t: useEn ? p.title_en! : p.title, href: (useEn ? '/en/' : '/') + p.slug, text: hinted ? excerpt(txt.slice(0, 2600), [], 2600) : excerpt(txt, ts, 1800) });
     }
   }
   news.forEach((n, i) => {

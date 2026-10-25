@@ -2,6 +2,7 @@
 
   python3 -I scripts/site-check.py logo    # логото от стария Google сайт → R2 site/logo-star.* и base64 в лога
   python3 -I scripts/site-check.py photos  # размерите на избраните снимки (начална страница) в R2
+  python3 -I scripts/site-check.py chat    # няколко въпроса към помощника на живия сайт
 """
 import base64, json, os, re, subprocess, sys, urllib.parse, urllib.request
 
@@ -90,5 +91,19 @@ def photos():
         print(key, u, len(data), size(data))
 
 
+def chat():
+    site = 'https://souvalchidol.souvalchidol.workers.dev'
+    for q, lang in [('Как се кандидатства в 8. клас?', 'bg'), ('Какъв е телефонът на директора?', 'bg'),
+                    ('Кога е основано училището?', 'bg'), ('How can I contact the school?', 'en')]:
+        req = urllib.request.Request(site + '/api/chat', data=json.dumps({'q': q, 'lang': lang}).encode(),
+                                     headers={**UA, 'content-type': 'application/json'})
+        try:
+            with urllib.request.urlopen(req, timeout=90) as r:
+                d = json.load(r)
+            print('В:', q, '\nО:', d.get('answer') or f"(без отговор: {d.get('fallback')})", '\nИзточници:', [s['href'] for s in d.get('sources', [])], '\n')
+        except Exception as e:
+            print('В:', q, 'ГРЕШКА', e)
+
+
 if __name__ == '__main__':
-    {'logo': logo, 'photos': photos}[sys.argv[1]]()
+    {'logo': logo, 'photos': photos, 'chat': chat}[sys.argv[1]]()
