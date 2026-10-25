@@ -87,8 +87,8 @@ export default async function Home() {
   // снимките в трите панела „Информация за“: избрани (page_photos['informatsiya-za']) или следващите от галерията
   const audPh = [0, 1, 2].map((i) => chosenInfo[i] || auto.shift() || covers[i + 3] || slides[i]);
   const [feat, ...rest] = news;
-  // бързите връзки без това, което вече е в бутоните горе (Прием, За училището)
-  const quick = home.quick.filter((q) => !['/priem', '/za-uchilishteto'].includes(q.href.split('#')[0]));
+  // бързите връзки (без Прием и За училището — те са бутони горе; виж QUICK_SKIP в lib/home.ts)
+  const quick = home.quick;
 
   // данни за училището за Google (адрес, телефон, лого)
   const c = info.contact;
