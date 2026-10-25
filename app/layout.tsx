@@ -12,6 +12,7 @@ import AccessibilityWidget from './components/AccessibilityWidget';
 import CookieBanner from './components/CookieBanner';
 import DocPreview from './components/DocPreview';
 import Doodles from './components/Doodles';
+import ChatBot from './components/ChatBot';
 import { getLang } from '../lib/lang-server';
 import { getNav, getNavEn } from '../lib/menu';
 
@@ -64,6 +65,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <AccessibilityWidget />
         <CookieBanner />
         <DocPreview />
+        <ChatBot />
       </body>
     </html>
   );

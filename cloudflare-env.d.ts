@@ -3,6 +3,7 @@
 // Runtime types generated with workerd@1.20261019.1 2026-10-01 global_fetch_strictly_public,nodejs_compat
 interface __BaseEnv_CloudflareEnv {
 	FILES: R2Bucket;
+	AI: Ai;
 	DB: D1Database;
 	ASSETS: Fetcher;
 }
