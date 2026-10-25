@@ -1,8 +1,10 @@
 import { all } from '../../lib/db';
+import SizedImg from './SizedImg';
 
 // „Избери от галерията и новините“: снимки, които вече са в сайта, с отметки (name="pick").
 // Стои вътре във формата за снимки; отметнатите се добавят заедно с качените от компютъра.
-export default async function PhotoPicker({ exclude = [] }: { exclude?: string[] }) {
+// min: под тази ширина снимката се отбелязва като „малка“ (за голямата снимка най-горе трябва поне ~1600px)
+export default async function PhotoPicker({ exclude = [], min = 1200 }: { exclude?: string[]; min?: number }) {
   const [gal, news] = await Promise.all([
     all<{ photo_url: string; album: string | null }>(
       `SELECT p.photo_url, a.title AS album FROM gallery_photos p LEFT JOIN gallery_albums a ON a.id = p.album_id
@@ -26,7 +28,7 @@ export default async function PhotoPicker({ exclude = [] }: { exclude?: string[]
       {items.map((x) => (
         <label key={x.url} title={x.t}>
           <input type="checkbox" name="pick" value={x.url} />
-          <img src={x.url} alt="" loading="lazy" />
+          <SizedImg src={x.url} min={min} />
         </label>
       ))}
     </div>

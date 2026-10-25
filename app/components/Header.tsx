@@ -56,7 +56,7 @@ export default function Header({ nav }: { nav?: NavGroup[] }) {
       <a className="skip" href="#main">Към съдържанието</a>
       <div className="wrap sh-bar">
         <a href="/" className="sh-brand" aria-label="СУ „Васил Левски“ – начална страница">
-          <img src="/logo.svg" alt="" width={56} height={56} />
+          <img src="/logo.png" alt="" width={56} height={56} />
           <span>
             <b>СУ „Васил Левски“</b>
             <small>гр. Вълчи дол · от 1880 г.</small>

@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
   description:
     'Средно училище „Васил Левски“ – гр. Вълчи дол. Училище с традиции – училище с бъдеще. Новини, прием, документи и информация за родители и ученици.',
-  icons: { icon: '/logo.svg', apple: '/logo.svg', shortcut: '/logo.svg' },
+  icons: { icon: '/logo.png', apple: '/logo.png', shortcut: '/logo.png' },
   openGraph: {
     title: 'СУ „Васил Левски“ – гр. Вълчи дол',
     description: 'Училище с традиции – училище с бъдеще.',

@@ -113,3 +113,7 @@
 .adm-pick label:hover img { scale: 1.05; }
 .adm-pick label:has(input:checked) { outline: 3px solid var(--navy); outline-offset: -3px; }
 .adm-pick label:has(input:checked) img { opacity: .8; }
+.adm-photos figure, .adm-pick label { position: relative; }
+.adm-size { position: absolute; right: 6px; bottom: 6px; padding: 2px 8px; border-radius: 999px; font-size: .75rem; background: rgba(255, 255, 255, .9); color: #234; pointer-events: none; }
+.adm-photos figure .adm-size { bottom: auto; top: 6px; }
+.adm-size.small { background: #c0392b; color: #fff; }
