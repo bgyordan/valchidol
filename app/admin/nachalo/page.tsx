@@ -2,6 +2,7 @@ import { denied } from '../guard';
 import { getHeroPhotos, getPagePhotos } from '../../../lib/data';
 import Confirm from '../Confirm';
 import PhotoPicker from '../PhotoPicker';
+import SizedImg from '../SizedImg';
 import { getHome, QUICK_ICONS } from '../../../lib/home';
 import { addHomePhotos, moveHomePhoto, removeHomePhoto, saveHomeTexts } from './actions';
 
@@ -32,7 +33,7 @@ export default async function AdminFrontPage() {
               <div className="adm-photos">
                 {list.map((u, i) => (
                   <figure key={u}>
-                    <img src={u} alt="" />
+                    <SizedImg src={u} min={g.target === 'hero' ? 1600 : 1000} />
                     <div className="adm-photo-btns">
                       <span>{i + 1}.</span>
                       {i > 0 && <form action={moveHomePhoto}><input type="hidden" name="target" value={g.target} /><input type="hidden" name="url" value={u} /><input type="hidden" name="dir" value="up" /><button className="adm-link">← по-напред</button></form>}
@@ -46,7 +47,7 @@ export default async function AdminFrontPage() {
             <form action={addHomePhotos} className="adm-form adm-box">
               <input type="hidden" name="target" value={g.target} />
               <label>Качи снимки<input type="file" name="photos" accept="image/*" multiple /></label>
-              <PhotoPicker exclude={list} />
+              <PhotoPicker exclude={list} min={g.target === 'hero' ? 1600 : 1000} />
               <label>…или адрес на снимка<input name="link" type="url" placeholder="https://" /></label>
               <p><button type="submit" className="adm-btn primary">Добави</button></p>
             </form>

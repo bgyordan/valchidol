@@ -16,7 +16,7 @@ export default async function Footer({ lang = 'bg' }: { lang?: Lang }) {
       <div className="wrap">
         <div className="sf-top">
           <div className="sf-brand">
-            <img src="/logo.svg" alt="" width={56} height={56} />
+            <img src="/logo.png" alt="" width={56} height={56} />
             <p className="sf-name">СУ „Васил Левски“</p>
             <p>Средно училище „Васил Левски“ – гр. Вълчи дол. Училище с традиции – училище с бъдеще.</p>
             <a className="sf-fb" href={CONTACT.facebook} target="_blank" rel="noopener noreferrer">Facebook страница</a>
