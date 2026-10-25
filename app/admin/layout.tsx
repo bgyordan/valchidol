@@ -50,6 +50,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         {can(me, 'stranitsi') && <Link href="/admin/stranitsi">Страници</Link>}
         {can(me, 'dokumenti') && <Link href="/admin/dokumenti">Документи</Link>}
         {can(me, 'galeriya') && <Link href="/admin/galeriya">Галерия</Link>}
+        {can(me, 'baza') && <Link href="/admin/baza">Материална база</Link>}
         {can(me, 'sabitiya') && <Link href="/admin/sabitiya">Събития</Link>}
         {can(me, 'nachalo') && <Link href="/admin/menyu">Меню</Link>}
         {can(me, 'nastroyki') && <Link href="/admin/nastroyki">Настройки</Link>}
