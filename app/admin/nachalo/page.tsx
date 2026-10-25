@@ -1,18 +1,20 @@
 import { denied } from '../guard';
 import { getHeroPhotos, getPagePhotos } from '../../../lib/data';
 import Confirm from '../Confirm';
+import PhotoPicker from '../PhotoPicker';
 import { getHome, QUICK_ICONS } from '../../../lib/home';
 import { addHomePhotos, moveHomePhoto, removeHomePhoto, saveHomeTexts } from './actions';
 
 const GROUPS = [
   { target: 'hero', title: 'Снимки най-горе (голямата снимка)', note: 'Показват се първите 3 и се сменят плавно. Най-добре хоризонтални снимки, поне 1600 px широки.' },
   { target: 'nachalna-pod', title: 'Снимки в „За училището“', note: 'Показват се първите 2.' },
+  { target: 'informatsiya-za', title: 'Снимки в „Информация за“', note: 'По една за Ученици, Родители и Учители, в този ред. Най-добре вертикални или квадратни.' },
 ] as const;
 
 export default async function AdminFrontPage() {
   const no = await denied('nachalo');
   if (no) return no;
-  const lists = { hero: await getHeroPhotos(), 'nachalna-pod': await getPagePhotos('nachalna-pod') };
+  const lists = { hero: await getHeroPhotos(), 'nachalna-pod': await getPagePhotos('nachalna-pod'), 'informatsiya-za': await getPagePhotos('informatsiya-za') };
   const h = await getHome();
   const quick = [...h.quick, ...Array(Math.max(0, 9 - h.quick.length)).fill({ t: '', href: '', icon: 'folder' })].slice(0, 12);
   const stats = [...h.stats, ...Array(Math.max(0, 6 - h.stats.length)).fill({ n: '', t: '' })].slice(0, 8);
@@ -44,6 +46,7 @@ export default async function AdminFrontPage() {
             <form action={addHomePhotos} className="adm-form adm-box">
               <input type="hidden" name="target" value={g.target} />
               <label>Качи снимки<input type="file" name="photos" accept="image/*" multiple /></label>
+              <PhotoPicker exclude={list} />
               <label>…или адрес на снимка<input name="link" type="url" placeholder="https://" /></label>
               <p><button type="submit" className="adm-btn primary">Добави</button></p>
             </form>

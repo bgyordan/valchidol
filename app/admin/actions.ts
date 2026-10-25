@@ -27,15 +27,21 @@ export async function saveNews(f: FormData) {
 
   const old = id ? await d.prepare('SELECT cover_url, gallery_images FROM site_news WHERE id = ?').bind(id).first<{ cover_url: string | null; gallery_images: string }>() : null;
   let cover = old?.cover_url ?? null;
-  if (f.get('remove_cover') === '1') { await deleteFile(cover); cover = null; }
+  // старите файлове се трият след записа и само ако никъде другаде не се ползват (виж deleteFile)
+  const trash: (string | null)[] = [];
+  if (f.get('remove_cover') === '1') { trash.push(cover); cover = null; }
   const coverFile = f.get('cover');
-  if (isFile(coverFile)) { await deleteFile(cover); cover = await uploadFile(coverFile, 'novini'); }
+  if (isFile(coverFile)) { trash.push(cover); cover = await uploadFile(coverFile, 'novini'); }
 
   let gallery: string[] = old ? JSON.parse(old.gallery_images || '[]') : [];
   const drop = new Set(f.getAll('remove_gallery').map(String));
-  for (const u of drop) await deleteFile(u);
+  trash.push(...drop);
   gallery = gallery.filter((u) => !drop.has(u));
   for (const g of f.getAll('gallery')) if (isFile(g)) gallery.push(await uploadFile(g, 'novini'));
+  // избрани от галерията и другите новини
+  const picked = f.getAll('pick').map(String).filter((u) => u.startsWith('/files/') && u !== cover && !gallery.includes(u));
+  if (!cover && picked.length) cover = picked.shift()!;
+  gallery.push(...picked);
 
   const status = f.get('status') === 'published' ? 'published' : 'draft';
   const publishedAt = sofiaToIso(str(f, 'published_at', 20)) ?? (status === 'published' ? new Date().toISOString() : null);
@@ -48,6 +54,7 @@ export async function saveNews(f: FormData) {
     const newId = `${slugify(title).replace(/\./g, '-').slice(0, 60)}-${crypto.randomUUID().slice(0, 4)}`;
     await d.prepare(`INSERT INTO site_news (title, excerpt, content, cover_url, gallery_images, category, status, published_at, author_name, id) VALUES (?,?,?,?,?,?,?,?,?,?)`).bind(...vals, newId).run();
   }
+  for (const u of trash) await deleteFile(u);
   revalidatePath('/', 'layout');
   redirect('/admin/novini');
 }
@@ -58,9 +65,9 @@ export async function deleteNews(f: FormData) {
   const id = str(f, 'id', 120);
   const row = await d.prepare('SELECT cover_url, gallery_images FROM site_news WHERE id = ?').bind(id).first<{ cover_url: string | null; gallery_images: string }>();
   if (row) {
+    await d.prepare('DELETE FROM site_news WHERE id = ?').bind(id).run();
     await deleteFile(row.cover_url);
     for (const u of JSON.parse(row.gallery_images || '[]')) await deleteFile(u);
-    await d.prepare('DELETE FROM site_news WHERE id = ?').bind(id).run();
   }
   revalidatePath('/', 'layout');
   redirect('/admin/novini');
@@ -201,9 +208,9 @@ export async function photoAction(f: FormData) {
   } else if (what === 'caption') {
     await d.prepare('UPDATE gallery_photos SET caption = ? WHERE id = ?').bind(opt(f, 'caption', 300), id).run();
   } else if (what === 'delete') {
-    await deleteFile(p.photo_url);
     await d.prepare('DELETE FROM gallery_photos WHERE id = ?').bind(id).run();
     await d.prepare('UPDATE gallery_albums SET cover_url = NULL WHERE id = ? AND cover_url = ?').bind(p.album_id, p.photo_url).run();
+    await deleteFile(p.photo_url);
   }
   revalidatePath('/', 'layout');
 }
@@ -213,11 +220,11 @@ export async function deleteAlbum(f: FormData) {
   const d = await D();
   const id = str(f, 'id', 60);
   const { results } = await d.prepare('SELECT photo_url FROM gallery_photos WHERE album_id = ?').bind(id).all<{ photo_url: string }>();
-  for (const r of results ?? []) await deleteFile(r.photo_url);
   await d.batch([
     d.prepare('DELETE FROM gallery_photos WHERE album_id = ?').bind(id),
     d.prepare('DELETE FROM gallery_albums WHERE id = ?').bind(id),
   ]);
+  for (const r of results ?? []) await deleteFile(r.photo_url);
   revalidatePath('/', 'layout');
   redirect('/admin/galeriya');
 }
@@ -256,9 +263,11 @@ export async function savePage(f: FormData) {
   if (isNew && old) throw new Error('Вече има страница с този адрес');
   let photos: string[] = old ? JSON.parse(old.photos || '[]') : [];
   const drop = new Set(f.getAll('remove_photo').map(String));
-  for (const u of drop) await deleteFile(u);
+  for (const u of drop) await deleteFile(u, 'stranitsi');
   photos = photos.filter((u) => !drop.has(u));
   for (const p of f.getAll('photos')) if (isFile(p)) photos.push(await uploadFile(p, 'stranitsi'));
+  // избрани от галерията и новините (само адреси от сайта)
+  for (const u of f.getAll('pick').map(String)) if (u.startsWith('/files/') && !photos.includes(u)) photos.push(u);
 
   const body = String(f.get('body') ?? '').replace(/\r/g, '').slice(0, 400000);
   if (old) {
@@ -278,7 +287,7 @@ export async function deletePage(f: FormData) {
   const slug = str(f, 'slug', 120);
   const row = await d.prepare('SELECT photos FROM site_pages WHERE slug = ?').bind(slug).first<{ photos: string }>();
   if (row) {
-    for (const u of JSON.parse(row.photos || '[]')) await deleteFile(u);
+    for (const u of JSON.parse(row.photos || '[]')) await deleteFile(u, 'stranitsi');
     await d.prepare('DELETE FROM site_pages WHERE slug = ?').bind(slug).run();
   }
   revalidatePath('/', 'layout');

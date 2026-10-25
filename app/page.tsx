@@ -25,6 +25,10 @@ const ICON: Record<string, string> = {
   student: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0',
   family: 'M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM2 20a6 6 0 0 1 12 0M13 20a4.5 4.5 0 0 1 9 0',
   teacher: 'M3 4h18v11H3zM8 21l4-6 4 6M7 8h6M7 11h4',
+  chart: 'M4 20V10M10 20V4M16 20v-7M22 20H2',
+  calendar: 'M4 6h16v15H4zM4 10h16M8 3v4M16 3v4M8 14h3M8 17h6',
+  coin: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM14.5 9.5c-.5-1-1.4-1.5-2.5-1.5-1.5 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1.2 0-2.1-.5-2.6-1.5M12 6.5v1.5M12 16v1.5',
+  shield: 'M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z',
 };
 
 function Ic({ d }: { d: string }) {
@@ -65,12 +69,15 @@ export default async function Home() {
   const [hero, news, recent, events, photos, info, chosenAbout, home, nav] = await Promise.all([
     getHeroPhotos(), getNews(4), getNews(12), getUpcomingEvents(4), getLatestPhotos(8), getSiteInfo(), getPagePhotos('nachalna-pod'), getHome(), getNav(),
   ]);
+  const chosenInfo = await getPagePhotos('informatsiya-za');
   const AUDIENCE = audience(nav);
   // без избрани снимки → корици на последните новини
   const covers = recent.map((n) => n.cover_url).filter((u): u is string => !!u);
   const slides = [0, 1, 2].map((i) => hero[i] || covers[i]).filter((u): u is string => !!u);
   const auto = [...photos.map((p) => p.photo_url), ...covers.slice(3)].filter((u) => !slides.includes(u) && !chosenAbout.includes(u));
   const about = [0, 1].map((i) => chosenAbout[i] || auto.shift() || slides[i] || '/logo.svg');
+  // снимките в трите панела „Информация за“: избрани (page_photos['informatsiya-za']) или следващите от галерията
+  const audPh = [0, 1, 2].map((i) => chosenInfo[i] || auto.shift() || covers[i + 3] || slides[i]);
   const [feat, ...rest] = news;
 
   return (
@@ -183,7 +190,7 @@ export default async function Home() {
       {/* ===== Информация за ученици, родители и учители ===== */}
       <section className="hs" aria-labelledby="aud-h">
         <div className="wrap">
-          <AudienceSwitch items={AUDIENCE.map(({ t, href, icon, links }) => ({ t, href, icon, links }))} />
+          <AudienceSwitch items={AUDIENCE.map(({ t, href, icon, links }, i) => ({ t, href, icon, links, photo: audPh[i] }))} />
         </div>
       </section>
 

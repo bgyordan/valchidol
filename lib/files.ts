@@ -1,4 +1,5 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare';
+import { first } from './db';
 
 // Качване и триене на файлове в R2 (връзката FILES). Публичният адрес е /files/<ключ>.
 const PREFIX = '/files/';
@@ -33,7 +34,25 @@ export async function uploadFile(file: File, folder: string): Promise<string> {
 }
 
 // Трие само файлове от нашето хранилище; външни адреси се пропускат.
-export async function deleteFile(url: string | null | undefined): Promise<void> {
+// onlyFolder: трие само файлове, качени в тази папка — снимка, избрана от галерията или новините, остава
+export async function deleteFile(url: string | null | undefined, onlyFolder?: string): Promise<void> {
   if (!url || !url.startsWith(PREFIX)) return;
+  if (onlyFolder && !url.startsWith(`${PREFIX}${onlyFolder}/`)) return;
+  // файл, който още се ползва другаде (снимка, избрана и за началната, страница, друга новина или галерията), остава.
+  // Затова извикващият първо сменя/трие своя ред в базата и чак после трие файла.
+  if (!onlyFolder && (await stillUsed(url))) return;
   try { await (await bucket()).delete(url.slice(PREFIX.length)); } catch { /* вече го няма */ }
+}
+
+async function stillUsed(url: string): Promise<boolean> {
+  const row = await first(
+    `SELECT 1 FROM site_settings WHERE instr(value, ?1) > 0
+     UNION ALL SELECT 1 FROM site_pages WHERE instr(photos, ?1) > 0
+     UNION ALL SELECT 1 FROM site_news WHERE cover_url = ?1 OR instr(gallery_images, ?1) > 0
+     UNION ALL SELECT 1 FROM gallery_photos WHERE photo_url = ?1
+     UNION ALL SELECT 1 FROM gallery_albums WHERE cover_url = ?1
+     LIMIT 1`,
+    url,
+  ).catch(() => ({ x: 1 })); // при грешка — по-добре да не трием
+  return !!row;
 }

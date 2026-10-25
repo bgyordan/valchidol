@@ -522,3 +522,26 @@ html.dp-lock { overflow: hidden; }
 .da-body .doc-rows a:hover { background: var(--paper); }
 @keyframes da-open { from { opacity: 0; transform: translateY(-8px); } }
 @media (max-width: 640px) { .da-n { display: none; } }
+
+/* ===== Меки вълни между секциите (светлите секции „tint“ преливат с вълна горе и долу) ===== */
+.section.tint, .hs.tint { position: relative; --wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 32C240 8 480 8 720 32s480 24 720 0v28H0z'/%3E%3C/svg%3E"); }
+.section.tint::before, .section.tint::after, .hs.tint::before, .hs.tint::after {
+  content: ""; position: absolute; left: 0; right: 0; height: clamp(22px, 3.4vw, 48px); background: inherit; pointer-events: none;
+  -webkit-mask: var(--wave) 0 0 / 1440px 100% repeat-x; mask: var(--wave) 0 0 / 1440px 100% repeat-x;
+  animation: wave-drift 60s linear infinite; }
+.section.tint::before, .hs.tint::before { bottom: calc(100% - 1px); }
+.section.tint::after, .hs.tint::after { top: calc(100% - 1px); scale: 1 -1; animation-direction: reverse; animation-duration: 75s; }
+@keyframes wave-drift { to { -webkit-mask-position: 1440px 0; mask-position: 1440px 0; } }
+@media (prefers-reduced-motion: reduce) { .section.tint::before, .section.tint::after, .hs.tint::before, .hs.tint::after { animation: none; } }
+
+/* ===== Ръкописни акценти по краищата (Doodles) — като бележки в полето: вертикално, до самия ръб, над съдържанието ===== */
+#main { position: relative; }
+.doodles { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; }
+.doodle { position: absolute; white-space: nowrap; writing-mode: vertical-rl; font: 500 calc(clamp(20px, 1.7vw, 27px) * var(--fs-ui, 1))/1 'Caveat Variable', 'Caveat', cursive; color: var(--navy); opacity: .5;
+  rotate: var(--r); animation: doodle-float 9s ease-in-out infinite alternate; animation-delay: var(--d); }
+.d-left { left: max(3px, calc((100vw - 1480px) / 4)); rotate: calc(180deg + var(--r)); }
+.d-right { right: max(3px, calc((100vw - 1480px) / 4)); }
+@keyframes doodle-float { to { translate: 0 -14px; } }
+@media (max-width: 1180px) { .doodles { display: none; } }
+@media (prefers-reduced-motion: reduce) { .doodle { animation: none; } }
+@media print { .doodles { display: none; } }

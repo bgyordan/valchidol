@@ -103,3 +103,13 @@
 .adm-form .adm-chip input { position: absolute; width: 1px; height: 1px; padding: 0; border: 0; opacity: 0; }
 .adm-form .adm-chip-new { display: inline-flex; align-items: center; font-weight: 400; white-space: nowrap; }
 .adm-form .adm-chip-new input { width: 12em; }
+.adm-pick-box { margin: 4px 0; }
+.adm-pick-box > summary { cursor: pointer; padding: 4px 0; }
+.adm-pick-h { margin: 12px 0 6px; font-size: .9rem; opacity: .75; }
+.adm-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 420px; overflow-y: auto; padding: 2px; }
+.adm-form .adm-pick label, .adm-pick label { position: relative; display: block; aspect-ratio: 1; border-radius: 12px; overflow: hidden; cursor: pointer; background: var(--sky); }
+.adm-pick img { width: 100%; height: 100%; object-fit: cover; transition: scale .25s, opacity .2s; }
+.adm-pick input { position: absolute; top: 8px; left: 8px; z-index: 1; width: 20px; height: 20px; accent-color: var(--navy); }
+.adm-pick label:hover img { scale: 1.05; }
+.adm-pick label:has(input:checked) { outline: 3px solid var(--navy); outline-offset: -3px; }
+.adm-pick label:has(input:checked) img { opacity: .8; }
