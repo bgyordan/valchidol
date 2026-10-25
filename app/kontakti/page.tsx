@@ -4,6 +4,7 @@ import MapEmbed from './MapEmbed';
 import { getSiteInfo } from '../../lib/siteinfo';
 
 export const metadata = {
+  alternates: { canonical: '/kontakti', languages: { bg: '/kontakti', en: '/en/contacts' } },
   title: 'Контакти — СУ „Васил Левски“ – Вълчи дол',
   description: 'Телефони, работно време, имейл и адрес на СУ „Васил Левски“ – гр. Вълчи дол, ул. „Георги Димитров“ № 1.',
 };

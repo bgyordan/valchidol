@@ -6,6 +6,10 @@ import PhotoBand from './components/PhotoBand';
 import AudienceSwitch from './components/AudienceSwitch';
 import './home.css';
 
+export const metadata = { alternates: { canonical: '/', languages: { bg: '/', en: '/en' } } };
+
+const SITE = 'https://souvalchidol.com';
+
 // Начална страница — подредена като на повечето средни училища:
 // снимка с името и главните действия → бързи връзки → новини и събития → числа →
 // „за ученици / родители / учители“ → за училището → галерия → документи → контакт.
@@ -80,8 +84,33 @@ export default async function Home() {
   const audPh = [0, 1, 2].map((i) => chosenInfo[i] || auto.shift() || covers[i + 3] || slides[i]);
   const [feat, ...rest] = news;
 
+  // данни за училището за Google (адрес, телефон, лого)
+  const c = info.contact;
+  const ld = {
+    '@context': 'https://schema.org',
+    '@type': 'HighSchool',
+    name: 'Средно училище „Васил Левски“',
+    alternateName: 'СУ „Васил Левски“ – Вълчи дол',
+    url: SITE,
+    logo: `${SITE}/logo.png`,
+    image: `${SITE}/logo.png`,
+    email: c.email,
+    telephone: c.phoneHref.replace('tel:', ''),
+    foundingDate: '1880',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: c.address,
+      postalCode: (c.city.match(/\d{4}/) || [''])[0],
+      addressLocality: c.city.replace(/\d{4}\s*/, '').trim(),
+      addressRegion: 'Варна',
+      addressCountry: 'BG',
+    },
+    sameAs: [c.facebook].filter(Boolean),
+  };
+
   return (
     <div className="home">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, '\\u003c') }} />
       {/* ===== Герой: снимки от училище (сменят се плавно), името и главните действия ===== */}
       <section className={`hh${slides.length ? '' : ' no-photo'}`} aria-labelledby="hh-title">
         <div className={`hh-slides n${slides.length}`} aria-hidden="true">
@@ -120,7 +149,7 @@ export default async function Home() {
             <h2 id="news-h">Новини</h2>
             <a className="more" href="/novini">Всички новини</a>
           </div>
-          <div className="hn">
+          <div className={`hn${events.length ? '' : ' no-ev'}`}>
             {!feat ? (
               <p className="empty">Скоро тук ще има новини от училище.</p>
             ) : (
@@ -151,11 +180,9 @@ export default async function Home() {
               </div>
             )}
 
-            <aside className="hn-events" aria-labelledby="ev-h">
-              <h3 id="ev-h">Предстоящи събития</h3>
-              {events.length === 0 ? (
-                <p className="muted">Няма обявени събития в момента.</p>
-              ) : (
+            {events.length > 0 && (
+              <aside className="hn-events" aria-labelledby="ev-h">
+                <h3 id="ev-h">Предстоящи събития</h3>
                 <ul>
                   {events.map((e) => (
                     <li key={e.id}>
@@ -169,9 +196,9 @@ export default async function Home() {
                     </li>
                   ))}
                 </ul>
-              )}
-              <a className="more" href="/sabitiya">Всички събития</a>
-            </aside>
+                <a className="more" href="/sabitiya">Всички събития</a>
+              </aside>
+            )}
           </div>
         </div>
       </section>

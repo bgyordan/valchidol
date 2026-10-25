@@ -17,3 +17,8 @@
 .pager button[aria-current] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 @media (max-width: 900px) { .nl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .nl-feat { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .nl-grid { grid-template-columns: 1fr; } }
+
+/* учебни години: текуща | Архив → годините в архива */
+.nl-years { display: grid; gap: 10px; }
+.nl-arch { padding: 12px; border-radius: var(--r); background: var(--sky); }
+.nl-arch button { font-size: calc(13.5px * var(--fs, 1)); padding: 6px 12px; }

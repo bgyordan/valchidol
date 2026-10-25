@@ -18,6 +18,7 @@ export async function generateMetadata({ params }: Props) {
   if (!post) return { title: 'Статията не е намерена — СУ „Васил Левски“ – Вълчи дол' };
   return {
     title: `${post.title} — СУ „Васил Левски“ – Вълчи дол`,
+    alternates: { canonical: `/novini/${post.slug}` },
     description: post.excerpt ?? undefined,
     openGraph: { title: post.title, description: post.excerpt ?? undefined, images: post.cover_url ? [post.cover_url] : undefined },
   };

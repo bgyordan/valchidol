@@ -23,7 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const page = await getPage(slug);
   const title = page?.title ?? group?.label;
   if (!title) return {};
-  return { title: `${title} — ${SCHOOL.short}`, description: group?.intro ?? page?.body.replace(/[#*\[\]]|\([^)]*\)/g, '').slice(0, 160) };
+  const en = page?.has_en ? { en: `/en/${slug}`, bg: `/${slug}` } : undefined;
+  return { title: `${title} — ${SCHOOL.short}`, alternates: { canonical: `/${slug}`, ...(en ? { languages: en } : {}) }, description: group?.intro ?? page?.body.replace(/[#*\[\]]|\([^)]*\)/g, '').slice(0, 160) };
 }
 
 export default async function SitePageView({ params }: Props) {
