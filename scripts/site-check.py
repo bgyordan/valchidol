@@ -105,5 +105,50 @@ def chat():
             print('В:', q, 'ГРЕШКА', e)
 
 
+def health():
+    """Отваря страниците на живия сайт няколко пъти и показва грешките; после пита Cloudflare кои заявки са прекалили."""
+    import time
+    site = 'https://souvalchidol.souvalchidol.workers.dev'
+    paths = ['/', '/novini', '/za-uchilishteto', '/priem', '/kontakti', '/dokumentatsiya', '/galeriya', '/proekti',
+             '/materialna-baza', '/en', '/en/contacts', '/signali', '/stipendii', '/admin', '/lichni-danni']
+    for rnd in range(3):
+        for path in paths:
+            t = time.time()
+            try:
+                with urllib.request.urlopen(urllib.request.Request(site + path, headers=UA), timeout=60) as r:
+                    code, n = r.status, len(r.read())
+            except urllib.error.HTTPError as e:
+                code, n = e.code, len(e.read())
+            except Exception as e:
+                code, n = str(e), 0
+            print(rnd, path, code, n, f'{time.time() - t:.2f}s')
+    acc, tok = os.environ['CLOUDFLARE_ACCOUNT_ID'], os.environ['CLOUDFLARE_API_TOKEN']
+    now = int(time.time() * 1000)
+    q = {'queryId': 'health', 'view': 'events', 'limit': 100, 'timeframe': {'from': now - 24 * 3600 * 1000, 'to': now},
+         'parameters': {'datasets': ['cloudflare-workers'], 'filters': [
+             {'key': '$workers.outcome', 'operation': 'neq', 'type': 'string', 'value': 'ok'}]}}
+    req = urllib.request.Request(f'https://api.cloudflare.com/client/v4/accounts/{acc}/workers/observability/telemetry/query',
+                                 data=json.dumps(q).encode(), headers={'Authorization': 'Bearer ' + tok, 'content-type': 'application/json'})
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            d = json.load(r)
+        for e in (d.get('result', {}).get('events', {}) or {}).get('events', []):
+            w = e.get('$workers', {})
+            print('EV', e.get('timestamp'), w.get('outcome'), w.get('cpuTimeMs'), w.get('wallTimeMs'),
+                  (w.get('event') or {}).get('request', {}).get('url'))
+    except urllib.error.HTTPError as e:
+        print('observability', e.code, e.read()[:800])
+    gql = '''query($a:String!,$s:Time!){viewer{accounts(filter:{accountTag:$a}){workersInvocationsAdaptive(limit:50,filter:{datetime_geq:$s,scriptName:"souvalchidol"}){sum{requests errors}quantiles{cpuTimeP50 cpuTimeP99}dimensions{status datetimeHour}}}}}'''
+    import datetime
+    s = (datetime.datetime.utcnow() - datetime.timedelta(hours=24)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    req = urllib.request.Request('https://api.cloudflare.com/client/v4/graphql', data=json.dumps({'query': gql, 'variables': {'a': acc, 's': s}}).encode(),
+                                 headers={'Authorization': 'Bearer ' + tok, 'content-type': 'application/json'})
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            print(json.dumps(json.load(r), ensure_ascii=False)[:6000])
+    except urllib.error.HTTPError as e:
+        print('graphql', e.code, e.read()[:800])
+
+
 if __name__ == '__main__':
-    {'logo': logo, 'photos': photos, 'chat': chat}[sys.argv[1]]()
+    {'logo': logo, 'photos': photos, 'chat': chat, 'health': health}[sys.argv[1]]()
