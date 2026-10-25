@@ -62,13 +62,17 @@ export const HOME_DEFAULTS: HomeContent = {
   },
 };
 
+// Тези вече са бутони в голямата снимка горе — в бързите връзки не се повтарят (нито на сайта, нито в админа).
+export const QUICK_SKIP = ['/priem', '/za-uchilishteto'];
+
 const str = (v: unknown, d: string) => (typeof v === 'string' && v.trim() ? v.trim() : d);
 
 export async function getHome(): Promise<HomeContent> {
   const raw = (await getSetting<Record<string, any>>('home')) || {};
   const D = HOME_DEFAULTS;
   const quick = Array.isArray(raw.quick)
-    ? raw.quick.filter((q: any) => q && q.t && q.href).map((q: any) => ({ t: String(q.t), href: String(q.href), icon: String(q.icon || 'folder') }))
+    ? raw.quick.filter((q: any) => q && q.t && q.href && !QUICK_SKIP.includes(String(q.href).split('#')[0]))
+        .map((q: any) => ({ t: String(q.t), href: String(q.href), icon: String(q.icon || 'folder') }))
     : [];
   const stats = Array.isArray(raw.stats)
     ? raw.stats.filter((s: any) => s && s.n).map((s: any) => ({ n: String(s.n), t: String(s.t || '') }))
