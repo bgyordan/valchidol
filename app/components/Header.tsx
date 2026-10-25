@@ -101,8 +101,9 @@ export default function Header({ nav }: { nav?: NavGroup[] }) {
         <span id="sh-notice-slot" />
         <ThemeToggle />
         <a href="https://app.shkolo.bg/" className="sh-donate" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={BOOK} /></svg>Е-дневник</a>
-        <button type="button" className="sh-menu" aria-expanded={mobile} aria-controls="mob-nav" onClick={() => setMobile(!mobile)}>
-          {mobile ? 'Затвори' : 'Меню'}
+        {/* три чертички (сандвич) — при отваряне стават на X */}
+        <button type="button" className="sh-menu" aria-expanded={mobile} aria-controls="mob-nav" aria-label={mobile ? 'Затвори менюто' : 'Меню'} onClick={() => setMobile(!mobile)}>
+          <span className="sh-burger" aria-hidden="true"><i /><i /><i /></span>
         </button>
       </div>
 
