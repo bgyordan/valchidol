@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { db, first } from '../../lib/db';
+import { AREAS } from '../../lib/perms';
 import { checkPassword, endSession, hashPassword, requireAdmin, requireMainAdmin, startSession } from '../../lib/auth';
 
 export type FormState = { error?: string; ok?: string } | undefined;
@@ -94,8 +95,8 @@ export async function addUser(_: FormState, f: FormData): Promise<FormState> {
   if (bad) return { error: bad };
   if (await first('SELECT 1 FROM admin_users WHERE email = ?', e)) return { error: 'Този имейл вече е добавен.' };
   const role = f.get('role') === 'admin' ? 'admin' : 'editor';
-  await d.prepare('INSERT INTO admin_users (email, name, pass_hash, role) VALUES (?, ?, ?, ?)')
-    .bind(e, str(f, 'name') || null, await hashPassword(pass), role).run();
+  await d.prepare('INSERT INTO admin_users (email, name, pass_hash, role, perms) VALUES (?, ?, ?, ?, ?)')
+    .bind(e, str(f, 'name') || null, await hashPassword(pass), role, role === 'admin' ? null : permsFrom(f)).run();
   revalidatePath('/admin/hora');
   return { ok: `Добавен е ${e}. Кажете му паролата лично; може да я смени от „Моят профил“.` };
 }
@@ -120,6 +121,20 @@ export async function setRole(f: FormData) {
   if (e === me.email) throw new Error('Не можете да смените собствената си роля.');
   const role = f.get('role') === 'admin' ? 'admin' : 'editor';
   await (await D()).prepare('UPDATE admin_users SET role = ? WHERE email = ?').bind(role, e).run();
+  revalidatePath('/admin/hora');
+}
+
+// отметките от формата → „novini,sabitiya“; всички отметнати = null (всичко, и бъдещите раздели)
+function permsFrom(f: FormData): string | null {
+  const got = AREAS.map((a) => a.key).filter((k) => f.getAll('perm').includes(k));
+  return got.length === AREAS.length ? null : got.join(',');
+}
+
+export async function setPerms(f: FormData) {
+  const me = await requireMainAdmin();
+  const e = email(f);
+  if (e === me.email) throw new Error('Не можете да смените собствените си права.');
+  await (await D()).prepare('UPDATE admin_users SET perms = ? WHERE email = ?').bind(permsFrom(f), e).run();
   revalidatePath('/admin/hora');
 }
 

@@ -84,3 +84,22 @@
 .adm-newyear { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .adm-year-act { margin: -2px 0 10px; font-size: .92rem; }
 .adm-doc-acts { white-space: nowrap; }
+.adm-perms { border: 1px solid var(--line); border-radius: 14px; padding: 10px 16px 12px; margin: 8px 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px 16px; }
+.adm-perms legend { padding: 0 6px; font-size: .95rem; }
+.adm-perms p { grid-column: 1 / -1; }
+.adm-perm-edit { margin-top: 6px; }
+.adm-cats { border: 0; padding: 0; margin: 4px 0 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.adm-cats legend { margin-bottom: 8px; }
+.adm-chip { position: relative; cursor: pointer; }
+.adm-chip input { position: absolute; opacity: 0; pointer-events: none; }
+.adm-chip span { display: inline-block; padding: 7px 15px; border-radius: 999px; border: 1px solid var(--line-strong); transition: background .2s, color .2s, border-color .2s; }
+.adm-chip:hover span { border-color: var(--navy); }
+.adm-chip input:checked + span { background: var(--navy); border-color: var(--navy); color: #fff; }
+.adm-chip input:focus-visible + span { outline: 2px solid var(--navy); outline-offset: 2px; }
+.adm-chip-new { display: inline-flex; align-items: center; gap: 8px; margin-left: 4px; }
+.adm-chip-new input { width: 12em; }
+.adm-form fieldset.adm-cats { display: flex; flex-wrap: wrap; border: 0; padding: 0; }
+.adm-form .adm-chip { display: inline-block; font-weight: 400; }
+.adm-form .adm-chip input { position: absolute; width: 1px; height: 1px; padding: 0; border: 0; opacity: 0; }
+.adm-form .adm-chip-new { display: inline-flex; align-items: center; font-weight: 400; white-space: nowrap; }
+.adm-form .adm-chip-new input { width: 12em; }

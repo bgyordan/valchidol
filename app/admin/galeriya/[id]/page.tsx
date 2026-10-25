@@ -1,3 +1,4 @@
+import { denied } from '../../guard';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { all, first } from '../../../../lib/db';
@@ -8,6 +9,8 @@ type Album = { id: string; title: string; cover_url: string | null; event_date: 
 type Photo = { id: string; photo_url: string; caption: string | null };
 
 export default async function EditAlbum({ params }: { params: Promise<{ id: string }> }) {
+  const no = await denied('galeriya');
+  if (no) return no;
   const { id } = await params;
   const a = await first<Album>('SELECT id, title, cover_url, event_date, sort_order FROM gallery_albums WHERE id = ?', id);
   if (!a) notFound();

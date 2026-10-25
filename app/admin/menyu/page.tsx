@@ -1,3 +1,4 @@
+import { denied } from '../guard';
 import { NAV } from '../../components/nav';
 import { getNav } from '../../../lib/menu';
 import { resetMenu, saveMenu } from './actions';
@@ -5,6 +6,8 @@ import { resetMenu, saveMenu } from './actions';
 // Редът, имената и скриването на разделите и страниците в главното меню.
 // Полетата носят номера на раздела/връзката в кода (NAV), за да се знае коя е.
 export default async function AdminMenu() {
+  const no = await denied('nachalo');
+  if (no) return no;
   const nav = await getNav(true);
   const gi = (href: string) => NAV.findIndex((g) => g.href === href);
   return (

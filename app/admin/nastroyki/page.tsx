@@ -1,7 +1,10 @@
+import { denied } from '../guard';
 import { getSiteInfo } from '../../../lib/siteinfo';
 import { saveSiteInfo } from './actions';
 
 export default async function AdminSettings() {
+  const no = await denied('nastroyki');
+  if (no) return no;
   const i = await getSiteInfo();
   return (
     <>

@@ -1,3 +1,4 @@
+import { denied } from '../guard';
 import { all } from '../../../lib/db';
 import { addDocument, archiveDocs, deleteDocument, renameDocGroup, setDocArchived, updateDocument } from '../actions';
 import Confirm from '../Confirm';
@@ -14,6 +15,8 @@ function schoolYear() {
 }
 
 export default async function AdminDocs({ searchParams }: { searchParams: Promise<{ page?: string; cat?: string; arch?: string }> }) {
+  const no = await denied('dokumenti');
+  if (no) return no;
   const pages = await all<{ slug: string; title: string }>('SELECT slug, title FROM site_pages ORDER BY sort');
   const counts = await all<{ section: string; n: number }>('SELECT section, COUNT(*) AS n FROM site_documents GROUP BY section');
   const n = (slug: string) => counts.find((c) => c.section === slug)?.n ?? 0;

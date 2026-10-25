@@ -19,7 +19,7 @@ async function D() {
 
 /* ---------------- Новини ---------------- */
 export async function saveNews(f: FormData) {
-  const me = await requireAdmin();
+  const me = await requireAdmin('novini');
   const d = await D();
   const id = str(f, 'id', 120);
   const title = str(f, 'title', 300);
@@ -39,7 +39,7 @@ export async function saveNews(f: FormData) {
 
   const status = f.get('status') === 'published' ? 'published' : 'draft';
   const publishedAt = sofiaToIso(str(f, 'published_at', 20)) ?? (status === 'published' ? new Date().toISOString() : null);
-  const vals = [title, opt(f, 'excerpt', 600), opt(f, 'content', 50000), cover, JSON.stringify(gallery), str(f, 'category', 60) || 'Новини', status, publishedAt, opt(f, 'author_name', 120) ?? me.email];
+  const vals = [title, opt(f, 'excerpt', 600), opt(f, 'content', 50000), cover, JSON.stringify(gallery), str(f, 'category_new', 60) || str(f, 'category', 60) || 'Новини', status, publishedAt, opt(f, 'author_name', 120) ?? me.email];
 
   if (old) {
     await d.prepare(`UPDATE site_news SET title=?, excerpt=?, content=?, cover_url=?, gallery_images=?, category=?, status=?, published_at=?, author_name=? WHERE id=?`).bind(...vals, id).run();
@@ -53,7 +53,7 @@ export async function saveNews(f: FormData) {
 }
 
 export async function deleteNews(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('novini');
   const d = await D();
   const id = str(f, 'id', 120);
   const row = await d.prepare('SELECT cover_url, gallery_images FROM site_news WHERE id = ?').bind(id).first<{ cover_url: string | null; gallery_images: string }>();
@@ -79,7 +79,7 @@ async function nextOrder(d: Awaited<ReturnType<typeof D>>, section: string, year
 }
 
 export async function addDocument(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('dokumenti');
   const d = await D();
   const file = f.get('file');
   const link = str(f, 'link', 1000);
@@ -96,7 +96,7 @@ export async function addDocument(f: FormData) {
 }
 
 export async function updateDocument(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('dokumenti');
   const d = await D();
   const id = str(f, 'id', 60);
   const name = str(f, 'name', 300);
@@ -117,7 +117,7 @@ export async function updateDocument(f: FormData) {
 
 // Преименува група за цялата страница (напр. „Училищна документация“ → „Правилници и планове“).
 export async function renameDocGroup(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('dokumenti');
   const d = await D();
   await d.prepare('UPDATE site_documents SET category=? WHERE section=? AND category=?')
     .bind(opt(f, 'to', 60), str(f, 'section', 60), str(f, 'from', 60)).run();
@@ -126,7 +126,7 @@ export async function renameDocGroup(f: FormData) {
 
 // Архив: един документ (archived=1 → в архива, 0 → обратно при текущите).
 export async function setDocArchived(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('dokumenti');
   const d = await D();
   await d.prepare('UPDATE site_documents SET archived=? WHERE id=?').bind(f.get('archived') === '1' ? 1 : 0, str(f, 'id', 60)).run();
   revalidatePath('/', 'layout');
@@ -134,7 +134,7 @@ export async function setDocArchived(f: FormData) {
 
 // Архивира наведнъж: цяла година на страницата (year) или всичко преди дадена година (before).
 export async function archiveDocs(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('dokumenti');
   const d = await D();
   const section = str(f, 'section', 60);
   const year = str(f, 'year', 20), before = str(f, 'before', 20);
@@ -144,7 +144,7 @@ export async function archiveDocs(f: FormData) {
 }
 
 export async function deleteDocument(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('dokumenti');
   const d = await D();
   const id = str(f, 'id', 60);
   const row = await d.prepare('SELECT file_url FROM site_documents WHERE id = ?').bind(id).first<{ file_url: string }>();
@@ -154,7 +154,7 @@ export async function deleteDocument(f: FormData) {
 
 /* ---------------- Галерия ---------------- */
 export async function createAlbum(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('galeriya');
   const d = await D();
   const title = str(f, 'title', 200);
   if (!title) throw new Error('Липсва заглавие');
@@ -164,7 +164,7 @@ export async function createAlbum(f: FormData) {
 }
 
 export async function updateAlbum(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('galeriya');
   const d = await D();
   await d.prepare('UPDATE gallery_albums SET title=?, event_date=?, sort_order=? WHERE id=?')
     .bind(str(f, 'title', 200), opt(f, 'event_date', 10), num(f, 'sort_order'), str(f, 'id', 60)).run();
@@ -172,7 +172,7 @@ export async function updateAlbum(f: FormData) {
 }
 
 export async function addPhotos(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('galeriya');
   const d = await D();
   const album = str(f, 'album_id', 60);
   const max = await d.prepare('SELECT COALESCE(MAX(sort_order), 0) AS m FROM gallery_photos WHERE album_id = ?').bind(album).first<{ m: number }>();
@@ -190,7 +190,7 @@ export async function addPhotos(f: FormData) {
 }
 
 export async function photoAction(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('galeriya');
   const d = await D();
   const id = str(f, 'id', 60);
   const p = await d.prepare('SELECT album_id, photo_url FROM gallery_photos WHERE id = ?').bind(id).first<{ album_id: string; photo_url: string }>();
@@ -209,7 +209,7 @@ export async function photoAction(f: FormData) {
 }
 
 export async function deleteAlbum(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('galeriya');
   const d = await D();
   const id = str(f, 'id', 60);
   const { results } = await d.prepare('SELECT photo_url FROM gallery_photos WHERE album_id = ?').bind(id).all<{ photo_url: string }>();
@@ -224,7 +224,7 @@ export async function deleteAlbum(f: FormData) {
 
 /* ---------------- Събития ---------------- */
 export async function addEvent(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('sabitiya');
   const d = await D();
   const title = str(f, 'title', 200);
   const date = str(f, 'event_date', 10);
@@ -235,7 +235,7 @@ export async function addEvent(f: FormData) {
 }
 
 export async function deleteEvent(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('sabitiya');
   const d = await D();
   await d.prepare('DELETE FROM site_events WHERE id = ?').bind(str(f, 'id', 60)).run();
   revalidatePath('/', 'layout');
@@ -243,7 +243,7 @@ export async function deleteEvent(f: FormData) {
 
 /* ---------------- Текстови страници ---------------- */
 export async function savePage(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('stranitsi');
   const d = await D();
   const isNew = f.get('new') === '1';
   const slug = isNew
@@ -273,7 +273,7 @@ export async function savePage(f: FormData) {
 }
 
 export async function deletePage(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('stranitsi');
   const d = await D();
   const slug = str(f, 'slug', 120);
   const row = await d.prepare('SELECT photos FROM site_pages WHERE slug = ?').bind(slug).first<{ photos: string }>();

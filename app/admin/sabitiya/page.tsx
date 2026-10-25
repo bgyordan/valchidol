@@ -1,3 +1,4 @@
+import { denied } from '../guard';
 import { all } from '../../../lib/db';
 import { fmtDate } from '../../../lib/data';
 import { addEvent, deleteEvent } from '../actions';
@@ -6,6 +7,8 @@ import Confirm from '../Confirm';
 type Row = { id: string; title: string; event_date: string; event_time: string | null; location: string | null };
 
 export default async function AdminEvents() {
+  const no = await denied('sabitiya');
+  if (no) return no;
   const rows = await all<Row>(`SELECT id, title, event_date, event_time, location FROM site_events ORDER BY event_date DESC`);
   const today = new Date().toISOString().slice(0, 10);
   return (

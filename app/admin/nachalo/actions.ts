@@ -30,7 +30,7 @@ async function write(t: Target, list: string[], all: Record<string, unknown>) {
 }
 
 export async function addHomePhotos(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('nachalo');
   const t = target(f);
   const { list, all } = await read(t);
   for (const file of f.getAll('photos')) if (isFile(file)) list.push(await uploadFile(file, 'nachalo'));
@@ -40,7 +40,7 @@ export async function addHomePhotos(f: FormData) {
 }
 
 export async function removeHomePhoto(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('nachalo');
   const t = target(f);
   const url = String(f.get('url') ?? '');
   const { list, all } = await read(t);
@@ -49,7 +49,7 @@ export async function removeHomePhoto(f: FormData) {
 }
 
 export async function moveHomePhoto(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('nachalo');
   const t = target(f);
   const url = String(f.get('url') ?? '');
   const dir = f.get('dir') === 'up' ? -1 : 1;
@@ -65,7 +65,7 @@ export async function moveHomePhoto(f: FormData) {
 const tx = (f: FormData, k: string, max = 300) => String(f.get(k) ?? '').trim().slice(0, max);
 
 export async function saveHomeTexts(f: FormData) {
-  await requireAdmin();
+  await requireAdmin('nachalo');
   const d = await db();
   if (!d) throw new Error('Няма връзка с базата');
   const quick = [], stats = [];
