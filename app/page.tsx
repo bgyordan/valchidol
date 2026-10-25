@@ -3,6 +3,7 @@ import { getSiteInfo } from '../lib/siteinfo';
 import { getNav } from '../lib/menu';
 import { getHome } from '../lib/home';
 import PhotoBand from './components/PhotoBand';
+import AudienceSwitch from './components/AudienceSwitch';
 import './home.css';
 
 // Начална страница — подредена като на повечето средни училища:
@@ -39,11 +40,11 @@ const pick = (nav: Nav, hrefs: string[]) => {
   return hrefs.map((h) => all.find((l) => l.href === h)).filter((l): l is NonNullable<typeof l> => !!l);
 };
 const audience = (nav: Nav) => [
-  { t: 'Ученици', tone: 'lime', icon: ICON.student, href: '/za-uchenika',
+  { t: 'Ученици', icon: ICON.student, href: '/za-uchenika',
     links: pick(nav, ['/za-uchenika', '/stipendii', '/zanimaniya-po-interesi', '/sfo', '/parlament']) },
-  { t: 'Родители', tone: 'orange', icon: ICON.family, href: '/za-roditeli',
+  { t: 'Родители', icon: ICON.family, href: '/za-roditeli',
     links: pick(nav, ['/priem', '/zayavleniya', '/za-roditeli', '/roditelski-klub', '/patuvaniya']) },
-  { t: 'Учители', tone: 'blue', icon: ICON.teacher, href: '/za-uchitelya',
+  { t: 'Учители', icon: ICON.teacher, href: '/za-uchitelya',
     links: pick(nav, ['/za-uchitelya', '/kriterii-dtv', '/profesionalni-obshtnosti', '/organizirane-na-ekskurzii', '/dokumentatsiya']) },
 ];
 
@@ -81,8 +82,13 @@ export default async function Home() {
         </div>
         <div className="wrap hh-in">
           <p className="hh-kicker">{home.kicker}</p>
-          <h1 id="hh-title">{home.title}</h1>
-          <p className="hh-motto">{home.motto}</p>
+          {/* думите на името изплуват една след друга, последната се подчертава */}
+          <h1 id="hh-title" aria-label={home.title}>
+            {home.title.split(/\s+/).filter(Boolean).map((w, i, all) => (
+              <span key={i} className={`hw${i === all.length - 1 ? ' hw-last' : ''}`} aria-hidden="true"><span style={{ ['--i' as string]: i } as React.CSSProperties}>{w}</span></span>
+            ))}
+          </h1>
+          <p className="hh-motto" style={{ ['--n' as string]: home.title.split(/\s+/).length } as React.CSSProperties}>{home.motto}</p>
           <div className="btn-row">
             <a className="btn btn-primary" href="/priem">Прием на ученици</a>
             <a className="btn hh-ghost" href="/za-uchilishteto">За училището</a>
@@ -99,15 +105,6 @@ export default async function Home() {
           </a>
         ))}
       </nav>
-
-      {/* ===== Важно — постоянна обява за правилата ===== */}
-      <div className="wrap">
-        <a className="hh-alert" href="/za-roditeli">
-          <span className="hh-alert-ic"><Ic d={ICON.alert} /></span>
-          <span><b>Важно:</b> правила за използване на мобилни устройства в училище и за превенция на рисковото поведение.</span>
-          <span className="hh-alert-go">Прочетете</span>
-        </a>
-      </div>
 
       {/* ===== Новини + събития ===== */}
       <section className="hs" aria-labelledby="news-h">
@@ -183,27 +180,10 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ===== За ученици, родители и учители ===== */}
+      {/* ===== Информация за ученици, родители и учители ===== */}
       <section className="hs" aria-labelledby="aud-h">
         <div className="wrap">
-          <div className="hs-head">
-            <div>
-              <h2 id="aud-h">Информация за</h2>
-            </div>
-          </div>
-          <div className="ha">
-            {AUDIENCE.map((a) => (
-              <div key={a.t} className={`ha-card tone-${a.tone}`}>
-                <div className="ha-top">
-                  <span className="ha-ic"><Ic d={a.icon} /></span>
-                  <h3><a href={a.href}>{a.t}</a></h3>
-                </div>
-                <ul>
-                  {a.links.map((l) => <li key={l.href}><a href={l.href}>{l.label}</a></li>)}
-                </ul>
-              </div>
-            ))}
-          </div>
+          <AudienceSwitch items={AUDIENCE.map(({ t, href, icon, links }) => ({ t, href, icon, links }))} />
         </div>
       </section>
 

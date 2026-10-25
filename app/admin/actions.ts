@@ -124,6 +124,25 @@ export async function renameDocGroup(f: FormData) {
   revalidatePath('/', 'layout');
 }
 
+// Архив: един документ (archived=1 → в архива, 0 → обратно при текущите).
+export async function setDocArchived(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  await d.prepare('UPDATE site_documents SET archived=? WHERE id=?').bind(f.get('archived') === '1' ? 1 : 0, str(f, 'id', 60)).run();
+  revalidatePath('/', 'layout');
+}
+
+// Архивира наведнъж: цяла година на страницата (year) или всичко преди дадена година (before).
+export async function archiveDocs(f: FormData) {
+  await requireAdmin();
+  const d = await D();
+  const section = str(f, 'section', 60);
+  const year = str(f, 'year', 20), before = str(f, 'before', 20);
+  if (year) await d.prepare('UPDATE site_documents SET archived=1 WHERE section=? AND academic_year=?').bind(section, year).run();
+  else if (before) await d.prepare("UPDATE site_documents SET archived=1 WHERE section=? AND academic_year IS NOT NULL AND academic_year<>'' AND academic_year<?").bind(section, before).run();
+  revalidatePath('/', 'layout');
+}
+
 export async function deleteDocument(f: FormData) {
   await requireAdmin();
   const d = await D();

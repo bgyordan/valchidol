@@ -473,3 +473,52 @@ html.a11y-links a { text-decoration: underline !important; text-underline-offset
 .yt-sub .yt-bar button { padding: 7px 14px; font-size: calc(14px * var(--fs, 1)); border: 1px solid var(--line); }
 .yt-sub .yt-bar button.on { border-color: var(--navy); }
 .doc-year { margin: 0 0 10px; font-weight: 400; font-size: 1rem; color: var(--ink-2); }
+
+/* ===== Преглед на документ (DocPreview) ===== */
+html.dp-lock { overflow: hidden; }
+.dp { position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: clamp(8px, 3vw, 40px); border: 0; background: transparent; display: none; }
+.dp[open] { display: grid; place-items: center; }
+.dp::backdrop { background: rgba(7, 22, 40, .62); backdrop-filter: blur(6px); animation: dp-fade .25s ease; }
+.dp-box { width: min(1100px, 100%); height: 100%; display: flex; flex-direction: column; border-radius: var(--r-lg); overflow: hidden; background: var(--paper); box-shadow: var(--shadow-lg); animation: dp-in .45s cubic-bezier(.2, .9, .25, 1.15); }
+.dp-bar { display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 22px; border-bottom: 1px solid var(--line); }
+.dp-name { flex: 1; min-width: 0; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dp-acts { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.dp-btn { padding: 8px 16px; border-radius: var(--r-pill); background: var(--navy-soft); color: var(--navy); font-weight: 500; font-size: calc(14.5px * var(--fs-ui, 1)); transition: background .2s, color .2s; }
+.dp-btn:hover { background: var(--navy); color: #fff; }
+.dp-x { width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; transition: background .2s, rotate .3s; }
+.dp-x:hover { background: var(--sky); rotate: 90deg; }
+.dp-x svg { width: 22px; height: 22px; }
+.dp-view { position: relative; flex: 1; min-height: 0; background: var(--sky); }
+.dp-view iframe, .dp-view img { width: 100%; height: 100%; border: 0; display: block; opacity: 0; transition: opacity .35s; }
+.dp-view img { object-fit: contain; }
+.dp-view.ok iframe, .dp-view.ok img { opacity: 1; }
+.dp-wait { position: absolute; left: 50%; top: 50%; width: 42px; height: 42px; margin: -21px; border-radius: 50%; border: 3px solid var(--line-strong); border-top-color: var(--navy); animation: dp-spin .8s linear infinite; }
+@keyframes dp-in { from { opacity: 0; transform: translateY(24px) scale(.97); } }
+@keyframes dp-fade { from { opacity: 0; } }
+@keyframes dp-spin { to { rotate: 360deg; } }
+@media (max-width: 640px) {
+  .dp { padding: 0; }
+  .dp-box { border-radius: 0; }
+  .dp-bar { padding-left: 14px; }
+  .dp-btn { padding: 7px 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .dp-box, .dp::backdrop { animation: none; } }
+
+/* ===== Текуща година и архив на документите ===== */
+.doc-now { display: inline-flex; align-items: center; gap: 10px; margin: 4px 0 18px; padding: 6px 16px 6px 6px; border-radius: var(--r-pill); background: var(--navy-soft); color: var(--navy); font-weight: 500; font-variant-numeric: tabular-nums; }
+.doc-now span { padding: 4px 12px; border-radius: var(--r-pill); background: var(--navy); color: #fff; font-size: calc(13.5px * var(--fs, 1)); }
+:root[data-theme="dark"] .doc-now span { color: #0E1722; }
+.doc-archive { margin-top: clamp(36px, 4vw, 56px); border-radius: var(--r-lg); background: var(--sky); overflow: hidden; }
+.doc-archive > summary { display: flex; align-items: center; gap: 14px; padding: 18px 22px; cursor: pointer; list-style: none; transition: background .2s; }
+.doc-archive > summary::-webkit-details-marker { display: none; }
+.doc-archive > summary::after { content: ""; width: 10px; height: 10px; margin-left: auto; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; rotate: 45deg; translate: 0 -3px; color: var(--ink-2); transition: rotate .3s, translate .3s; }
+.doc-archive[open] > summary::after { rotate: 225deg; translate: 0 3px; }
+.doc-archive > summary:hover { background: var(--sky-2); }
+.da-ic { width: 44px; height: 44px; flex-shrink: 0; display: grid; place-items: center; border-radius: 50%; background: var(--paper); color: var(--navy); }
+.da-ic svg { width: 22px; height: 22px; }
+.da-t { font: 300 calc(clamp(19px, 1.6vw, 23px) * var(--fs-ui, 1))/1.2 var(--display); }
+.da-n { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.da-body { padding: 4px clamp(14px, 2vw, 26px) clamp(18px, 2vw, 26px); animation: da-open .4s ease; }
+.da-body .doc-rows a:hover { background: var(--paper); }
+@keyframes da-open { from { opacity: 0; transform: translateY(-8px); } }
+@media (max-width: 640px) { .da-n { display: none; } }
