@@ -80,6 +80,7 @@ export const NAV: NavGroup[] = [
       { label: 'Административни услуги', desc: 'Удостоверения и заявления', href: '/administrativni-uslugi' },
       { label: 'Достъп до информация', desc: 'По ЗДОИ', href: '/dostap-do-informatsiya' },
       { label: 'Лични данни', desc: 'Защита на личните данни', href: '/lichni-danni' },
+      { label: 'Сигнали за нарушения', desc: 'По ЗЗЛПСПОИН', href: '/signali' },
       { label: 'Профил на купувача', desc: 'Обществени поръчки', href: 'https://app.eop.bg/buyer/21179' },
       { label: 'За учителя', desc: 'Документи за учителите', href: '/za-uchitelya' },
       { label: 'Критерии за ДТВ', desc: 'Допълнително трудово възнаграждение', href: '/kriterii-dtv' },

@@ -28,14 +28,14 @@ a.tb-item:hover { color: #fff; text-decoration: underline; text-underline-offset
 .sh-brand span { min-width: 0; }
 .sh-brand img { width: 56px; height: 56px; object-fit: contain; flex-shrink: 0; transition: width .3s, height .3s; }
 .site-head.is-stuck .sh-brand img { width: 46px; height: 46px; }
-.sh-brand b { display: block; font-family: var(--display); font-weight: 500; font-size: calc(18px * var(--fs-ui, 1)); line-height: 1.15; letter-spacing: -.015em; white-space: nowrap; color: var(--navy); }
+.sh-brand b { display: block; font-family: var(--display); font-weight: 300; font-size: calc(18px * var(--fs-ui, 1)); line-height: 1.15; letter-spacing: -.015em; white-space: nowrap; color: var(--navy); }
 .sh-brand small { display: block; font-size: calc(13.5px * var(--fs-ui, 1)); color: var(--ink-3); line-height: 1.3; margin-top: 3px; }
 
 .sh-nav { display: flex; align-items: center; gap: 0; align-self: stretch; }
 .sh-item { position: relative; display: flex; align-items: center; height: 100%; }
 
 .sh-link { position: relative; display: inline-flex; align-items: center; height: 100%; padding: 0 12px; border: 0; background: none; cursor: pointer;
-  font: 500 calc(16px * var(--fs-ui, 1))/1 var(--body); white-space: nowrap; color: var(--ink); transition: color .2s; }
+  font: 400 calc(16px * var(--fs-ui, 1))/1 var(--body); white-space: nowrap; color: var(--ink); transition: color .2s; }
 .sh-item:has(.sh-caret) .sh-link { padding-right: 2px; }
 .sh-caret { display: grid; place-items: center; width: 26px; height: 36px; margin-right: 4px; padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; border-radius: var(--r-sm); }
 .sh-caret svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; opacity: .55; transition: transform .25s cubic-bezier(.2, .8, .2, 1), opacity .2s; }
@@ -55,10 +55,10 @@ a.tb-item:hover { color: #fff; text-decoration: underline; text-underline-offset
 .sh-panel ul { list-style: none; display: grid; }
 .sh-panel li a { display: block; padding: 11px 14px; border-radius: 11px; font-size: calc(16px * var(--fs-ui, 1)); line-height: 1.3; white-space: nowrap; color: var(--ink); transition: background .15s; }
 .sh-panel li a:hover { background: var(--sky); }
-.sh-panel li a[aria-current] { font-weight: 600; background: var(--tone-soft); color: var(--tone-ink); }
+.sh-panel li a[aria-current] { font-weight: 400; background: var(--tone-soft); color: var(--tone-ink); }
 
 /* вдясно: бутонът за е-дневника и смяна на темата */
-.sh-donate { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: 600 calc(15px * var(--fs-ui, 1))/1 var(--body);
+.sh-donate { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: 400 calc(15px * var(--fs-ui, 1))/1 var(--body);
   padding: 13px 20px; border-radius: var(--r-pill); background: var(--warm); color: var(--on-warm); border: 0; transition: background .2s; }
 .sh-donate svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .sh-donate:hover { background: color-mix(in srgb, var(--warm) 88%, #000); }
@@ -126,5 +126,5 @@ a.tb-item:hover { color: #fff; text-decoration: underline; text-underline-offset
 @media (prefers-reduced-motion: reduce) { .sh-panel, .sh-mob { animation: none; } .sh-bar, .sh-brand img, .sh-item::after { transition: none; } }
 
 /* БГ / EN в горната лента */
-.tb-lang { font-weight: 700; letter-spacing: .04em; padding: 5px 10px; margin-right: -10px; border-radius: var(--r-sm); border: 1px solid rgba(214, 225, 238, .35); }
+.tb-lang { font-weight: 400; letter-spacing: .04em; padding: 5px 10px; margin-right: -10px; border-radius: var(--r-sm); border: 1px solid rgba(214, 225, 238, .35); }
 .tb-lang:hover { background: rgba(255, 255, 255, .1); text-decoration: none !important; }

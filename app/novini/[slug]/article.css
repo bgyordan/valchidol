@@ -15,7 +15,7 @@
 .art-text { min-width: 0; }
 .art-photos { position: sticky; top: calc(var(--header-h) + 24px); min-width: 0; }
 .art-photos-h { display: flex; align-items: baseline; gap: 10px; font: 300 calc(clamp(22px, 1.8vw, 30px) * var(--fs-ui, 1))/1.1 var(--display); letter-spacing: -.02em; margin-bottom: 18px; }
-.art-photos-h span { font: 500 calc(14px * var(--fs, 1)) var(--body); color: var(--ink-3); }
+.art-photos-h span { font: 400 calc(14px * var(--fs, 1)) var(--body); color: var(--ink-3); }
 
 .article-body { padding: 0; }
 .article-lead { font-size: calc(clamp(20px, 1.6vw, 25px) * var(--fs-ui, 1)); line-height: 1.55; color: var(--ink); font-weight: 400; margin-bottom: clamp(24px, 2.4vw, 36px); padding: 0; border: 0; }
@@ -36,16 +36,16 @@
 
 /* Бутон Сподели */
 .share-box { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding-top: 24px; margin-top: clamp(32px, 3vw, 48px); border-top: 1px solid var(--line); }
-.share-label { font-weight: 600; color: var(--ink-2); }
+.share-label { font-weight: 400; color: var(--ink-2); }
 .share-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-.share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; font-weight: 600; font-size: calc(15px * var(--fs, 1)); border: 0; border-radius: var(--r-pill); cursor: pointer; }
+.share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; font-weight: 400; font-size: calc(15px * var(--fs, 1)); border: 0; border-radius: var(--r-pill); cursor: pointer; }
 .share-btn svg { width: 17px; height: 17px; }
 .share-btn.fb { background: var(--ink); color: var(--paper); }
 .share-btn.native { background: var(--sky); color: var(--ink); }
 .article-cover.is-zoom{display:block;width:100%;padding:0;border:none;cursor:zoom-in;position:relative;background:none}
 .article-cover.is-zoom img{transition:transform .8s cubic-bezier(.2,.7,.3,1)}
 .article-cover.is-zoom:hover img{transform:scale(1.03)}
-.ac-badge{position:absolute;right:16px;bottom:16px;display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;font-size:calc(13px * var(--fs, 1));font-weight:600;color:#fff;background:rgba(15,30,25,.45);backdrop-filter:blur(10px)}
+.ac-badge{position:absolute;right:16px;bottom:16px;display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;font-size:calc(13px * var(--fs, 1));font-weight:400;color:#fff;background:rgba(15,30,25,.45);backdrop-filter:blur(10px)}
 .ac-badge svg{width:16px;height:16px}
 
 /* Мозайка от снимки в статията */
@@ -62,7 +62,7 @@
 .ng-zoom{position:absolute;inset:0;display:grid;place-items:center;background:rgba(15,40,30,.28);opacity:0;transition:opacity .3s}
 .ng-zoom svg{width:34px;height:34px;color:#fff;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
 .ng-item:hover .ng-zoom{opacity:1}
-.ng-more{position:absolute;inset:0;display:grid;place-items:center;font-size:calc(30px * var(--fs, 1));font-weight:600;color:#fff;background:rgba(15,40,30,.55);backdrop-filter:blur(2px);transition:background .3s}
+.ng-more{position:absolute;inset:0;display:grid;place-items:center;font-size:calc(30px * var(--fs, 1));font-weight:400;color:#fff;background:rgba(15,40,30,.55);backdrop-filter:blur(2px);transition:background .3s}
 .ng-item:hover .ng-more{background:rgba(15,40,30,.4)}
 @media(max-width:600px){
   .ng-grid{grid-template-columns:1fr 1fr !important;grid-auto-rows:130px;gap:8px}

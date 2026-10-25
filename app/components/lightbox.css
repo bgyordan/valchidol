@@ -5,7 +5,7 @@
 
 .lb-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px}
 .lb-count{display:flex;align-items:baseline;gap:2px;font-size:calc(14px * var(--fs, 1));color:rgba(255,255,255,.6);min-width:0}
-.lb-count strong{font-size:calc(17px * var(--fs, 1));font-weight:600;color:#fff}
+.lb-count strong{font-size:calc(17px * var(--fs, 1));font-weight:400;color:#fff}
 .lb-title{font-style:normal;margin-left:14px;padding-left:14px;border-left:1px solid rgba(255,255,255,.2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:rgba(255,255,255,.75)}
 .lb-actions{display:flex;gap:8px;flex-shrink:0}
 .lb-btn{width:42px;height:42px;border-radius:50%;border:none;display:grid;place-items:center;background:rgba(255,255,255,.1);backdrop-filter:blur(10px);color:#fff;cursor:pointer;transition:background .2s,transform .25s}

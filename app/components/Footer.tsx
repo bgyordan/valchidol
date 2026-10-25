@@ -59,6 +59,7 @@ export default async function Footer({ lang = 'bg' }: { lang?: Lang }) {
             <a href="/dostapnost">Достъпност</a>
             <a href="/lichni-danni">Лични данни</a>
             <a href="/politika-za-biskvitki">Бисквитки</a>
+            <a href="/signali">Сигнали</a>
             <a href="/obshti-usloviya">Общи условия</a></>}
           </span>
         </div>
