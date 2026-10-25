@@ -11,9 +11,9 @@
 .nl-item { display: block; min-width: 0; }
 .nl-item .nl-img { border-radius: var(--r); aspect-ratio: 4 / 3; }
 .nl-item .nl-meta { margin-top: 14px; }
-.nl-item h3 { margin-top: 8px; font-weight: 600; }
+.nl-item h3 { margin-top: 8px; font-weight: 400; }
 .pager { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 44px; }
-.pager button { min-width: 44px; height: 44px; border-radius: var(--r-pill); border: 1px solid var(--line-strong); background: var(--paper); cursor: pointer; font-weight: 600; }
+.pager button { min-width: 44px; height: 44px; border-radius: var(--r-pill); border: 1px solid var(--line-strong); background: var(--paper); cursor: pointer; font-weight: 400; }
 .pager button[aria-current] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 @media (max-width: 900px) { .nl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .nl-feat { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .nl-grid { grid-template-columns: 1fr; } }

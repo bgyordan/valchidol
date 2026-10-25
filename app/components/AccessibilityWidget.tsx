@@ -65,10 +65,10 @@ export default function AccessibilityWidget() {
           background: var(--paper); border: 1px solid var(--line); border-radius: 18px;
           box-shadow: 0 24px 60px -18px rgba(16,34,64,.28); padding: 16px; font-family: var(--sans, system-ui);
         }
-        .a11y-panel h3 { font-size: 15px; font-weight: 700; color: var(--ink); margin: 0 0 2px; }
+        .a11y-panel h3 { font-size: 15px; font-weight: 400; color: var(--ink); margin: 0 0 2px; }
         .a11y-panel .sub { font-size: 12px; color: var(--ink-2); margin: 0 0 14px; }
         .a11y-row { margin-bottom: 13px; }
-        .a11y-lbl { font-size: 12.5px; font-weight: 600; color: var(--ink); margin-bottom: 6px; display: block; }
+        .a11y-lbl { font-size: 12.5px; font-weight: 400; color: var(--ink); margin-bottom: 6px; display: block; }
         .a11y-seg { display: flex; gap: 5px; }
         .a11y-seg button {
           flex: 1; border: 1px solid var(--line); background: var(--sky); border-radius: 10px; cursor: pointer;

@@ -3,7 +3,7 @@
 .cf-head p { margin-top: 8px; }
 .cf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 20px; }
 .cf-f { display: grid; gap: 7px; min-width: 0; }
-.cf-f > span { font-size: calc(14.5px * var(--fs, 1)); font-weight: 600; color: var(--ink); }
+.cf-f > span { font-size: calc(14.5px * var(--fs, 1)); font-weight: 400; color: var(--ink); }
 .cf-f > span i { font-style: normal; font-weight: 400; color: var(--ink-2); }
 .cf-wide { grid-column: 1 / -1; }
 .cf input, .cf select, .cf textarea { width: 100%; padding: 13px 16px; border: 1px solid var(--line-strong); border-radius: 14px; background: var(--paper); color: var(--ink); outline: none; transition: border-color .15s, box-shadow .15s; }

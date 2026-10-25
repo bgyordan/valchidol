@@ -10,7 +10,7 @@
 .bz-card:hover img { scale: 1.05; }
 .bz-name { position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; padding: clamp(16px, 1.8vw, 24px); font: 300 calc(clamp(18px, 1.5vw, 22px) * var(--fs-ui, 1))/1.25 var(--display); }
 .bz-big .bz-name { font-size: calc(clamp(22px, 2.3vw, 34px) * var(--fs-ui, 1)); }
-.bz-360 { position: absolute; z-index: 1; top: 14px; right: 14px; padding: 6px 12px; border-radius: var(--r-pill); background: rgba(255, 255, 255, .92); color: var(--navy); font: 500 calc(13px * var(--fs-ui, 1))/1 var(--body); letter-spacing: .03em; }
+.bz-360 { position: absolute; z-index: 1; top: 14px; right: 14px; padding: 6px 12px; border-radius: var(--r-pill); background: rgba(255, 255, 255, .92); color: var(--navy); font: 400 calc(13px * var(--fs-ui, 1))/1 var(--body); letter-spacing: .03em; }
 .bz-noimg { position: absolute; inset: 0; display: grid; place-items: center; color: var(--navy); opacity: .45; }
 .bz-noimg svg { width: clamp(56px, 6vw, 96px); height: auto; }
 .bz-empty { color: var(--navy); }
@@ -34,7 +34,7 @@
 .bz-nav svg { width: 22px; height: 22px; }
 .bz-nav.prev { left: 14px; } .bz-nav.next { right: 14px; }
 .bz-modes { position: absolute; z-index: 3; left: 14px; bottom: 14px; display: flex; padding: 4px; gap: 4px; border-radius: var(--r-pill); background: rgba(255, 255, 255, .92); }
-.bz-modes button { padding: 7px 14px; border: 0; border-radius: var(--r-pill); background: none; color: var(--navy); font: 500 calc(14px * var(--fs-ui, 1))/1 var(--body); cursor: pointer; }
+.bz-modes button { padding: 7px 14px; border: 0; border-radius: var(--r-pill); background: none; color: var(--navy); font: 400 calc(14px * var(--fs-ui, 1))/1 var(--body); cursor: pointer; }
 .bz-modes button[aria-pressed="true"] { background: var(--navy); color: #fff; }
 .bz-side { padding: clamp(22px, 2.6vw, 36px); overflow-y: auto; }
 .bz-side h2 { margin: 0 44px 14px 0; font: 300 calc(clamp(22px, 2vw, 30px) * var(--fs-ui, 1))/1.2 var(--display); }

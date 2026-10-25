@@ -40,11 +40,11 @@ export default function CookieBanner() {
         }
         .cookie-bar .ck-txt { flex: 1; min-width: 220px; }
         .cookie-bar .ck-txt p { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--ink-2); }
-        .cookie-bar .ck-txt a { color: var(--blue-ink); font-weight: 600; text-decoration: none; }
+        .cookie-bar .ck-txt a { color: var(--blue-ink); font-weight: 400; text-decoration: none; }
         .cookie-bar .ck-txt a:hover { text-decoration: underline; }
         .cookie-bar .ck-btn {
           border: none; cursor: pointer; background: var(--ink); color: var(--paper);
-          padding: 11px 22px; border-radius: 12px; font-family: inherit; font-size: 14px; font-weight: 600;
+          padding: 11px 22px; border-radius: 12px; font-family: inherit; font-size: 14px; font-weight: 400;
           transition: background .2s; flex: 0 0 auto;
         }
         .cookie-bar .ck-btn:hover { background: var(--ink); }
