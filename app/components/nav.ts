@@ -111,6 +111,15 @@ export const CONTACT = {
   ],
 };
 
+// Лентата с връзки за образованието на началната страница (под бързите връзки)
+export const EDU_LINKS = [
+  { short: 'Ш', label: 'Електронен дневник', note: 'Школо', href: 'https://app.shkolo.bg/' },
+  { short: 'Н', label: 'НЕИСПУО', note: '', href: 'https://neispuo.mon.bg/' },
+  { short: 'МОН', label: 'Министерство на образованието', note: '', href: 'https://www.mon.bg/' },
+  { short: 'РУО', label: 'РУО – Варна', note: '', href: 'https://ruo-varna.bg/' },
+  { short: '365', label: 'Microsoft 365', note: '@edu.mon.bg', href: 'https://www.office.com/' },
+];
+
 // Полезни връзки (долната част на стария сайт)
 export const USEFUL_LINKS = [
   { label: 'Гореща линия за деца 116 111', href: 'http://116111.bg/' },

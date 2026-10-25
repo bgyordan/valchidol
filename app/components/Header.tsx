@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { NAV as DEFAULT_NAV, type NavGroup } from './nav';
 import ThemeToggle from './ThemeToggle';
 
-const BOOK = 'M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3zM4 17a3 3 0 0 1 3-3h11';
 import './header.css';
 
 // менюто идва от layout (с промените от админа); без него — менюто от кода
@@ -103,7 +102,6 @@ export default function Header({ nav, lang = 'bg' }: { nav?: NavGroup[]; lang?: 
         {/* листче-иконка за обявата (NoticeNote.tsx я слага тук, когато има активна обява) */}
         <span id="sh-notice-slot" />
         <ThemeToggle />
-        {!en && <a href="https://app.shkolo.bg/" className="sh-donate" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={BOOK} /></svg>Е-дневник</a>}
         {/* три чертички (сандвич) — при отваряне стават на X */}
         <button type="button" className="sh-menu" aria-expanded={mobile} aria-controls="mob-nav" aria-label={en ? (mobile ? 'Close menu' : 'Menu') : mobile ? 'Затвори менюто' : 'Меню'} onClick={() => setMobile(!mobile)}>
           <span className="sh-burger" aria-hidden="true"><i /><i /><i /></span>
@@ -130,7 +128,6 @@ export default function Header({ nav, lang = 'bg' }: { nav?: NavGroup[]; lang?: 
             </div>
           ))}
           <a className="sh-mob-solo" href={contacts}>{en ? 'Contacts' : 'Контакти'}</a>
-          {!en && <a className="sh-donate sh-mob-donate" href="https://app.shkolo.bg/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={BOOK} /></svg>Електронен дневник</a>}
         </div>
       </div>
     </header>
