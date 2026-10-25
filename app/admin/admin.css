@@ -80,3 +80,7 @@
 .adm-tabs a.on { background: var(--navy); border-color: var(--navy); color: #fff; }
 .adm-year { border: 1px solid var(--line); border-radius: 14px; padding: 4px 14px; margin-bottom: 10px; }
 .adm-year > summary { cursor: pointer; padding: 10px 0; font-size: 1.1rem; }
+.adm-arch { margin: 8px 0 20px; }
+.adm-newyear { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.adm-year-act { margin: -2px 0 10px; font-size: .92rem; }
+.adm-doc-acts { white-space: nowrap; }

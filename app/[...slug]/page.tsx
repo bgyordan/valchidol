@@ -111,61 +111,76 @@ export default async function SitePageView({ params }: Props) {
   );
 }
 
-// Текстът и документите на страницата. Ако има няколко учебни години (в текста или в документите),
-// се показва само най-новата, а другите се избират с бутоните над нея.
+// Текстът и документите на страницата. Отпред е само текущото (най-новата година и неархивираните документи),
+// а миналите години са в „Архив“ най-долу — с бутони за годините.
 function PageBody({ body, docs }: { body: string; docs: DocRow[] }) {
   const years = body ? splitByYears(body) : null;
-  const textOf = new Map((years?.sections ?? []).map((y) => [y.label, y.text]));
-  const all = [...new Set([...textOf.keys(), ...docs.map((d) => d.academic_year).filter((y): y is string => !!y)])]
-    .sort((x, y) => y.localeCompare(x));
-  const noYear = docs.filter((d) => !d.academic_year);
   const text = (t: string) => (t ? <div className="prose-block page-body"><RichText text={t} /></div> : null);
+  const cur = docs.filter((d) => !d.archived);
+  const arch = docs.filter((d) => d.archived);
+  const desc = (l: (string | null | undefined)[]) => [...new Set(l.filter((y): y is string => !!y))].sort((x, y) => y.localeCompare(x));
 
-  // Няколко групи (Училищна документация, Бюджет, Графици…) → първо бутони с групите, в тях — годините.
-  // При много групи (напр. класовете в СФО) остава първо годината.
-  const cats = groupOrder(docs);
-  if (cats.length >= 2 && cats.length <= 12 && docs.length >= 40) {
-    return (
-      <>
-        {text(body)}
-        <YearTabs aria="Група документи" tabs={cats.map((c) => {
-          const list = docs.filter((d) => (d.category || '') === c);
-          const ys = [...new Set(list.map((d) => d.academic_year).filter((y): y is string => !!y))].sort((x, y) => y.localeCompare(x));
-          const rest = list.filter((d) => !d.academic_year);
-          return {
-            label: c || 'Други',
-            node: (
-              <>
-                {ys.length >= 2
-                  ? <YearTabs sub noHash tabs={ys.map((y) => ({ label: y, node: <DocRows docs={sorted(list.filter((d) => d.academic_year === y))} /> }))} />
-                  : ys.length === 1 && <><h3 className="doc-year">{ys[0]}</h3><DocRows docs={sorted(list.filter((d) => d.academic_year === ys[0]))} /></>}
-                {rest.length > 0 && <DocRows docs={sorted(rest)} />}
-              </>
-            ),
-          };
-        })} />
-      </>
-    );
-  }
+  // текстът по години: най-новата година отпред, останалите — в архива
+  const curYear = desc([...(years?.sections ?? []).map((y) => y.label), ...cur.map((d) => d.academic_year)])[0];
+  const textNow = years ? [years.intro, years.sections.find((y) => y.label === curYear)?.text ?? (cur.length ? '' : years.sections[0].text)].filter(Boolean).join('\n\n') : body;
+  const shownText = years && !years.sections.some((y) => y.label === curYear) && !cur.length ? years.sections[0].label : curYear;
+  const oldText = new Map((years?.sections ?? []).filter((y) => y.label !== shownText).map((y) => [y.label, y.text]));
+  const archYears = desc([...oldText.keys(), ...arch.map((d) => d.academic_year)]);
+  const archNoYear = arch.filter((d) => !d.academic_year);
 
-  if (all.length < 2) {
-    return (
-      <>
-        {text(body)}
-        <DocGroups docs={docs} />
-      </>
-    );
-  }
   return (
     <>
-      {text(years ? years.intro : body)}
-      <YearTabs tabs={all.map((y) => ({
-        label: y,
-        node: <>{text(textOf.get(y) ?? '')}<DocGroups docs={docs.filter((d) => d.academic_year === y)} /></>,
-      }))} />
-      <DocGroups docs={noYear} />
+      {text(textNow)}
+      <CurrentDocs docs={cur} />
+      {(archYears.length > 0 || archNoYear.length > 0) && (
+        <details className="doc-archive">
+          <summary>
+            <span className="da-ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h18v4H3zM5 8v12h14V8M10 12h4" /></svg>
+            </span>
+            <span className="da-t">Архив</span>
+            <span className="da-n">{archYears.length ? `${archYears[archYears.length - 1].slice(0, 4)} – ${archYears[0]}` : `${archNoYear.length} документа`}</span>
+          </summary>
+          <div className="da-body">
+            {archYears.length > 0 && (
+              <YearTabs sub noHash aria="Година в архива" tabs={archYears.map((y) => ({
+                label: y,
+                node: <>{text(oldText.get(y) ?? '')}<DocGroups docs={arch.filter((d) => d.academic_year === y)} /></>,
+              }))} />
+            )}
+            <DocGroups docs={archNoYear} />
+          </div>
+        </details>
+      )}
     </>
   );
+}
+
+// Текущите документи: при няколко групи (Училищна документация, Бюджет, Графици…) — бутони с групите.
+function CurrentDocs({ docs }: { docs: DocRow[] }) {
+  if (!docs.length) return null;
+  const cats = groupOrder(docs);
+  const ys = [...new Set(docs.map((d) => d.academic_year).filter((y): y is string => !!y))].sort((x, y) => y.localeCompare(x));
+  const head = ys.length === 1 ? <p className="doc-now"><span>Учебна година</span> {ys[0]}</p> : null;
+  const list = (l: DocRow[]) => {
+    const yy = [...new Set(l.map((d) => d.academic_year).filter((y): y is string => !!y))].sort((x, y) => y.localeCompare(x));
+    return yy.length >= 2
+      ? <><YearTabs sub noHash tabs={yy.map((y) => ({ label: y, node: <DocRows docs={sorted(l.filter((d) => d.academic_year === y))} /> }))} />
+          {l.some((d) => !d.academic_year) && <DocRows docs={sorted(l.filter((d) => !d.academic_year))} />}</>
+      : <DocRows docs={sorted(l)} />;
+  };
+  if (cats.length >= 2 && docs.length >= 15) {
+    return (
+      <>
+        {head}
+        <YearTabs aria="Група документи" tabs={cats.map((c) => ({ label: c || 'Други', node: list(docs.filter((d) => (d.category || '') === c)) }))} />
+      </>
+    );
+  }
+  if (ys.length >= 2) {
+    return <YearTabs tabs={ys.map((y) => ({ label: y, node: <DocGroups docs={docs.filter((d) => d.academic_year === y)} /> }))} />;
+  }
+  return <>{head}<DocGroups docs={docs} /></>;
 }
 
 const sorted = (l: DocRow[]) => [...l].sort((a, b) => a.sort_order - b.sort_order);

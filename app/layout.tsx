@@ -9,6 +9,7 @@ import SiteNotice from './components/SiteNotice';
 import ScrollTop from './components/ScrollTop';
 import AccessibilityWidget from './components/AccessibilityWidget';
 import CookieBanner from './components/CookieBanner';
+import DocPreview from './components/DocPreview';
 import { getLang } from '../lib/lang-server';
 import { getNav } from '../lib/menu';
 
@@ -59,6 +60,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ScrollTop />
         <AccessibilityWidget />
         <CookieBanner />
+        <DocPreview />
       </body>
     </html>
   );

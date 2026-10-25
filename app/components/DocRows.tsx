@@ -5,7 +5,7 @@ function ext(url: string) {
   return m ? m[1].toUpperCase() : 'PDF';
 }
 
-// Редове с документи: икона, име, тип файл. Отварят се в нов раздел.
+// Редове с документи: икона, име, тип файл. Щракване → преглед в прозорец (DocPreview); с Ctrl — нов раздел.
 export default function DocRows({ docs }: { docs: Pick<DocRow, 'id' | 'name' | 'file_url'>[] }) {
   return (
     <ul className="doc-rows">
@@ -26,7 +26,7 @@ export default function DocRows({ docs }: { docs: Pick<DocRow, 'id' | 'name' | '
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h6" /></svg>
             </span>
             <span className="dr-name">{d.name}</span>
-            <span className="dr-type">{ext(d.file_url)}<span className="sr-only">, отваря се в нов раздел</span></span>
+            <span className="dr-type">{ext(d.file_url)}</span>
           </a>
           )}
         </li>

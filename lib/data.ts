@@ -127,17 +127,18 @@ export type DocRow = {
   sort_order: number;
   category?: string | null;
   on_site?: boolean;
+  archived?: boolean;
 };
 
 export async function getDocuments(section: string, onlyOnSite = false): Promise<DocRow[]> {
   noStore();
-  const rows = await all<DocRow & { on_site: number | boolean }>(
-    `SELECT id, name, file_url, academic_year, section, sort_order, category, on_site FROM site_documents
+  const rows = await all<DocRow & { on_site: number | boolean; archived: number | boolean }>(
+    `SELECT id, name, file_url, academic_year, section, sort_order, category, on_site, archived FROM site_documents
      WHERE section = ?${onlyOnSite ? ' AND on_site = 1' : ''}
      ORDER BY academic_year DESC, sort_order ASC`,
     section,
   );
-  return rows.map((r) => ({ ...r, on_site: !!r.on_site }));
+  return rows.map((r) => ({ ...r, on_site: !!r.on_site, archived: !!r.archived }));
 }
 
 // Екипът: от таблицата team_members. null → сайтът ползва вградения списък.
