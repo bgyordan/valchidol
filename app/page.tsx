@@ -2,6 +2,7 @@ import { getNews, getUpcomingEvents, getHeroPhotos, getLatestPhotos, getPagePhot
 import { getSiteInfo } from '../lib/siteinfo';
 import { getNav } from '../lib/menu';
 import { getHome } from '../lib/home';
+import { getSpaces, SPACE_ICONS } from '../lib/baza';
 import PhotoBand from './components/PhotoBand';
 import AudienceSwitch from './components/AudienceSwitch';
 import { EDU_LINKS } from './components/nav';
@@ -74,7 +75,9 @@ export default async function Home() {
   const [hero, news, recent, events, photos, info, chosenAbout, home, nav] = await Promise.all([
     getHeroPhotos(), getNews(4), getNews(12), getUpcomingEvents(4), getLatestPhotos(8), getSiteInfo(), getPagePhotos('nachalna-pod'), getHome(), getNav(),
   ]);
-  const chosenInfo = await getPagePhotos('informatsiya-za');
+  const [chosenInfo, spaces] = await Promise.all([getPagePhotos('informatsiya-za'), getSpaces().catch(() => [])]);
+  const bz = spaces.slice(0, 4);
+  const bzPano = spaces.some((s) => s.pano);
   const AUDIENCE = audience(nav);
   // без избрани снимки → корици на последните новини
   const covers = recent.map((n) => n.cover_url).filter((u): u is string => !!u);
@@ -257,6 +260,36 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* ===== Материална база: кратък текст и четири помещения → /materialna-baza ===== */}
+      {bz.length > 0 && (
+        <section className="hs" aria-labelledby="bz-h">
+          <div className="wrap hbz">
+            <div className="hbz-text">
+              <p className="kicker">Материална база</p>
+              <h2 id="bz-h">Пространства за учене, спорт и творчество</h2>
+              <p>
+                STEM център „Природни науки“, 22 класни стаи и кабинети, два физкултурни салона, актова зала и работилници.
+                {bzPano ? ' Разгледайте помещенията на снимки и в 360° разходка.' : ' Разгледайте помещенията на училището.'}
+              </p>
+              <a className="btn btn-dark" href="/materialna-baza">Материалната база</a>
+            </div>
+            <ul className="hbz-tiles">
+              {bz.map((s, i) => (
+                <li key={s.id} style={{ ['--i' as any]: i }}>
+                  <a href={`/materialna-baza#${s.id}`} className={s.photos[0] ? '' : 'hbz-empty'}>
+                    {s.photos[0]
+                      ? <img src={s.photos[0]} alt="" loading="lazy" />
+                      : <span className="hbz-ic"><Ic d={SPACE_ICONS.find((x) => x.key === s.icon)?.d || SPACE_ICONS[1].d} /></span>}
+                    {s.pano && <span className="hbz-360">360°</span>}
+                    <b>{s.name}</b>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {/* ===== Галерия ===== */}
       {photos.length > 0 && (
