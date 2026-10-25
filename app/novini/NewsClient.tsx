@@ -6,25 +6,42 @@ import { fmtDate } from '../../lib/data';
 
 const PER_PAGE = 12;
 
+// учебната година на новината: от 1 септември до 31 август („2025/26“)
+function schoolYear(iso: string | null) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const y = d.getMonth() >= 8 ? d.getFullYear() : d.getFullYear() - 1;
+  return `${y}/${String(y + 1).slice(2)}`;
+}
+
 // initialCat: рубрика от адреса (/novini?r=Постижения) — връзките в менюто „Новини“
 export default function NewsClient({ posts, initialCat }: { posts: NewsCard[]; initialCat?: string }) {
   const cats = useMemo(() => Array.from(new Set(posts.map((p) => p.category).filter(Boolean))), [posts]);
   const [cat, setCat] = useState(initialCat && posts.some((p) => p.category === initialCat) ? initialCat : 'all');
   const [q, setQ] = useState('');
   const [page, setPage] = useState(1);
+  // отпред са новините от текущата учебна година (или от последната, в която има новини), миналите — в „Архив“ по години
+  const years = useMemo(() => Array.from(new Set(posts.map((p) => schoolYear(p.published_at)).filter(Boolean))).sort((a, b) => b.localeCompare(a)), [posts]);
+  const now = schoolYear(new Date().toISOString());
+  const curYear = years.includes(now) ? now : years[0];
+  const archYears = years.filter((y) => y !== curYear);
+  const [year, setYear] = useState(curYear);
+  const inArchive = year !== curYear;
 
   const found = useMemo(() => {
     const query = q.trim().toLowerCase();
     return posts.filter((p) => (cat === 'all' || p.category === cat)
-      && (!query || p.title.toLowerCase().includes(query) || (p.excerpt ?? '').toLowerCase().includes(query)));
-  }, [posts, cat, q]);
+      // търсенето е във всички години
+      && (query ? p.title.toLowerCase().includes(query) || (p.excerpt ?? '').toLowerCase().includes(query) : schoolYear(p.published_at) === year));
+  }, [posts, cat, q, year]);
 
   if (posts.length === 0) return <p className="empty">Все още няма публикувани новини.</p>;
 
   const pages = Math.max(1, Math.ceil(found.length / PER_PAGE));
   const cur = Math.min(page, pages);
   const shown = found.slice((cur - 1) * PER_PAGE, cur * PER_PAGE);
-  const featured = cur === 1 && cat === 'all' && !q ? shown[0] : undefined;
+  const featured = cur === 1 && cat === 'all' && !q && !inArchive ? shown[0] : undefined;
+  const pick = (y: string) => { setYear(y); setPage(1); };
   const grid = featured ? shown.slice(1) : shown;
 
   return (
@@ -43,10 +60,25 @@ export default function NewsClient({ posts, initialCat }: { posts: NewsCard[]; i
             ))}
           </div>
         )}
+        {archYears.length > 0 && !q && (
+          <div className="nl-years">
+            <div className="chips" role="group" aria-label="Учебна година">
+              <button type="button" className={!inArchive ? 'on' : ''} aria-pressed={!inArchive} onClick={() => pick(curYear)}>{curYear}</button>
+              <button type="button" className={inArchive ? 'on' : ''} aria-pressed={inArchive} onClick={() => pick(inArchive ? year : archYears[0])}>Архив</button>
+            </div>
+            {inArchive && (
+              <div className="chips nl-arch" role="group" aria-label="Година в архива">
+                {archYears.map((y) => (
+                  <button key={y} type="button" className={year === y ? 'on' : ''} aria-pressed={year === y} onClick={() => pick(y)}>{y}</button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {found.length === 0 ? (
-        <p className="empty">Няма новини по това търсене.</p>
+        <p className="empty">{q ? 'Няма новини по това търсене.' : `Няма новини в тази рубрика за ${year}.`}</p>
       ) : (
         <>
           {featured && (

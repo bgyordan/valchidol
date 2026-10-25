@@ -536,14 +536,29 @@ html.dp-lock { overflow: hidden; }
 @keyframes wave-drift { to { -webkit-mask-position: 1440px 0; mask-position: 1440px 0; } }
 @media (prefers-reduced-motion: reduce) { .section.tint::before, .section.tint::after, .hs.tint::before, .hs.tint::after { animation: none; } }
 
-/* ===== Ръкописни акценти по краищата (Doodles) — като бележки в полето: вертикално, до самия ръб, над съдържанието ===== */
+/* ===== Ръкописни акценти по краищата (Doodles) — като бележки в полето: под различен ъгъл, в ярки цветове, над съдържанието ===== */
 #main { position: relative; }
 .doodles { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; }
-.doodle { position: absolute; white-space: nowrap; writing-mode: vertical-rl; font: 500 calc(clamp(20px, 1.7vw, 27px) * var(--fs-ui, 1))/1 'Caveat Variable', 'Caveat', cursive; color: var(--navy); opacity: .5;
+/* центърът на акцента е в средата на полето до ръба; въртенето е около центъра */
+.doodle { --edge: max(30px, calc((100vw - 1480px) / 4 + 24px)); position: absolute; white-space: nowrap; translate: -50% 0;
+  font: 600 calc(clamp(22px, 1.8vw, 29px) * var(--fs-ui, 1))/1 'Caveat Variable', 'Caveat', cursive; color: var(--dc); opacity: .9;
   rotate: var(--r); animation: doodle-float 9s ease-in-out infinite alternate; animation-delay: var(--d); }
-.d-left { left: max(3px, calc((100vw - 1480px) / 4)); rotate: calc(180deg + var(--r)); }
-.d-right { right: max(3px, calc((100vw - 1480px) / 4)); }
-@keyframes doodle-float { to { translate: 0 -14px; } }
+.d-left { left: var(--edge); }
+.d-right { left: calc(100% - var(--edge)); }
+@media (min-width: 1760px) { .doodle { rotate: var(--rw); } }
+@keyframes doodle-float { to { translate: -50% -14px; } }
+.doodle.c0 { --dc: #E5383B; } /* червено */
+.doodle.c1 { --dc: #1E7BE0; } /* синьо */
+.doodle.c2 { --dc: #1FA45B; } /* зелено */
+.doodle.c3 { --dc: #F08A00; } /* оранжево */
+.doodle.c4 { --dc: #8A4FE0; } /* лилаво */
+.doodle.c5 { --dc: #E0368C; } /* розово */
+[data-theme="dark"] .doodle.c0 { --dc: #FF7A7C; }
+[data-theme="dark"] .doodle.c1 { --dc: #6FB3FF; }
+[data-theme="dark"] .doodle.c2 { --dc: #5FD992; }
+[data-theme="dark"] .doodle.c3 { --dc: #FFB347; }
+[data-theme="dark"] .doodle.c4 { --dc: #B794FF; }
+[data-theme="dark"] .doodle.c5 { --dc: #FF7DBF; }
 /* текстът е в data-t, за да не влиза в текста на страницата (Google, четци) */
 .doodle::before { content: attr(data-t); }
 @media (max-width: 1180px) { .doodles { display: none; } }
