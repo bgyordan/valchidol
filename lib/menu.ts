@@ -21,6 +21,12 @@ function arrange<T extends { href: string; label: string }>(items: T[], saved: S
     .map(({ _o, ...it }) => it as T & { hidden?: boolean });
 }
 
+// Главни букви в менюто (отметки в Админ → Меню): top — разделите горе, sub — подменютата.
+export async function getMenuCaps(): Promise<{ top: boolean; sub: boolean }> {
+  const raw = await getSetting<{ caps?: boolean; capsSub?: boolean }>('menu').catch(() => null);
+  return { top: raw?.caps !== false, sub: !!raw?.capsSub }; // горе — главни, докато не се махне отметката
+}
+
 export type MenuGroup = Omit<NavGroup, 'links'> & { hidden?: boolean; links: (NavLink & { hidden?: boolean })[] };
 
 export async function getNav(showHidden = false): Promise<MenuGroup[]> {

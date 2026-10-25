@@ -1,5 +1,5 @@
 /* Sofia Sans (Lettersoup, OFL) — шрифтът за текста. Поддържа българската кирилица:
-   при <html lang="bg"> буквите д, т, в, к, ж и др. се изписват в българската им форма, като в заглавния Unbounded.
+   Sofia Sans по подразбиране рисува българските форми на д, т, в, к…; в globals.css font-language-override: "RUS" ги прави прави.
    Файловете са в public/fonts/sofia-sans (без пакет в npm — не изисква инсталиране на сървъра). */
 /* sofia-sans-cyrillic-ext-wght-normal */
 @font-face {

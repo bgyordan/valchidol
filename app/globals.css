@@ -3,7 +3,7 @@
    Класическа визия на средно училище: тъмносиньо (доверие, традиция), топло слънчево жълто за главните действия
    и зелено за ученическото. Трите цвята различават и разделите в менюто:
      синьо = училището и документите, жълто = родители и прием, зелено = ученици и новини.
-   Шрифтове (като на сайта на ЦСОП): Unbounded (заглавия) + Sofia Sans (текст, българска кирилица), self-hosted (без Google).
+   Шрифтове: Montserrat (заглавия) + Sofia Sans (текст), self-hosted (без Google). Кирилицата е с прави (стандартни) форми — виж правилото за „locl“ по-долу.
    ===================================================================== */
 
 :root {
@@ -37,7 +37,7 @@
   /* текущ цвят на раздела (задава се с .tone-*) */
   --tone: var(--navy); --tone-ink: var(--navy); --tone-soft: var(--navy-soft);
 
-  --display: 'Unbounded Variable', 'Unbounded', 'Arial Black', system-ui, sans-serif;
+  --display: 'Montserrat Variable', 'Montserrat', 'Segoe UI', system-ui, sans-serif;
   --body: 'Sofia Sans Variable', 'Sofia Sans', 'Segoe UI', system-ui, sans-serif;
 
   --r-sm: 10px; --r: 16px; --r-lg: 24px; --r-pill: 999px;
@@ -79,6 +79,10 @@
 html { scroll-behavior: smooth; color-scheme: light; -webkit-text-size-adjust: 100%; overflow-x: clip; }
 h1, h2, h3, h4 { overflow-wrap: break-word; }
 html[data-theme="dark"] { color-scheme: dark; }
+/* Кирилицата с прави (стандартни) форми, а не с ръкописните български в, д, т, л…
+   Става с руските правила на шрифта (locl RUS). !important, защото „font:“ в другите правила иначе го връща. */
+*, *::before, *::after { font-language-override: "RUS" !important; }
+
 body {
   font: 400 calc(18px * var(--fs, 1))/1.62 var(--body);
   background: var(--paper);

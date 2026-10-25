@@ -1,6 +1,6 @@
 import { denied } from '../guard';
 import { NAV } from '../../components/nav';
-import { getNav } from '../../../lib/menu';
+import { getNav, getMenuCaps } from '../../../lib/menu';
 import { resetMenu, saveMenu } from './actions';
 
 // Редът, имената и скриването на разделите и страниците в главното меню.
@@ -9,12 +9,20 @@ export default async function AdminMenu() {
   const no = await denied('nachalo');
   if (no) return no;
   const nav = await getNav(true);
+  const caps = await getMenuCaps();
   const gi = (href: string) => NAV.findIndex((g) => g.href === href);
   return (
     <>
       <h1>Меню</h1>
       <p className="adm-muted">Сменете номера, за да преместите раздел или страница. Ново име — в полето до старото. Скрита страница не се вижда в менюто, но остава на адреса си.</p>
       <form action={saveMenu} className="adm-form">
+        <fieldset className="adm-menu-group">
+          <legend>Главни букви</legend>
+          <div className="adm-row adm-menu-row">
+            <label className="adm-check"><input type="checkbox" name="caps" value="1" defaultChecked={caps.top} /> Разделите в менюто с главни букви</label>
+            <label className="adm-check"><input type="checkbox" name="caps_sub" value="1" defaultChecked={caps.sub} /> Подменютата с главни букви</label>
+          </div>
+        </fieldset>
         {nav.map((g, gpos) => {
           const k = gi(g.href);
           const orig = NAV[k];

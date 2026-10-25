@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import '@fontsource-variable/unbounded';
+import '@fontsource-variable/montserrat';
 import '@fontsource-variable/caveat';
 import './fonts.css';
 import './globals.css';
@@ -14,7 +14,7 @@ import DocPreview from './components/DocPreview';
 import Doodles from './components/Doodles';
 import ChatBot from './components/ChatBot';
 import { getLang } from '../lib/lang-server';
-import { getNav, getNavEn } from '../lib/menu';
+import { getNav, getNavEn, getMenuCaps } from '../lib/menu';
 
 const SITE = 'https://souvalchidol.com';
 
@@ -50,8 +50,9 @@ const THEME_SCRIPT = `(function(){try{var s=localStorage.getItem('su-theme');var
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const lang = await getLang();
   const nav = lang === 'en' ? await getNavEn() : await getNav();
+  const caps = await getMenuCaps();
   return (
-    <html lang={lang} suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning data-caps={caps.top ? '1' : undefined} data-caps-sub={caps.sub ? '1' : undefined}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>

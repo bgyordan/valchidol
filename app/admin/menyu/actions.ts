@@ -31,7 +31,7 @@ export async function saveMenu(f: FormData) {
     };
   }).sort((a, b) => a.pos - b.pos).map(({ pos, ...g }) => g);
   await d.prepare(`INSERT INTO site_settings (key, value) VALUES ('menu', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`)
-    .bind(JSON.stringify({ groups })).run();
+    .bind(JSON.stringify({ groups, caps: f.get('caps') === '1', capsSub: f.get('caps_sub') === '1' || undefined })).run();
   revalidatePath('/', 'layout');
 }
 
