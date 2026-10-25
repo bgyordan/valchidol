@@ -146,15 +146,14 @@ export default async function Home() {
       </nav>
 
       {/* ===== Лента с връзки за образованието: е-дневник, НЕИСПУО, МОН, РУО… ===== */}
-      <nav className="wrap hedu" aria-label="Връзки за образованието">
+      <div className="wrap"><nav className="hedu" aria-label="Връзки за образованието">
         {EDU_LINKS.map((l, i) => (
           <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer" style={{ ['--i' as any]: i }}>
-            <span className={`hedu-b c${i % 5}`} aria-hidden="true">{l.short}</span>
-            <span className="hedu-t">{l.label}{l.note && <small>{l.note}</small>}</span>
+            <span>{l.label}</span>
             <svg className="hedu-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
           </a>
         ))}
-      </nav>
+      </nav></div>
 
       {/* ===== Новини + събития ===== */}
       <section className="hs" aria-labelledby="news-h">
