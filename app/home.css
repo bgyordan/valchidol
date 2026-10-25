@@ -162,7 +162,7 @@
 .hab-p2 { position: absolute; right: 0; bottom: 0; width: 46%; aspect-ratio: 1; object-fit: cover; border-radius: var(--r); border: 6px solid var(--sky); background: var(--sky-2); }
 .hab-year { position: absolute; left: -10px; bottom: 4%; display: grid; gap: 2px; padding: 16px 20px; border-radius: var(--r); background: var(--warm); color: var(--on-warm); font-weight: 500; line-height: 1.2; box-shadow: var(--shadow); }
 .hab-year b { font: 400 calc(32px * var(--fs-ui, 1))/1 var(--display); }
-.hab-text .kicker { color: var(--warm-ink); text-transform: uppercase; letter-spacing: .08em; font-size: calc(13.5px * var(--fs, 1)); font-weight: 600; }
+.hab-text .kicker, .hbz-text .kicker { color: var(--warm-ink); text-transform: uppercase; letter-spacing: .08em; font-size: calc(13.5px * var(--fs, 1)); font-weight: 600; }
 .hab-text > p:not(.kicker) { margin-top: 16px; color: var(--ink-2); }
 .hab-text .feature-list { margin-top: 20px; --tone-soft: var(--navy-soft); }
 .hab-text .btn-row { margin-top: 28px; }
@@ -255,3 +255,25 @@
   .ap-panel:not(.on)::after { left: auto; right: 22px; bottom: 28px; }
 }
 @media (prefers-reduced-motion: reduce) { .ap-panel, .ap-img, .ap-body li { transition: none; animation: none; } }
+
+/* ===== Материална база (кратко): текст вляво, четири плочки вдясно ===== */
+.hbz { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: clamp(28px, 4vw, 64px); align-items: center; }
+.hbz-text h2 { margin: 6px 0 16px; }
+.hbz-text p:not(.kicker) { color: var(--ink-2); line-height: 1.65; margin-bottom: 24px; max-width: 34em; }
+.hbz-tiles { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.hbz-tiles li { opacity: 0; animation: bz-tile-in .7s cubic-bezier(.2, .9, .3, 1.15) calc(.15s + var(--i, 0) * 90ms) forwards; }
+.hbz-tiles li:nth-child(even) { translate: 0 28px; }
+@keyframes bz-tile-in { from { opacity: 0; scale: .94; } to { opacity: 1; scale: 1; } }
+.hbz-tiles a { position: relative; display: block; aspect-ratio: 4 / 3; border-radius: var(--r-lg); overflow: hidden; background: var(--navy-soft); color: #fff; }
+.hbz-tiles img { width: 100%; height: 100%; object-fit: cover; transition: scale .8s cubic-bezier(.2, .8, .2, 1); }
+.hbz-tiles a::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(7, 26, 46, .75), transparent 60%); }
+.hbz-tiles a:hover img { scale: 1.05; }
+.hbz-tiles b { position: absolute; z-index: 1; left: 16px; right: 16px; bottom: 14px; font: 300 calc(clamp(16px, 1.3vw, 19px) * var(--fs-ui, 1))/1.25 var(--display); }
+.hbz-empty { color: var(--navy) !important; }
+.hbz-empty::after { display: none; }
+.hbz-ic { position: absolute; inset: 0 0 34px; display: grid; place-items: center; opacity: .45; }
+.hbz-ic svg { width: clamp(40px, 4vw, 60px); height: auto; }
+.hbz-360 { position: absolute; z-index: 1; top: 12px; right: 12px; padding: 5px 10px; border-radius: var(--r-pill); background: rgba(255, 255, 255, .92); color: var(--navy); font: 500 calc(12.5px * var(--fs-ui, 1))/1 var(--body); }
+@media (max-width: 900px) { .hbz { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .hbz-ic { inset: 0 0 auto; padding-top: 18px; } .hbz-ic svg { width: 32px; } .hbz-tiles { gap: 10px; } .hbz-tiles li:nth-child(even) { translate: 0 16px; } .hbz-tiles b { left: 12px; right: 12px; bottom: 10px; } }
+@media (prefers-reduced-motion: reduce) { .hbz-tiles li { animation: none; opacity: 1; } }
