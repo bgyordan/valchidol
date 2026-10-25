@@ -30,4 +30,9 @@ jobs:
           test -f "seed/fixes/$FILE"
           id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="souvalchidol") | .uuid')
           sed -i "s/PLACEHOLDER-SET-AFTER-d1-create/$id/" wrangler.jsonc
-          npx wrangler d1 execute souvalchidol --remote --file "seed/fixes/$FILE"
+          # файл, който започва с „-- read“, само чете и показва редовете
+          if head -1 "seed/fixes/$FILE" | grep -q '^-- read'; then
+            npx wrangler d1 execute souvalchidol --remote --json --command "$(grep -v '^--' "seed/fixes/$FILE")"
+          else
+            npx wrangler d1 execute souvalchidol --remote --file "seed/fixes/$FILE"
+          fi
