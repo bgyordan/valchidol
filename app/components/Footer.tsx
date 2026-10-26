@@ -53,6 +53,14 @@ export default async function Footer({ lang = 'bg' }: { lang?: Lang }) {
 
         <div className="sf-bot">
           <span>© {new Date().getFullYear()} {en ? 'Vasil Levski School – Valchi Dol' : 'СУ „Васил Левски“ – Вълчи дол'}</span>
+          {/* сайтът работи в мрежата на Cloudflare (Workers) — защита от атаки и HTTPS */}
+          <a className="sf-cf" href="https://www.cloudflare.com/" target="_blank" rel="noopener noreferrer"
+            title={en ? 'This site runs on the Cloudflare network – protection from attacks and a secure connection' : 'Сайтът работи в мрежата на Cloudflare – защита от атаки и сигурна връзка'}>
+            <svg viewBox="0 0 32 20" aria-hidden="true">
+              <path d="M8 18h17.5a5 5 0 0 0 .6-9.96A8 8 0 0 0 10.6 6.2 6 6 0 0 0 8 18z" />
+            </svg>
+            {en ? 'Protected by Cloudflare' : 'Защитено от Cloudflare'}
+          </a>
           {!en && <LastUpdated />}
           <span className="sf-legal">
             {en ? <a href="/">Българска версия</a> : <>
