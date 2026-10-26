@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'dry = само проверка, run = сваляне и смяна в базата, logo = логото от стария сайт, photos = размери на избраните снимки, chat = проба на помощника'
+        description: 'dry = само проверка, run = сваляне и смяна в базата, logo = логото от стария сайт, photos = размери на избраните снимки, chat = проба на помощника, r2 = колко място заемат файловете'
         type: choice
-        options: [dry, run, logo, photos, chat, health, d1]
+        options: [dry, run, logo, photos, chat, health, d1, r2]
         default: dry
 
 jobs:
@@ -34,6 +34,9 @@ jobs:
           id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="souvalchidol") | .uuid')
           sed -i "s/PLACEHOLDER-SET-AFTER-d1-create/$id/" wrangler.jsonc
           python3 -I scripts/site-check.py ${{ inputs.mode }}
+      - name: Колко място заемат файловете в R2
+        if: inputs.mode == 'r2'
+        run: npx wrangler r2 bucket info souvalchidol-files
       - name: Смяна на адресите в базата
         if: inputs.mode == 'run'
         run: |
