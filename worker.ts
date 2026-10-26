@@ -1,6 +1,9 @@
 // Обвивка около сайта (OpenNext), за да харчи по-малко изчисления на заявка:
 //  1) /files/... (снимки и документи от R2) се дават направо, без да се пуска Next.js;
 //  2) готовите публични страници се пазят 5 минути в кеша на Cloudflare (промените от админа се виждат до 5 мин по-късно).
+//     Кешът е отделен за всяко пускане (версия на Worker-а): след нов deploy старите страници не се дават,
+//     защото сочат към CSS/JS файлове от предишния билд, които вече ги няма → сайтът изглеждаше „счупен“.
+//     Браузърът не пази страниците (no-cache) — пита всеки път, а отговаря кешът на Cloudflare.
 // (файлът се създава при билда — opennextjs-cloudflare build; worker.ts не се проверява от tsc)
 import next from './.open-next/worker.js';
 export { DOQueueHandler, DOShardedTagCache, BucketCachePurge } from './.open-next/worker.js';
@@ -15,7 +18,7 @@ const TYPES: Record<string, string> = {
   pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 };
 
-type Env = { FILES?: R2Bucket } & Record<string, unknown>;
+type Env = { FILES?: R2Bucket; CF_VERSION_METADATA?: { id: string } } & Record<string, unknown>;
 
 async function serveFile(req: Request, url: URL, env: Env): Promise<Response> {
   const bucket = env.FILES;
@@ -54,9 +57,10 @@ function cacheable(req: Request, url: URL): boolean {
 // Next.js дава различен отговор според тези заглавки (обикновена страница или данни при преход между страници).
 const VARY = ['rsc', 'next-router-state-tree', 'next-router-prefetch', 'next-router-segment-prefetch', 'next-url'];
 
-async function cacheKey(req: Request, url: URL): Promise<Request> {
+async function cacheKey(req: Request, url: URL, version: string): Promise<Request> {
   const parts = VARY.map((h) => req.headers.get(h) ?? '').join('|');
   const k = new URL(url);
+  k.searchParams.set('__b', version); // отделен кеш за всяко пускане
   if (parts.replace(/\|/g, '')) {
     const d = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(parts));
     k.searchParams.set('__v', [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join(''));
@@ -71,9 +75,13 @@ export default {
     if (!cacheable(req, url)) return next.fetch(req, env, ctx);
 
     const cache = (caches as unknown as { default: Cache }).default;
-    const key = await cacheKey(req, url);
+    const key = await cacheKey(req, url, env.CF_VERSION_METADATA?.id ?? 'dev');
     const hit = await cache.match(key);
-    if (hit) return hit;
+    if (hit) {
+      const out = new Response(hit.body, hit);
+      out.headers.set('cache-control', 'no-cache'); // браузърът не пази стара страница след нов deploy
+      return out;
+    }
 
     const res: Response = await next.fetch(req, env, ctx);
     if (res.status === 200 && !res.headers.has('set-cookie')) {

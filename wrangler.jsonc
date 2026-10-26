@@ -15,5 +15,7 @@
   ],
   // Изкуственият интелект на Cloudflare (Workers AI) — за чатбота на сайта
   "ai": { "binding": "AI" },
+  // Номер на версията при всяко пускане — worker.ts го слага в ключа на кеша (без стари страници след deploy)
+  "version_metadata": { "binding": "CF_VERSION_METADATA" },
   "observability": { "enabled": true }
 }
