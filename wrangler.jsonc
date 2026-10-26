@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "souvalchidol",
-  "main": ".open-next/worker.js",
+  "main": "worker.ts", // обвивка около .open-next/worker.js (кеш и файлове)
   "compatibility_date": "2026-10-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
