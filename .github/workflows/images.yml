@@ -8,7 +8,7 @@ on:
       mode:
         description: 'dry = само проверка, run = сваляне и смяна в базата, logo = логото от стария сайт, photos = размери на избраните снимки, chat = проба на помощника'
         type: choice
-        options: [dry, run, logo, photos, chat, health]
+        options: [dry, run, logo, photos, chat, health, d1]
         default: dry
 
 jobs:
@@ -29,7 +29,7 @@ jobs:
         if: inputs.mode == 'dry' || inputs.mode == 'run'
         run: python3 -I scripts/migrate-images.py ${{ inputs.mode }}
       - name: Проверки (лого, размери на снимки)
-        if: inputs.mode == 'logo' || inputs.mode == 'photos' || inputs.mode == 'chat' || inputs.mode == 'health'
+        if: inputs.mode == 'logo' || inputs.mode == 'photos' || inputs.mode == 'chat' || inputs.mode == 'health' || inputs.mode == 'd1'
         run: |
           id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="souvalchidol") | .uuid')
           sed -i "s/PLACEHOLDER-SET-AFTER-d1-create/$id/" wrangler.jsonc

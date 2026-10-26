@@ -150,5 +150,27 @@ def health():
         print('graphql', e.code, e.read()[:800])
 
 
+def d1():
+    """Кои заявки към базата четат най-много редове (последните 24 часа)."""
+    import datetime
+    acc, tok = os.environ['CLOUDFLARE_ACCOUNT_ID'], os.environ['CLOUDFLARE_API_TOKEN']
+    s = (datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=24)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    for name, gql in [
+        ('queries', '''query($a:String!,$s:Time!){viewer{accounts(filter:{accountTag:$a}){d1QueriesAdaptiveGroups(limit:40,filter:{datetime_geq:$s},orderBy:[sum_rowsRead_DESC]){count sum{rowsRead rowsWritten}dimensions{query}}}}}'''),
+        ('hours', '''query($a:String!,$s:Time!){viewer{accounts(filter:{accountTag:$a}){d1AnalyticsAdaptiveGroups(limit:48,filter:{datetime_geq:$s},orderBy:[datetimeHour_ASC]){sum{rowsRead readQueries}dimensions{datetimeHour}}}}}'''),
+    ]:
+        req = urllib.request.Request('https://api.cloudflare.com/client/v4/graphql', data=json.dumps({'query': gql, 'variables': {'a': acc, 's': s}}).encode(),
+                                     headers={'Authorization': 'Bearer ' + tok, 'content-type': 'application/json'})
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                d = json.load(r)
+        except urllib.error.HTTPError as e:
+            print(name, e.code, e.read()[:800]); continue
+        if d.get('errors'):
+            print(name, d['errors']); continue
+        for row in list(d['data']['viewer']['accounts'][0].values())[0]:
+            print(name, json.dumps(row, ensure_ascii=False)[:400])
+
+
 if __name__ == '__main__':
-    {'logo': logo, 'photos': photos, 'chat': chat, 'health': health}[sys.argv[1]]()
+    {'logo': logo, 'photos': photos, 'chat': chat, 'health': health, 'd1': d1}[sys.argv[1]]()
