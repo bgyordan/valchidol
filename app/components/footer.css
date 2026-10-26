@@ -40,3 +40,10 @@
 .sf-h a { color: inherit; }
 .sf-more { opacity: .75; }
 .sf-more::after { content: " →"; }
+
+/* „Защитено от Cloudflare“ — скромна значка в долната лента */
+.sf-cf { display: inline-flex; align-items: center; gap: 7px; padding: 4px 12px 4px 10px; border-radius: 999px; color: inherit; text-decoration: none;
+  border: 1px solid color-mix(in srgb, #F38020 45%, transparent); background: color-mix(in srgb, #F38020 10%, transparent); transition: background .2s, border-color .2s; }
+.sf-cf svg { width: 20px; height: 13px; fill: #F38020; flex-shrink: 0; }
+.site-foot .sf-cf:hover { text-decoration: none; background: color-mix(in srgb, #F38020 20%, transparent); border-color: #F38020; }
+.sf-cf:focus-visible { outline: 3px solid #F38020; outline-offset: 2px; }
