@@ -63,7 +63,7 @@ export const HOME_DEFAULTS: HomeContent = {
 };
 
 // Тези вече са бутони в голямата снимка горе — в бързите връзки не се повтарят (нито на сайта, нито в админа).
-export const QUICK_SKIP = ['/priem', '/za-uchilishteto'];
+export const QUICK_SKIP: string[] = []; // по-рано: Прием и За училището бяха бутони в героя
 
 const str = (v: unknown, d: string) => (typeof v === 'string' && v.trim() ? v.trim() : d);
 

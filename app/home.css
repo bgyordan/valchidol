@@ -277,3 +277,17 @@
 @media (max-width: 900px) { .hbz { grid-template-columns: 1fr; } }
 @media (max-width: 480px) { .hbz-ic { inset: 0 0 auto; padding-top: 18px; } .hbz-ic svg { width: 32px; } .hbz-tiles { gap: 10px; } .hbz-tiles li:nth-child(even) { translate: 0 16px; } .hbz-tiles b { left: 12px; right: 12px; bottom: 10px; } }
 @media (prefers-reduced-motion: reduce) { .hbz-tiles li { animation: none; opacity: 1; } }
+
+/* --- слоганът в героя: ръкописно, топло жълто, леко наклонено (като „Вярваме, че“ при ЦСОП) --- */
+.hh-motto { margin-top: clamp(14px, 1.6vw, 22px); max-width: none; color: var(--warm);
+  font: 600 calc(clamp(30px, 3.4vw, 52px) * var(--fs-ui, 1))/1.05 'Caveat Variable', 'Caveat', cursive;
+  rotate: -2deg; transform-origin: left center; text-shadow: 0 2px 18px rgba(7, 32, 60, .55); }
+.hh-motto > span { display: block; }
+.hh-motto > span + span { padding-left: 1.4em; color: #FFE3A6; } /* втората част — малко по-светла и отместена, като ръкопис */
+@media (max-width: 640px) { .hh-motto > span + span { padding-left: .8em; } }
+
+/* насочващите бутони — с иконка */
+.hh-go { display: inline-flex; align-items: center; gap: 10px; }
+.hh-go svg { width: 20px; height: 20px; flex-shrink: 0; }
+/* „Информация за“ — при превъртане от бутоните да не се крие под менюто */
+.ap { scroll-margin-top: calc(var(--header-h) + 24px); }

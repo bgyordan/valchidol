@@ -50,11 +50,11 @@ const pick = (nav: Nav, hrefs: string[]) => {
   return hrefs.map((h) => all.find((l) => l.href === h)).filter((l): l is NonNullable<typeof l> => !!l);
 };
 const audience = (nav: Nav) => [
-  { t: 'Ученици', icon: ICON.student, href: '/za-uchenika',
+  { t: 'Ученици', key: 'za-uchenitsi', icon: ICON.student, href: '/za-uchenika',
     links: pick(nav, ['/za-uchenika', '/stipendii', '/zanimaniya-po-interesi', '/sfo', '/parlament']) },
-  { t: 'Родители', icon: ICON.family, href: '/za-roditeli',
+  { t: 'Родители', key: 'za-roditeli', icon: ICON.family, href: '/za-roditeli',
     links: pick(nav, ['/priem', '/zayavleniya', '/za-roditeli', '/roditelski-klub', '/patuvaniya']) },
-  { t: 'Учители', icon: ICON.teacher, href: '/za-uchitelya',
+  { t: 'Учители', key: 'za-uchiteli', icon: ICON.teacher, href: '/za-uchitelya',
     links: pick(nav, ['/za-uchitelya', '/kriterii-dtv', '/profesionalni-obshtnosti', '/organizirane-na-ekskurzii', '/dokumentatsiya']) },
 ];
 
@@ -87,7 +87,7 @@ export default async function Home() {
   // снимките в трите панела „Информация за“: избрани (page_photos['informatsiya-za']) или следващите от галерията
   const audPh = [0, 1, 2].map((i) => chosenInfo[i] || auto.shift() || covers[i + 3] || slides[i]);
   const [feat, ...rest] = news;
-  // бързите връзки (без Прием и За училището — те са бутони горе; виж QUICK_SKIP в lib/home.ts)
+  // бързите връзки (подредени от админ → Начална страница)
   const quick = home.quick;
 
   // данни за училището за Google (адрес, телефон, лого)
@@ -130,10 +130,20 @@ export default async function Home() {
               <span key={i} className={`hw${i === all.length - 1 ? ' hw-last' : ''}`} aria-hidden="true"><span style={{ ['--i' as string]: i } as React.CSSProperties}>{w}</span></span>
             ))}
           </h1>
-          <p className="hh-motto" style={{ ['--n' as string]: home.title.split(/\s+/).length } as React.CSSProperties}>{home.motto}</p>
+          {/* слоганът — ръкописно, в топло жълто (като „Вярваме, че“ в сайта на ЦСОП); след тирето на нов ред */}
+          <p className="hh-motto" style={{ ['--n' as string]: home.title.split(/\s+/).length } as React.CSSProperties}>
+            {home.motto.split(/\s+[–—-]\s+/).map((part, i, all) => (
+              <span key={i}>{part}{i < all.length - 1 ? ' –' : ''}</span>
+            ))}
+          </p>
+          {/* два насочващи бутона: отварят „Информация за“ по-долу на нужния панел — най-търсеното на едно място */}
           <div className="btn-row">
-            <a className="btn btn-primary" href="/priem">Прием на ученици</a>
-            <a className="btn hh-ghost" href="/za-uchilishteto">За училището</a>
+            <a className="btn btn-primary hh-go" href="#za-roditeli">
+              <Ic d={ICON.family} />За родители
+            </a>
+            <a className="btn hh-ghost hh-go" href="#za-uchenitsi">
+              <Ic d={ICON.student} />За ученици
+            </a>
           </div>
         </div>
       </section>
@@ -233,7 +243,7 @@ export default async function Home() {
       {/* ===== Информация за ученици, родители и учители ===== */}
       <section className="hs" aria-labelledby="aud-h">
         <div className="wrap">
-          <AudienceSwitch items={AUDIENCE.map(({ t, href, icon, links }, i) => ({ t, href, icon, links, photo: audPh[i] }))} />
+          <AudienceSwitch items={AUDIENCE.map(({ t, key, href, icon, links }, i) => ({ t, key, href, icon, links, photo: audPh[i] }))} />
         </div>
       </section>
 
