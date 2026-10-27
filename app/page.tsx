@@ -119,8 +119,10 @@ export default async function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, '\\u003c') }} />
       {/* ===== Герой: снимки от училище (сменят се плавно), името и главните действия ===== */}
       <section className={`hh${slides.length ? '' : ' no-photo'}`} aria-labelledby="hh-title">
+        <div className={`hh-slides n${slides.length}`} aria-hidden="true">
+          {slides.map((src, i) => <img key={src + i} src={src} alt="" fetchPriority={i === 0 ? 'high' : 'low'} />)}
+        </div>
         <div className="wrap hh-in">
-          <div className="hh-text">
           <p className="hh-kicker">{home.kicker}</p>
           {/* думите на името изплуват една след друга, последната се подчертава */}
           <h1 id="hh-title" aria-label={home.title}>
@@ -128,7 +130,7 @@ export default async function Home() {
               <span key={i} className={`hw${i === all.length - 1 ? ' hw-last' : ''}`} aria-hidden="true"><span style={{ ['--i' as string]: i } as React.CSSProperties}>{w}</span></span>
             ))}
           </h1>
-          {/* слоганът — ръкописно (като „Вярваме, че“ в сайта на ЦСОП); след тирето на нов ред */}
+          {/* слоганът — ръкописно, в топло жълто (като „Вярваме, че“ в сайта на ЦСОП); след тирето на нов ред */}
           <p className="hh-motto" style={{ ['--n' as string]: home.title.split(/\s+/).length } as React.CSSProperties}>
             {home.motto.split(/\s+[–—-]\s+/).map((part, i, all) => (
               <span key={i}>{part}{i < all.length - 1 ? ' –' : ''}</span>
@@ -139,20 +141,9 @@ export default async function Home() {
             <a className="btn btn-primary hh-go" href="#za-roditeli">
               <Ic d={ICON.family} />За родители
             </a>
-            <a className="btn btn-ghost hh-go" href="#za-uchenitsi">
+            <a className="btn hh-ghost hh-go" href="#za-uchenitsi">
               <Ic d={ICON.student} />За ученици
             </a>
-          </div>
-          </div>
-          {/* снимките от училище — в светла рамка с неправилна, „жива“ форма; сменят се плавно */}
-          <div className="hh-pic" aria-hidden="true">
-            <span className="hh-blob" />
-            <div className={`hh-slides n${slides.length}`}>
-              {slides.length
-                ? slides.map((src, i) => <img key={src + i} src={src} alt="" fetchPriority={i === 0 ? 'high' : 'low'} />)
-                : <img className="hh-logo" src="/logo.png" alt="" />}
-            </div>
-            <span className="hh-dot d1" /><span className="hh-dot d2" /><span className="hh-dot d3" />
           </div>
         </div>
       </section>

@@ -59,8 +59,10 @@ export default async function HomeEn() {
   return (
     <div className="home">
       <section className={`hh${slides.length ? '' : ' no-photo'}`} aria-labelledby="hh-title">
+        <div className={`hh-slides n${slides.length}`} aria-hidden="true">
+          {slides.map((src, i) => <img key={src + i} src={src} alt="" fetchPriority={i === 0 ? 'high' : 'low'} />)}
+        </div>
         <div className="wrap hh-in">
-          <div className="hh-text">
           <p className="hh-kicker">Secondary school · Valchi Dol, Bulgaria · since 1880</p>
           <h1 id="hh-title" aria-label={title}>
             {title.split(' ').map((w, i, all) => (
@@ -70,18 +72,7 @@ export default async function HomeEn() {
           <p className="hh-motto" style={{ ['--n' as string]: 3 } as React.CSSProperties}>{home.en.motto}</p>
           <div className="btn-row">
             {has('priem') && <a className="btn btn-primary" href="/en/priem">Admission</a>}
-            <a className="btn btn-ghost" href={has('istoriya') ? '/en/istoriya' : '/en/contacts'}>{has('istoriya') ? 'About the school' : 'Contacts'}</a>
-          </div>
-          </div>
-          {/* снимките от училище — в светла рамка с неправилна, „жива“ форма; сменят се плавно */}
-          <div className="hh-pic" aria-hidden="true">
-            <span className="hh-blob" />
-            <div className={`hh-slides n${slides.length}`}>
-              {slides.length
-                ? slides.map((src, i) => <img key={src + i} src={src} alt="" fetchPriority={i === 0 ? 'high' : 'low'} />)
-                : <img className="hh-logo" src="/logo.png" alt="" />}
-            </div>
-            <span className="hh-dot d1" /><span className="hh-dot d2" /><span className="hh-dot d3" />
+            <a className="btn hh-ghost" href={has('istoriya') ? '/en/istoriya' : '/en/contacts'}>{has('istoriya') ? 'About the school' : 'Contacts'}</a>
           </div>
         </div>
       </section>

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-// „Информация за“ на началната: три високи панела със снимки от училище (светли, всеки в свой мек цвят).
+// „Информация за“ на началната: три високи панела със снимки от училище (в тъмносиньо).
 // Избраният (с мишка, пръст или Tab) се разтваря и в него влитат връзките; другите остават тесни, с името си отстрани.
 // Бутоните в героя водят към #za-roditeli / #za-uchenitsi → тук се отваря този панел и страницата се превърта до него.
 type Item = { t: string; key: string; href: string; icon: string; photo?: string; links: { href: string; label: string }[] };
@@ -33,7 +33,7 @@ export default function AudienceSwitch({ items }: { items: Item[] }) {
         {items.map((it, k) => {
           const on = k === cur;
           return (
-            <section key={it.t} className={`ap-panel ap-${it.key}${on ? ' on' : ''}`} aria-labelledby={`ap-t${k}`}
+            <section key={it.t} className={`ap-panel${on ? ' on' : ''}`} aria-labelledby={`ap-t${k}`}
               onMouseEnter={() => pick(k)} onFocus={() => setCur(k)} onClick={() => setCur(k)}>
               {it.photo && <img className="ap-img" src={it.photo} alt="" loading="lazy" />}
               <span className="ap-shade" aria-hidden="true" />
