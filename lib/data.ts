@@ -132,10 +132,14 @@ export type DocRow = {
 
 export async function getDocuments(section: string, onlyOnSite = false): Promise<DocRow[]> {
   noStore();
+  // Празните места за новата учебна година (pending) не се показват; докато чакат файл, на тяхно място
+  // стои миналогодишният документ — под новата година, в същата група и на същия ред.
   const rows = await all<DocRow & { on_site: number | boolean; archived: number | boolean }>(
-    `SELECT id, name, file_url, academic_year, section, sort_order, category, on_site, archived FROM site_documents
-     WHERE section = ?${onlyOnSite ? ' AND on_site = 1' : ''}
-     ORDER BY academic_year DESC, sort_order ASC`,
+    `SELECT d.id, d.name, d.file_url, COALESCE(p.academic_year, d.academic_year) AS academic_year, d.section,
+            COALESCE(p.sort_order, d.sort_order) AS sort_order, COALESCE(p.category, d.category) AS category, d.on_site, d.archived
+     FROM site_documents d LEFT JOIN site_documents p ON p.prev_id = d.id AND p.pending = 1
+     WHERE d.section = ? AND d.pending = 0${onlyOnSite ? ' AND d.on_site = 1' : ''}
+     ORDER BY 4 DESC, 6 ASC`,
     section,
   );
   return rows.map((r) => ({ ...r, on_site: !!r.on_site, archived: !!r.archived }));

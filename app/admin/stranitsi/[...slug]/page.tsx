@@ -18,7 +18,9 @@ export default async function EditPage({ params }: { params: Promise<{ slug: str
   if (!isNew && !p) notFound();
   const photos = json<string[]>(p?.photos, []);
   // документите на страницата (управляват се в „Документи“) — тук само колко са и бутон към тях
-  const docs = isNew ? [] : await all<{ academic_year: string | null; archived: number }>('SELECT academic_year, archived FROM site_documents WHERE section = ?', slug);
+  const docsAll = isNew ? [] : await all<{ academic_year: string | null; archived: number; pending: number }>('SELECT academic_year, archived, pending FROM site_documents WHERE section = ?', slug);
+  const docs = docsAll.filter((d) => !d.pending);
+  const missing = docsAll.length - docs.length;
   const docNow = docs.filter((d) => !d.archived);
   const docYears = [...new Set(docNow.map((d) => d.academic_year).filter((y): y is string => !!y))].sort().reverse();
 
@@ -32,6 +34,7 @@ export default async function EditPage({ params }: { params: Promise<{ slug: str
           <p>
             <b>Документи на страницата:</b>{' '}
             {docs.length ? <>{docNow.length} на сайта{docYears.length ? ` (${docYears.join(', ')})` : ''}, {docs.length - docNow.length} в архива</> : 'няма'}
+            {missing > 0 && <span className="adm-tag">липсват {missing} за новата година</span>}
           </p>
           <p className="adm-muted">Файловете (заповеди, заявления, правила…) не са в текста отдолу — качват се, сменят и архивират в „Документи“.
             Нова учебна година: архивирай старите документи и качи новите там.</p>

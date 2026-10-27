@@ -111,14 +111,70 @@ export async function updateDocument(f: FormData) {
   // нов файл (или връзка) на мястото на стария
   const file = f.get('file');
   const link = str(f, 'link', 1000);
+  const old = await d.prepare('SELECT file_url, pending, prev_id FROM site_documents WHERE id = ?').bind(id).first<{ file_url: string; pending: number; prev_id: string | null }>();
   let url: string | null = null;
-  if (isFile(file) || link) {
-    const old = await d.prepare('SELECT file_url FROM site_documents WHERE id = ?').bind(id).first<{ file_url: string }>();
-    url = isFile(file) ? await uploadFile(file, 'dokumenti') : link;
-    await deleteFile(old?.file_url);
-  }
+  if (isFile(file) || link) url = isFile(file) ? await uploadFile(file, 'dokumenti') : link;
   await d.prepare('UPDATE site_documents SET name=?, academic_year=?, category=?, sort_order=?, on_site=?, file_url=COALESCE(?, file_url) WHERE id=?')
     .bind(name, opt(f, 'academic_year', 20), opt(f, 'category', 60), num(f, 'sort_order'), f.get('on_site') === '1' ? 1 : 0, url, id).run();
+  if (url && old?.pending) await fillSlot(d, id, old.prev_id); // празно място за новата година получи файл
+  if (url) await deleteFile(old?.file_url); // след записа — старият файл се трие, само ако никъде другаде не се ползва
+  revalidatePath('/', 'layout');
+}
+
+/* ---- Нова учебна година: празни места от миналогодишните документи ---- */
+// Място с файл → вече е обикновен документ; миналогодишният отива в архива.
+async function fillSlot(d: Awaited<ReturnType<typeof D>>, id: string, prevId: string | null) {
+  await d.prepare('UPDATE site_documents SET pending=0, on_site=1 WHERE id=?').bind(id).run();
+  if (prevId) await d.prepare('UPDATE site_documents SET archived=1 WHERE id=?').bind(prevId).run();
+}
+
+// „Започни 2026/2027“: за всеки текущ документ от минала учебна година — празно място за новата година
+// (същото име, група и ред). Миналогодишният остава на сайта, докато мястото не получи файл.
+// section празно = всички страници. Документите без година (постоянни) не се пипат.
+export async function startDocYear(f: FormData) {
+  await requireAdmin('dokumenti');
+  const d = await D();
+  const year = str(f, 'year', 20);
+  if (!/^\d{4}\/\d{4}$/.test(year)) throw new Error('Учебната година трябва да е във вида 2026/2027');
+  const section = str(f, 'section', 60);
+  const olds = await d.prepare(
+    `SELECT id, name, section, category, sort_order FROM site_documents d
+     WHERE archived = 0 AND pending = 0 AND academic_year IS NOT NULL AND academic_year <> '' AND academic_year < ?1
+       AND academic_year LIKE '____/____' AND (?2 = '' OR section = ?2)
+       AND NOT EXISTS (SELECT 1 FROM site_documents p WHERE p.prev_id = d.id)`,
+  ).bind(year, section).all<{ id: string; name: string; section: string; category: string | null; sort_order: number }>();
+  const ins = d.prepare(`INSERT INTO site_documents (id, name, file_url, academic_year, section, category, sort_order, on_site, archived, pending, prev_id)
+    VALUES (?, ?, '', ?, ?, ?, ?, 0, 0, 1, ?)`);
+  const rows = olds.results ?? [];
+  for (let i = 0; i < rows.length; i += 50) {
+    await d.batch(rows.slice(i, i + 50).map((r) => ins.bind(crypto.randomUUID(), r.name, year, r.section, r.category, r.sort_order, r.id)));
+  }
+  revalidatePath('/', 'layout');
+  redirect(section ? `/admin/dokumenti?page=${encodeURIComponent(section)}` : '/admin');
+}
+
+// „Същият като миналата година“: мястото взима миналогодишния файл.
+export async function reuseLastYear(f: FormData) {
+  await requireAdmin('dokumenti');
+  const d = await D();
+  const id = str(f, 'id', 60);
+  const row = await d.prepare(`SELECT p.prev_id, o.file_url FROM site_documents p JOIN site_documents o ON o.id = p.prev_id WHERE p.id = ? AND p.pending = 1`)
+    .bind(id).first<{ prev_id: string; file_url: string }>();
+  if (!row?.file_url) throw new Error('Няма миналогодишен файл');
+  await d.prepare('UPDATE site_documents SET file_url=? WHERE id=?').bind(row.file_url, id).run();
+  await fillSlot(d, id, row.prev_id);
+  revalidatePath('/', 'layout');
+}
+
+// „Не трябва тази година“: мястото се маха, миналогодишният отива в архива.
+export async function dropSlot(f: FormData) {
+  await requireAdmin('dokumenti');
+  const d = await D();
+  const id = str(f, 'id', 60);
+  const row = await d.prepare('SELECT prev_id FROM site_documents WHERE id = ? AND pending = 1').bind(id).first<{ prev_id: string | null }>();
+  if (!row) return;
+  if (row.prev_id) await d.prepare('UPDATE site_documents SET archived=1 WHERE id=?').bind(row.prev_id).run();
+  await d.prepare('DELETE FROM site_documents WHERE id = ?').bind(id).run();
   revalidatePath('/', 'layout');
 }
 
@@ -155,7 +211,11 @@ export async function deleteDocument(f: FormData) {
   const d = await D();
   const id = str(f, 'id', 60);
   const row = await d.prepare('SELECT file_url FROM site_documents WHERE id = ?').bind(id).first<{ file_url: string }>();
-  if (row) { await deleteFile(row.file_url); await d.prepare('DELETE FROM site_documents WHERE id = ?').bind(id).run(); }
+  if (row) {
+    await d.prepare('DELETE FROM site_documents WHERE id = ?').bind(id).run();
+    await d.prepare('UPDATE site_documents SET prev_id = NULL WHERE prev_id = ?').bind(id).run(); // празното място остава, без „същият като миналата година“
+    await deleteFile(row.file_url); // след триенето на реда — файлът остава, ако друг документ го ползва
+  }
   revalidatePath('/', 'layout');
 }
 

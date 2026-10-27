@@ -62,7 +62,7 @@ export async function findSources(q: string, lang: 'bg' | 'en'): Promise<Source[
     all<{ slug: string; title: string; excerpt: string | null; body: string | null; published_at: string | null }>(
       `SELECT id AS slug, title, excerpt, substr(content, 1, 2500) AS body, published_at FROM site_news WHERE status = 'published' ORDER BY published_at DESC LIMIT 150`),
     all<{ title: string; file_url: string | null; page_slug: string; academic_year: string | null; category: string | null }>(
-      `SELECT name AS title, file_url, section AS page_slug, academic_year, category FROM site_documents WHERE archived = 0 AND on_site = 1 AND file_url <> ''`),
+      `SELECT name AS title, file_url, section AS page_slug, academic_year, category FROM site_documents WHERE archived = 0 AND on_site = 1 AND pending = 0 AND file_url <> ''`),
   ]);
 
   // колко от текстовете съдържат всяка дума → тежест log(N / df)

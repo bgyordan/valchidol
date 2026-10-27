@@ -38,7 +38,7 @@ export async function uploadFile(file: File, folder: string): Promise<string> {
 export async function deleteFile(url: string | null | undefined, onlyFolder?: string): Promise<void> {
   if (!url || !url.startsWith(PREFIX)) return;
   if (onlyFolder && !url.startsWith(`${PREFIX}${onlyFolder}/`)) return;
-  // файл, който още се ползва другаде (снимка, избрана и за началната, страница, друга новина или галерията), остава.
+  // файл, който още се ползва другаде (снимка, избрана и за началната, страница, друга новина, галерията или друг документ — напр. „същият като миналата година“), остава.
   // Затова извикващият първо сменя/трие своя ред в базата и чак после трие файла.
   if (!onlyFolder && (await stillUsed(url))) return;
   try { await (await bucket()).delete(url.slice(PREFIX.length)); } catch { /* вече го няма */ }
@@ -51,6 +51,7 @@ async function stillUsed(url: string): Promise<boolean> {
      UNION ALL SELECT 1 FROM site_news WHERE cover_url = ?1 OR instr(gallery_images, ?1) > 0
      UNION ALL SELECT 1 FROM gallery_photos WHERE photo_url = ?1
      UNION ALL SELECT 1 FROM gallery_albums WHERE cover_url = ?1
+     UNION ALL SELECT 1 FROM site_documents WHERE file_url = ?1
      LIMIT 1`,
     url,
   ).catch(() => ({ x: 1 })); // при грешка — по-добре да не трием
