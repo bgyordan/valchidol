@@ -1,15 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // „Информация за“ на началната: три високи панела със снимки от училище (в тъмносиньо).
 // Избраният (с мишка, пръст или Tab) се разтваря и в него влитат връзките; другите остават тесни, с името си отстрани.
-type Item = { t: string; href: string; icon: string; photo?: string; links: { href: string; label: string }[] };
+// Бутоните в героя водят към #za-roditeli / #za-uchenitsi → тук се отваря този панел и страницата се превърта до него.
+type Item = { t: string; key: string; href: string; icon: string; photo?: string; links: { href: string; label: string }[] };
 
 export default function AudienceSwitch({ items }: { items: Item[] }) {
   const [cur, setCur] = useState(0);
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const go = (scroll: boolean) => {
+      const k = items.findIndex((it) => '#' + it.key === window.location.hash);
+      if (k < 0) return;
+      setCur(k);
+      if (scroll) box.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    };
+    go(true);
+    const onHash = () => go(true);
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, [items]);
   return (
-    <div className="ap">
+    <div className="ap" ref={box}>
       <h2 className="ap-h" id="aud-h">Информация за</h2>
       <div className="ap-row">
         {items.map((it, k) => {
