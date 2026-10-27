@@ -1,7 +1,7 @@
 import { denied } from '../../guard';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { first, json } from '../../../../lib/db';
+import { all, first, json } from '../../../../lib/db';
 import { deletePage, savePage } from '../../actions';
 import Confirm from '../../Confirm';
 import PhotoPicker from '../../PhotoPicker';
@@ -17,12 +17,27 @@ export default async function EditPage({ params }: { params: Promise<{ slug: str
   const p = isNew ? null : await first<Row>('SELECT slug, title, grp, body, photos, title_en, body_en FROM site_pages WHERE slug = ?', slug);
   if (!isNew && !p) notFound();
   const photos = json<string[]>(p?.photos, []);
+  // документите на страницата (управляват се в „Документи“) — тук само колко са и бутон към тях
+  const docs = isNew ? [] : await all<{ academic_year: string | null; archived: number }>('SELECT academic_year, archived FROM site_documents WHERE section = ?', slug);
+  const docNow = docs.filter((d) => !d.archived);
+  const docYears = [...new Set(docNow.map((d) => d.academic_year).filter((y): y is string => !!y))].sort().reverse();
 
   return (
     <>
       <p><Link href="/admin/stranitsi">← Всички страници</Link></p>
       <h1>{isNew ? 'Нова страница' : p!.title}</h1>
       {!isNew && <p><a href={`/${p!.slug}`} target="_blank">Виж на сайта ↗</a>{p!.title_en && <> · <a href={`/en/${p!.slug}`} target="_blank">English ↗</a></>}</p>}
+      {!isNew && (
+        <div className="adm-box adm-pagedocs">
+          <p>
+            <b>Документи на страницата:</b>{' '}
+            {docs.length ? <>{docNow.length} на сайта{docYears.length ? ` (${docYears.join(', ')})` : ''}, {docs.length - docNow.length} в архива</> : 'няма'}
+          </p>
+          <p className="adm-muted">Файловете (заповеди, заявления, правила…) не са в текста отдолу — качват се, сменят и архивират в „Документи“.
+            Нова учебна година: архивирай старите документи и качи новите там.</p>
+          <p><Link className="adm-btn" href={`/admin/dokumenti?page=${encodeURIComponent(p!.slug)}`}>Документи на „{p!.title}“ →</Link></p>
+        </div>
+      )}
       <form action={savePage} className="adm-form">
         <input type="hidden" name="new" value={isNew ? '1' : '0'} />
         <div className="adm-row">
@@ -43,7 +58,7 @@ export default async function EditPage({ params }: { params: Promise<{ slug: str
         </div>
         <label>Текст
           <textarea name="body" rows={28} defaultValue={p?.body ?? ''} />
-          <small>Всеки ред е абзац. „## “ = заглавие, „### “ = по-малко заглавие, „- “ = точка от списък, **удебелен**, [текст на връзката](https://адрес). Документ: качете го от „Документи“ и поставете връзката му тук.</small>
+          <small>Текстът стои над документите на сайта. Може да е и празен, ако страницата е само с документи. Всеки ред е абзац. „## “ = заглавие, „### “ = по-малко заглавие, „- “ = точка от списък, **удебелен**, [текст на връзката](https://адрес). Документ: качете го от „Документи“ и поставете връзката му тук.</small>
         </label>
         <details className="adm-en" open={!!p?.title_en}>
           <summary>На английски {p?.title_en ? <span className="adm-badge">EN</span> : <span className="adm-muted">(няма)</span>}</summary>

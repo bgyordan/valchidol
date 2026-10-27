@@ -122,3 +122,5 @@
 .adm-en summary { cursor: pointer; font-weight: 500; }
 .adm-en[open] summary { margin-bottom: 10px; }
 .adm-badge { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 99px; background: #0B2A4A; color: #fff; margin-left: 6px; vertical-align: 1px; }
+.adm-pagedocs { margin-block: 12px 20px; }
+.adm-pagedocs p + p { margin-top: 6px; }
