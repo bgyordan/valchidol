@@ -571,3 +571,27 @@ html.dp-lock { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .doodle { animation: none; } }
 @media print { .doodles { display: none; } }
 .page-bg-note { margin-top: 28px; font-size: calc(16px * var(--fs, 1)); }
+
+/* ===== Начална страница на раздел от менюто (Ученици, Родители…): всичко от раздела като карти с пояснения ===== */
+.sec-h { margin-bottom: clamp(18px, 2vw, 26px); }
+.sec-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 14px; }
+.sec-cards li { animation: sc-in .55s cubic-bezier(.2, .85, .25, 1.1) both; animation-delay: calc(var(--i, 0) * 45ms); }
+.sec-cards a { position: relative; height: 100%; display: grid; grid-template-columns: 48px minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: 14px; row-gap: 4px; align-items: start;
+  padding: 18px 20px; border-radius: var(--r-lg); background: var(--paper); border: 1px solid var(--line);
+  transition: border-color .2s, box-shadow .25s, translate .25s cubic-bezier(.2, .9, .3, 1.3); }
+.sec-cards a:hover { border-color: var(--tone); box-shadow: var(--shadow); translate: 0 -3px; }
+.sec-cards a:focus-visible { outline: 3px solid var(--tone); outline-offset: 2px; }
+.sc-ic { grid-row: 1 / 3; width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: var(--tone-soft); color: var(--tone-ink); transition: background .2s, color .2s; }
+.sc-ic svg { width: 24px; height: 24px; }
+.sec-cards a:hover .sc-ic { background: var(--tone); color: var(--paper); }
+.sc-t { font-weight: 500; font-size: calc(17px * var(--fs, 1)); line-height: 1.3; color: var(--ink); }
+.sc-ext { color: var(--ink-3); font-weight: 400; }
+.sc-d { font-size: calc(14.5px * var(--fs, 1)); line-height: 1.45; color: var(--ink-2); }
+@keyframes sc-in { from { opacity: 0; transform: translateY(14px); } }
+@media (prefers-reduced-motion: reduce) { .sec-cards li { animation: none; } }
+/* „Полезна информация“ — всяка група (## подзаглавие) в своя карта, на колони */
+.info-cards { columns: 3 320px; column-gap: 16px; }
+.info-card { break-inside: avoid; margin: 0 0 16px; padding: 22px 24px 18px; border-radius: var(--r-lg); background: var(--paper); border: 1px solid var(--line); }
+.info-card h2 { font-size: calc(clamp(20px, 1.6vw, 24px) * var(--fs-ui, 1)); margin: 0 0 8px; color: var(--green); }
+.info-card p { color: var(--ink-2); }
+.info-card ul { margin-top: 10px; }

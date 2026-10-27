@@ -2,7 +2,8 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import PageHero from '../components/PageHero';
 import PhotoBand from '../components/PhotoBand';
-import LinkList from '../components/LinkList';
+import { Ic } from '../components/LinkList';
+import { getNav } from '../../lib/menu';
 import { NAV, SCHOOL } from '../components/nav';
 import { getChildPages, getDocuments, getPage, type DocRow } from '../../lib/data';
 import DocRows from '../components/DocRows';
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const slug = await slugOf(params);
   const group = NAV.find((g) => g.href === '/' + slug);
   const page = await getPage(slug);
-  const title = page?.title ?? group?.label;
+  const title = group?.label ?? page?.title;
   if (!title) return {};
   const en = page?.has_en ? { en: `/en/${slug}`, bg: `/${slug}` } : undefined;
   return { title: `${title} — ${SCHOOL.short}`, alternates: { canonical: `/${slug}`, ...(en ? { languages: en } : {}) }, description: group?.intro ?? page?.body.replace(/[#*\[\]]|\([^)]*\)/g, '').slice(0, 160) };
@@ -41,21 +42,55 @@ export default async function SitePageView({ params }: Props) {
   // разделът от менюто, в който е страницата — връзките му стоят в страничната колона
   const navPath = slug.startsWith('proekti/') ? '/proekti' : path;
   const section = group ? undefined : NAV.find((g) => g.links.some((l) => l.href === navPath));
+  // начална страница на раздел от менюто (напр. „Ученици“): всичко от раздела като карти с пояснения,
+  // а текстът на страницата (ако има) — отдолу като „Полезна информация“; без голямата снимка горе
+  const menuGroup = group ? (await getNav().catch(() => [])).find((g) => g.href === path) ?? group : undefined;
+  const cards = menuGroup ? menuGroup.links.filter((l) => l.href !== path) : [];
 
   return (
     <>
       <PageHero
         path={slug.startsWith('proekti/') ? '/proekti' : path}
-        title={page?.title ?? group!.label}
-        photo={page?.photos[0]}
+        title={menuGroup ? menuGroup.label : page?.title ?? ''}
+        intro={menuGroup?.intro}
+        photo={menuGroup ? undefined : page?.photos[0]}
       />
 
-      {(page?.body || docs.length > 0) && (
+      {menuGroup && cards.length > 0 && (
         <section className="section">
+          <div className="wrap">
+            <h2 className="sec-h">Всичко в раздела</h2>
+            <ul className={`sec-cards tone-${menuGroup.tone}`}>
+              {cards.map((l, i) => {
+                const ext = l.href.startsWith('http');
+                return (
+                  <li key={l.href} style={{ ['--i' as string]: i } as React.CSSProperties}>
+                    <a href={l.href} {...(ext ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+                      <span className="sc-ic"><Ic name={CARD_ICONS[l.href] ?? (ext ? 'external' : 'doc')} /></span>
+                      <span className="sc-t">{l.label}{ext && <span className="sc-ext"> ↗</span>}</span>
+                      {l.desc && <span className="sc-d">{l.desc}</span>}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      {(page?.body || docs.length > 0) && (
+        <section className={`section${menuGroup ? ' tint' : ''}`}>
           <div className={`wrap${section ? ' page-layout' : ''}`}>
             <div>
+              {menuGroup && <h2 className="sec-h">Полезна информация</h2>}
               {parent && <p className="page-back"><a href={'/' + parent.slug}>← {parent.title}</a></p>}
-              <PageBody body={page ? dropChildLinks(stripTitle(page.body || '', page.title), children.map((c) => c.slug)) : ''} docs={docs} />
+              {menuGroup && page && infoCards(page.body) ? (
+                <div className="info-cards">
+                  {infoCards(page.body)!.map((t, i) => <article key={i} className="info-card prose-block page-body"><RichText text={t} /></article>)}
+                </div>
+              ) : (
+                <PageBody body={page ? dropChildLinks(stripTitle(page.body || '', page.title), children.map((c) => c.slug)) : ''} docs={docs} />
+              )}
             </div>
             {section && (
               <nav className={`page-side tone-${section.tone}`} aria-label={`Раздел „${section.label}“`}>
@@ -89,17 +124,6 @@ export default async function SitePageView({ params }: Props) {
         </section>
       )}
 
-      {group && (
-        <section className={`section${page?.body ? ' tint' : ''}`}>
-          <div className="wrap">
-            {page?.body && <h2 style={{ marginBottom: 20 }}>В този раздел</h2>}
-            <LinkList
-              items={group.links.filter((l) => l.href !== path).map((l) => ({ t: l.label, href: l.href, icon: l.href.startsWith('http') ? 'external' : 'doc', external: l.href.startsWith('http') }))}
-            />
-          </div>
-        </section>
-      )}
-
       {page && page.photos.length > 1 && (
         <section className="section">
           <div className="wrap">
@@ -111,6 +135,24 @@ export default async function SitePageView({ params }: Props) {
     </>
   );
 }
+
+// текст на началната страница на раздел, разделен с „## “ подзаглавия → отделни карти (поне две)
+function infoCards(body: string): string[] | null {
+  const parts = body.split(/\n(?=## )/).map((t) => t.trim()).filter(Boolean);
+  return parts.length >= 2 && parts.every((t) => t.startsWith('## ')) ? parts : null;
+}
+
+// икони на картите в началните страници на разделите
+const CARD_ICONS: Record<string, string> = {
+  '/istoriya': 'history', '/patron-i-simvoli': 'heart', '/misiya-i-tseli': 'bulb', '/viziya': 'bulb', '/materialna-baza': 'building',
+  '/proekti': 'briefcase', '/obshtestven-savet': 'users', '/uchilishtno-nastoyatelstvo': 'users', '/biblioteka': 'news', '/vestnik': 'news', '/radio': 'chat',
+  '/priem': 'clipboard', '/svobodni-mesta': 'info', '/zayavleniya': 'doc', '/roditelski-klub': 'users', '/patuvaniya': 'bus', '/bdp': 'shield',
+  '/za-uchenika': 'info', '/sfo': 'calendar', '/zanimaniya-po-interesi': 'bulb', '/stipendii': 'coin', '/postizheniya': 'trophy', '/analiz-nvo-dzi': 'chart',
+  '/parlament': 'users', '/ombudsman': 'scale', 'https://edu.mon.bg/': 'backpack',
+  '/aktsenti': 'news', '/sabitiya': 'calendar', '/galeriya': 'camera', '/pozdravitelni-adresi': 'mail',
+  '/dokumentatsiya': 'doc', '/administrativni-uslugi': 'chat', '/dostap-do-informatsiya': 'search', '/lichni-danni': 'shield', '/signali': 'shield',
+  '/za-uchitelya': 'users', '/kriterii-dtv': 'chart', '/profesionalni-obshtnosti': 'users', '/organizirane-na-ekskurzii': 'bus',
+};
 
 // Текстът и документите на страницата. Отпред е само текущото (най-новата година и неархивираните документи),
 // а миналите години са в „Архив“ най-долу — с бутони за годините.
