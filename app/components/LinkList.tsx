@@ -23,6 +23,11 @@ const ICONS: Record<string, string> = {
   mail: 'M3 5h18v14H3zM3 6l9 7 9-7',
   pin: 'M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
   info: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 16v-5M12 8h.01',
+  coin: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .8-3 2s1.3 1.7 3 2 3 .8 3 2-1.3 2-3 2c-1.4 0-2.5-.5-3-1.5M12 6v2M12 16v2',
+  trophy: 'M8 4h8v6a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8M9 18h6',
+  backpack: 'M6 8a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v13H6zM9 4V3h6v1M6 13h12M10 13v3h4v-3',
+  bus: 'M5 4h14v13H5zM5 11h14M8 17v3M16 17v3M8 14h.01M16 14h.01',
+  scale: 'M12 4v17M7 21h10M5 8h14M5 8l-3 6a3 3 0 0 0 6 0zM19 8l-3 6a3 3 0 0 0 6 0zM12 4l-1-1h2z',
 };
 
 export function Ic({ name }: { name: string }) {
