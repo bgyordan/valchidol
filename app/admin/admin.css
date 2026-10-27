@@ -124,3 +124,14 @@
 .adm-badge { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 99px; background: #0B2A4A; color: #fff; margin-left: 6px; vertical-align: 1px; }
 .adm-pagedocs { margin-block: 12px 20px; }
 .adm-pagedocs p + p { margin-top: 6px; }
+/* нова учебна година: чеклист на празните места */
+.adm-newyear h2, .adm-slots h2, .adm-missing h2 { margin-bottom: 6px; }
+.adm-newyear .adm-row { align-items: center; margin-top: 10px; }
+.adm-slots { margin-block: 16px; border-color: color-mix(in srgb, var(--warm) 60%, var(--line)); background: color-mix(in srgb, var(--warm) 8%, var(--paper)); }
+.adm-slots ul { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 10px; }
+.adm-slots li { padding: 12px 14px; border-radius: var(--r); background: var(--paper); border: 1px solid var(--line); }
+.adm-slot-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 8px; }
+.adm-slot-up { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.adm-slot-up input[type="url"] { width: 220px; }
+.adm-missing { margin-block: 16px; }
+.adm-missing ul { margin: 6px 0 0 18px; }
