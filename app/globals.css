@@ -595,3 +595,5 @@ html.dp-lock { overflow: hidden; }
 .info-card h2 { font-size: calc(clamp(20px, 1.6vw, 24px) * var(--fs-ui, 1)); margin: 0 0 8px; color: var(--green); }
 .info-card p { color: var(--ink-2); }
 .info-card ul { margin-top: 10px; }
+.info-card .doc-rows { margin-top: 10px; }
+.info-card .page-body + .doc-rows { margin-top: 6px; }
