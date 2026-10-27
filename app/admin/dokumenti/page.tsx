@@ -53,6 +53,7 @@ export default async function AdminDocs({ searchParams }: { searchParams: Promis
         <p><button className="adm-btn">Покажи</button></p>
       </form>
 
+      <p><a href={`/admin/stranitsi/${cur}`}>Текст на „{title}“ →</a> · <a href={`/${cur}`} target="_blank">Виж на сайта ↗</a></p>
       <nav className="adm-tabs adm-arch" aria-label="Текущи или архив">
         <a href={base} className={arch ? '' : 'on'}>Текущи <span>{every.length - nArch}</span></a>
         <a href={`${base}&arch=1`} className={arch ? 'on' : ''}>Архив <span>{nArch}</span></a>
