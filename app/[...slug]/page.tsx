@@ -85,9 +85,7 @@ export default async function SitePageView({ params }: Props) {
               {menuGroup && <h2 className="sec-h">Полезна информация</h2>}
               {parent && <p className="page-back"><a href={'/' + parent.slug}>← {parent.title}</a></p>}
               {menuGroup && page && infoCards(page.body) ? (
-                <div className="info-cards">
-                  {infoCards(page.body)!.map((t, i) => <article key={i} className="info-card prose-block page-body"><RichText text={t} /></article>)}
-                </div>
+                <InfoCards parts={infoCards(page.body)!} docs={docs.filter((d) => !d.archived)} />
               ) : (
                 <PageBody body={page ? dropChildLinks(stripTitle(page.body || '', page.title), children.map((c) => c.slug)) : ''} docs={docs} />
               )}
@@ -140,6 +138,32 @@ export default async function SitePageView({ params }: Props) {
 function infoCards(body: string): string[] | null {
   const parts = body.split(/\n(?=## )/).map((t) => t.trim()).filter(Boolean);
   return parts.length >= 2 && parts.every((t) => t.startsWith('## ')) ? parts : null;
+}
+
+// Картите в „Полезна информация“: всяка група от текста (## заглавие) заедно с документите от същата група
+// (група на документа = заглавието). Документи от група, която я няма в текста, получават своя карта.
+function InfoCards({ parts, docs }: { parts: string[]; docs: DocRow[] }) {
+  const key = (t: string) => t.toLowerCase().replace(/[^a-zа-я0-9]+/gi, '');
+  const head = (t: string) => t.split('\n')[0].replace(/^##\s+/, '').trim();
+  const used = new Set<string>();
+  const cards = parts.map((t) => {
+    const k = key(head(t));
+    const mine = docs.filter((d) => key(d.category || '') === k);
+    mine.forEach((d) => used.add(d.id));
+    return { text: t, docs: mine };
+  });
+  const rest = docs.filter((d) => !used.has(d.id));
+  for (const c of groupOrder(rest)) cards.push({ text: `## ${c || 'Документи'}`, docs: rest.filter((d) => (d.category || '') === c) });
+  return (
+    <div className="info-cards">
+      {cards.map((c, i) => (
+        <article key={i} className="info-card">
+          <div className="prose-block page-body"><RichText text={c.text} /></div>
+          {c.docs.length > 0 && <DocRows docs={sorted(c.docs)} />}
+        </article>
+      ))}
+    </div>
+  );
 }
 
 // икони на картите в началните страници на разделите
