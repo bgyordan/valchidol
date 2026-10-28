@@ -1,4 +1,3 @@
-import HeroSlides from '../components/HeroSlides';
 import type { Metadata } from 'next';
 import { getEnPages, getHeroPhotos, getLatestPhotos, getNews, getPagePhotos } from '../../lib/data';
 import { getSiteInfo } from '../../lib/siteinfo';
@@ -60,9 +59,9 @@ export default async function HomeEn() {
   return (
     <div className="home">
       <section className={`hh${slides.length ? '' : ' no-photo'}`} aria-labelledby="hh-title">
-        <HeroSlides slides={slides} />
-        {/* годината на основаване — голяма, само с контур, в ъгъла */}
-        <span className="hh-year" aria-hidden="true">1880</span>
+        <div className={`hh-slides n${slides.length}`} aria-hidden="true">
+          {slides.map((src, i) => <img key={src + i} src={src} alt="" fetchPriority={i === 0 ? 'high' : 'low'} />)}
+        </div>
         <div className="wrap hh-in">
           <p className="hh-kicker">Secondary school · Valchi Dol, Bulgaria · since 1880</p>
           <h1 id="hh-title" aria-label={title}>
@@ -70,12 +69,10 @@ export default async function HomeEn() {
               <span key={i} className={`hw${i === all.length - 1 ? ' hw-last' : ''}`} aria-hidden="true"><span style={{ ['--i' as string]: i } as React.CSSProperties}>{w}</span></span>
             ))}
           </h1>
-          <p className="hh-motto" style={{ ['--n' as string]: 3 } as React.CSSProperties}>
-            {home.en.motto.split(/\s+[–—-]\s+/).map((part, i, all) => <span key={i}>{part}{i < all.length - 1 ? ' –' : ''}</span>)}
-          </p>
+          <p className="hh-motto" style={{ ['--n' as string]: 3 } as React.CSSProperties}>{home.en.motto}</p>
           <div className="btn-row">
-            {has('priem') && <a className="hh-btn gold" href="/en/priem"><span>Admission</span><svg className="hh-arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>}
-            <a className="hh-btn" href={has('istoriya') ? '/en/istoriya' : '/en/contacts'}><span>{has('istoriya') ? 'About the school' : 'Contacts'}</span><svg className="hh-arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
+            {has('priem') && <a className="btn btn-primary" href="/en/priem">Admission</a>}
+            <a className="btn hh-ghost" href={has('istoriya') ? '/en/istoriya' : '/en/contacts'}>{has('istoriya') ? 'About the school' : 'Contacts'}</a>
           </div>
         </div>
       </section>
