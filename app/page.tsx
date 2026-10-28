@@ -4,7 +4,6 @@ import { getNav } from '../lib/menu';
 import { getHome } from '../lib/home';
 import { getSpaces, SPACE_ICONS } from '../lib/baza';
 import PhotoBand from './components/PhotoBand';
-import HeroSlides from './components/HeroSlides';
 import AudienceSwitch from './components/AudienceSwitch';
 import { EDU_LINKS } from './components/nav';
 import './home.css';
@@ -120,9 +119,9 @@ export default async function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, '\\u003c') }} />
       {/* ===== Герой: снимки от училище (сменят се плавно), името и главните действия ===== */}
       <section className={`hh${slides.length ? '' : ' no-photo'}`} aria-labelledby="hh-title">
-        <HeroSlides slides={slides} />
-        {/* годината на основаване — голяма, само с контур, в ъгъла */}
-        <span className="hh-year" aria-hidden="true">1880</span>
+        <div className={`hh-slides n${slides.length}`} aria-hidden="true">
+          {slides.map((src, i) => <img key={src + i} src={src} alt="" fetchPriority={i === 0 ? 'high' : 'low'} />)}
+        </div>
         <div className="wrap hh-in">
           <p className="hh-kicker">{home.kicker}</p>
           {/* думите на името изплуват една след друга, последната се подчертава */}
@@ -131,7 +130,7 @@ export default async function Home() {
               <span key={i} className={`hw${i === all.length - 1 ? ' hw-last' : ''}`} aria-hidden="true"><span style={{ ['--i' as string]: i } as React.CSSProperties}>{w}</span></span>
             ))}
           </h1>
-          {/* слоганът — ръкописно, в топло жълто (като „Вярваме, че“ в сайта на ЦСОП); след тирето на нов ред; „изписва се“ */}
+          {/* слоганът — ръкописно, в топло жълто (като „Вярваме, че“ в сайта на ЦСОП); след тирето на нов ред */}
           <p className="hh-motto" style={{ ['--n' as string]: home.title.split(/\s+/).length } as React.CSSProperties}>
             {home.motto.split(/\s+[–—-]\s+/).map((part, i, all) => (
               <span key={i}>{part}{i < all.length - 1 ? ' –' : ''}</span>
