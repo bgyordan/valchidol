@@ -4,7 +4,7 @@
 Текстовете са в seed/news/<дата>.json (заглавие, дата, текст и „маркер“ — част от заглавието).
 Снимките се вземат наживо от страницата с новините: всички снимки между маркера на една новина
 и маркера на следващата (за последната — end_marker). Свалят се, качват се в R2 и се пише out/news.sql
-(INSERT OR IGNORE — пускане втори път не прави двойни новини).
+(повторно пускане не прави двойни новини — само допълва снимките).
 
   python3 -I scripts/import-news.py seed/news/2026-10-29.json dry   # само проверка
   python3 -I scripts/import-news.py seed/news/2026-10-29.json run
@@ -58,15 +58,28 @@ if MODE != 'run':
 os.makedirs('out', exist_ok=True)
 
 
-def store(u):
+def fetch(u):
+    """Сваля веднага — адресите на Google важат кратко. Връща (u, path, ctype) или (u, None, грешка)."""
     key = 'stari/' + hashlib.sha1(u.encode()).hexdigest()[:16]
-    data, ctype = get(u + '=w1600')
+    for _ in range(2):
+        try:
+            data, ctype = get(u + '=w1600')
+            break
+        except Exception as e:  # noqa: BLE001
+            err = e
+    else:
+        return u, None, str(err)
     ctype = (ctype or 'image/jpeg').split(';')[0]
     if not ctype.startswith('image/'):
-        raise RuntimeError(f'не е снимка: {ctype}')
+        return u, None, f'не е снимка: {ctype}'
     key += {'image/png': '.png', 'image/gif': '.gif', 'image/webp': '.webp'}.get(ctype, '.jpg')
     path = os.path.join('out', key.replace('/', '_'))
     open(path, 'wb').write(data)
+    return u, path, ctype
+
+
+def upload(path, ctype):
+    key = os.path.basename(path).replace('stari_', 'stari/', 1)
     r = subprocess.run(['npx', 'wrangler', 'r2', 'object', 'put', f'{BUCKET}/{key}', '--file', path, '--content-type', ctype, '--remote'],
                        capture_output=True, text=True)
     os.remove(path)
@@ -75,19 +88,32 @@ def store(u):
     return f'/files/{key}'
 
 
+# 1) първо се свалят всички снимки наведнъж (успоредно), 2) после се качват в R2
+from concurrent.futures import ThreadPoolExecutor
+with ThreadPoolExecutor(12) as ex:
+    got = {u: (path, info) for u, path, info in ex.map(fetch, [u for g in groups for u in g])}
+bad = [u for u, (path, _) in got.items() if not path]
+note(f'свалени {len(got) - len(bad)} от {len(got)} снимки')
+
 q = lambda s: 'NULL' if s is None else "'" + str(s).replace("'", "''") + "'"
 sql = []
 for n, urls in zip(D['news'], groups):
     files = []
     for u in urls:
+        path, info = got[u]
+        if not path:
+            continue
         try:
-            files.append(store(u))
+            files.append(upload(path, info))
         except Exception as e:  # noqa: BLE001
-            print(f'::warning::{n["title"][:40]}: снимка не се свали ({e})')
+            print(f'::warning::{n["title"][:40]}: {e}')
     cover = files[0] if files else None
+    # вече пренесена новина (напр. от по-ранно пускане с липсващи снимки) → само снимките се подменят
     sql.append(
-        'INSERT OR IGNORE INTO site_news (id, title, excerpt, content, cover_url, gallery_images, category, status, published_at, author_name) VALUES '
+        'INSERT INTO site_news (id, title, excerpt, content, cover_url, gallery_images, category, status, published_at, author_name) VALUES '
         f"({q(n['id'])}, {q(n['title'])}, {q(n['excerpt'])}, {q(n['content'])}, {q(cover)}, {q(json.dumps(files[1:], ensure_ascii=False))}, "
-        f"'Новини', 'published', {q(n['published_at'])}, 'стария сайт');")
+        f"'Новини', 'published', {q(n['published_at'])}, 'стария сайт') "
+        'ON CONFLICT(id) DO UPDATE SET cover_url = excluded.cover_url, gallery_images = excluded.gallery_images '
+        'WHERE json_array_length(excluded.gallery_images) >= json_array_length(site_news.gallery_images);')
     note(f'{n["title"][:50]}: качени {len(files)} от {len(urls)} снимки')
 open('out/news.sql', 'w', encoding='utf-8').write('\n'.join(sql) + '\n')
