@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'dry = само проверка, run = сваляне и смяна в базата, logo = логото от стария сайт, photos = размери на избраните снимки, chat = проба на помощника'
+        description: 'dry = само проверка, run = сваляне и смяна в базата, logo = логото от стария сайт, photos = размери на избраните снимки, chat = проба на помощника, news-dry / news = новите новини от seed/news'
         type: choice
-        options: [dry, run, logo, photos, chat, health, d1]
+        options: [dry, run, logo, photos, chat, health, d1, news-dry, news]
         default: dry
 
 jobs:
@@ -41,3 +41,15 @@ jobs:
           sed -i "s/PLACEHOLDER-SET-AFTER-d1-create/$id/" wrangler.jsonc
           wc -l out/images.sql
           npx wrangler d1 execute souvalchidol --remote --file out/images.sql
+      - name: Нови новини от стария сайт (seed/news)
+        if: inputs.mode == 'news-dry' || inputs.mode == 'news'
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="souvalchidol") | .uuid')
+          sed -i "s/PLACEHOLDER-SET-AFTER-d1-create/$id/" wrangler.jsonc
+          for f in seed/news/*.json; do
+            python3 -I scripts/import-news.py "$f" ${{ inputs.mode == 'news' && 'run' || 'dry' }}
+            if [ "${{ inputs.mode }}" = "news" ]; then npx wrangler d1 execute souvalchidol --remote --file out/news.sql; fi
+          done
+          if [ "${{ inputs.mode }}" = "news" ]; then
+            npx wrangler d1 execute souvalchidol --remote --json --command "SELECT id, cover_url, json_array_length(gallery_images) AS n FROM site_news WHERE published_at >= '2026-10-20'" | jq -r '.[0].results[] | "::notice::в базата: \(.id) — корица \(.cover_url), още \(.n) снимки"'
+          fi
