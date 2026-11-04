@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'dry = само проверка, run = сваляне и смяна в базата, logo = логото от стария сайт, photos = размери на избраните снимки, chat = проба на помощника, news-dry / news = новите новини от seed/news'
+        description: 'dry = само проверка, run = сваляне и смяна в базата, logo = логото от стария сайт, photos = размери на избраните снимки, chat = проба на помощника, news-dry / news = новите новини от seed/news, news-text = текстът на новините от стария сайт'
         type: choice
-        options: [dry, run, logo, photos, chat, health, d1, news-dry, news]
+        options: [dry, run, logo, photos, chat, health, d1, news-dry, news, news-text]
         default: dry
 
 jobs:
@@ -41,6 +41,13 @@ jobs:
           sed -i "s/PLACEHOLDER-SET-AFTER-d1-create/$id/" wrangler.jsonc
           wc -l out/images.sql
           npx wrangler d1 execute souvalchidol --remote --file out/images.sql
+      - name: Текст на новините от стария сайт
+        if: inputs.mode == 'news-text'
+        run: |
+          python3 -I scripts/news-text.py 'СВЕТЪТ НА АНИМАЦИЯТА'
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="souvalchidol") | .uuid')
+          sed -i "s/PLACEHOLDER-SET-AFTER-d1-create/$id/" wrangler.jsonc
+          npx wrangler d1 execute souvalchidol --remote --json --command "SELECT id, published_at, title FROM site_news ORDER BY published_at DESC LIMIT 12" | jq -r '.[0].results[] | "в базата: \(.published_at) \(.title)"'
       - name: Нови новини от стария сайт (seed/news)
         if: inputs.mode == 'news-dry' || inputs.mode == 'news'
         run: |
